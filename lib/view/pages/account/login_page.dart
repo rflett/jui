@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
             Hero(
                 tag: "app-logo",
                 child: Image.asset(
-                  "images/friends_logo.png",
+                  "images/logo.png",
                   width: 120,
                 ))
           ],
@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
                       backgroundColor: appAccentColor,
                       primary: Colors.white,
                       padding: EdgeInsets.all(15),
-                      minimumSize: Size(300, 10),
+                      minimumSize: Size(300, 60),
                     ),
                     child: Text("Login", style: TextStyle(fontSize: 25)),
                     onPressed: onLoginClicked,

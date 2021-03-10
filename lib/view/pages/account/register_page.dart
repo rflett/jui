@@ -28,7 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
             Hero(
                 tag: "app-logo",
                 child: Image.asset(
-                  "images/friends_logo.png",
+                  "images/logo.png",
                   width: 120,
                 ))
           ],
@@ -70,7 +70,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       backgroundColor: appAccentColor,
                       primary: Colors.white,
                       padding: EdgeInsets.all(15),
-                      minimumSize: Size(300, 10),
+                      minimumSize: Size(300, 60),
                     ),
                     child: Text("Register", style: TextStyle(fontSize: 25)),
                     onPressed: onRegisterClicked,
