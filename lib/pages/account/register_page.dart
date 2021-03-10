@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:friendsbet/constants/colors.dart';
-import 'package:friendsbet/models/request/registration_request.dart';
-import 'package:friendsbet/server/account.dart';
-import 'package:friendsbet/utilities/popups.dart';
+import 'package:jui/constants/colors.dart';
+import 'package:jui/models/request/registration_request.dart';
+import 'package:jui/models/response/problem_response.dart';
+import 'package:jui/server/account.dart';
+import 'package:jui/utilities/popups.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text("Register"),
           actions: [
@@ -64,11 +65,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         labelText: "Enter your Password",
                         border: OutlineInputBorder()),
                   ),
-                  FlatButton(
-                    color: appAccentColor,
-                    textColor: Colors.white,
-                    padding: EdgeInsets.all(15),
-                    minWidth: 300,
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: appAccentColor,
+                      primary: Colors.white,
+                      padding: EdgeInsets.all(15),
+                      minimumSize: Size(300, 10),
+                    ),
                     child: Text("Register", style: TextStyle(fontSize: 25)),
                     onPressed: onRegisterClicked,
                   )
@@ -80,16 +83,15 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   onRegisterClicked() async {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState?.validate() == true) {
       // Form was filled out, attempt login
       var requestData =
           RegistrationRequest(this._username, this._email, this._password);
       try {
         var name = await Account.register(requestData);
-        ScaffoldState scaffoldState = _scaffoldKey.currentState;
-        scaffoldState.showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Thanks for registering $name")));
-      } catch (err) {
+      } on ProblemResponse catch (err) {
         // TODO logging
         print(err);
         PopupUtils.showError(context, err);
@@ -97,27 +99,30 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  String validateEmail(String currentValue) {
-    if (currentValue.isEmpty) {
-      return "Please enter an email address";
+  String? validateEmail(String? currentValue) {
+    if (currentValue != null) {
+      if (currentValue.isEmpty) {
+        return "Please enter an email address";
+      }
+      if (!currentValue.contains("@")) {
+        return "Please enter a valid email";
+      }
     }
-    if (!currentValue.contains("@")) {
-      return "Please enter a valid email";
-    }
-
     return null;
   }
 
-  String validatePassword(String currentValue) {
-    if (currentValue.isEmpty) {
-      return "Please enter a password";
-    }
-    if (currentValue.length < 5) {
-      return "Password must be at least 5 characters";
-    }
+  String? validatePassword(String? currentValue) {
+    if (currentValue != null) {
+      if (currentValue.isEmpty) {
+        return "Please enter a password";
+      }
+      if (currentValue.length < 5) {
+        return "Password must be at least 5 characters";
+      }
 
-    if (!currentValue.contains(RegExp("[1,2,3,4,5,6,7,8,9]"))) {
-      return "Password needs at least 1 number";
+      if (!currentValue.contains(RegExp("[1,2,3,4,5,6,7,8,9]"))) {
+        return "Password needs at least 1 number";
+      }
     }
 
     return null;

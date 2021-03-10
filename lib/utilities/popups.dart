@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:friendsbet/models/response/problem_response.dart';
+import 'package:jui/models/response/problem_response.dart';
 
 class PopupUtils {
   /// Shows an error popup to the user containing the information that fits the specific error
   static void showError(BuildContext context, ProblemResponse problem) {
-    if (problem.errors != null && problem.errors.isNotEmpty) {
+    if (problem.errors != null && problem.errors!.isNotEmpty) {
       // Validation errors are present
       _showValidationErrors(context, problem);
     } else {
@@ -26,7 +26,7 @@ class PopupUtils {
               ),
             ),
             actions: [
-              FlatButton(
+              TextButton(
                 child: Text('Ok'),
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -47,7 +47,7 @@ class PopupUtils {
               child: Text(problem.detail),
             ),
             actions: [
-              FlatButton(
+              TextButton(
                 child: Text('Ok'),
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -60,7 +60,7 @@ class PopupUtils {
 
   static List<Column> _formatErrorsIntoList(ProblemResponse problems) {
     List<Column> errorList = [];
-    problems.errors.forEach((field, errorStrings) {
+    problems.errors!.forEach((field, errorStrings) {
       var parentColumn = Column(
         children: [Text(field, style: TextStyle(fontWeight: FontWeight.bold))],
       );

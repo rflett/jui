@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:friendsbet/constants/colors.dart';
+import 'package:jui/constants/colors.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -21,27 +21,33 @@ class _LandingPageState extends State<LandingPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                FlatButton(
-                  color: appPrimaryColor,
-                  textColor: Colors.white,
-                  padding: EdgeInsets.all(15),
-                  minWidth: 300,
+                TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: appPrimaryColor,
+                    primary: Colors.white,
+                    padding: EdgeInsets.all(15),
+                    minimumSize: Size(300, 10),
+                  ),
                   child: Text("View Room", style: TextStyle(fontSize: 25)),
                   onPressed: () => Navigator.pushNamed(context, "/enter-code"),
                 ),
-                FlatButton(
-                  color: appAccentColor,
-                  textColor: Colors.white,
-                  padding: EdgeInsets.all(15),
-                  minWidth: 300,
+                TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: appAccentColor,
+                    primary: Colors.white,
+                    padding: EdgeInsets.all(15),
+                    minimumSize: Size(300, 10),
+                  ),
                   child: Text("Login", style: TextStyle(fontSize: 25)),
                   onPressed: () => Navigator.pushNamed(context, "/login"),
                 ),
-                FlatButton(
-                  color: appSecondaryColor,
-                  textColor: Colors.white,
-                  padding: EdgeInsets.all(15),
-                  minWidth: 300,
+                TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: appSecondaryColor,
+                    primary: Colors.white,
+                    padding: EdgeInsets.all(15),
+                    minimumSize: Size(300, 10),
+                  ),
                   child: Text("Register", style: TextStyle(fontSize: 25)),
                   onPressed: () => Navigator.pushNamed(context, "/register"),
                 )

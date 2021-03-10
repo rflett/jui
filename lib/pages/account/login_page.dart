@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:friendsbet/constants/colors.dart';
-import 'package:friendsbet/models/request/login_request.dart';
-import 'package:friendsbet/server/account.dart';
-import 'package:friendsbet/utilities/popups.dart';
+import 'package:jui/constants/colors.dart';
+import 'package:jui/models/request/login_request.dart';
+import 'package:jui/models/response/problem_response.dart';
+import 'package:jui/server/account.dart';
+import 'package:jui/utilities/popups.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -14,12 +15,12 @@ class _LoginPageState extends State<LoginPage> {
   String _password = "";
 
   final _formKey = GlobalKey<FormState>();
-  final GlobalKey _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text("Login"),
           actions: [
@@ -55,11 +56,13 @@ class _LoginPageState extends State<LoginPage> {
                         labelText: "Enter your Password",
                         border: OutlineInputBorder()),
                   ),
-                  FlatButton(
-                    color: appAccentColor,
-                    textColor: Colors.white,
-                    padding: EdgeInsets.all(15),
-                    minWidth: 300,
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: appAccentColor,
+                      primary: Colors.white,
+                      padding: EdgeInsets.all(15),
+                      minimumSize: Size(300, 10),
+                    ),
                     child: Text("Login", style: TextStyle(fontSize: 25)),
                     onPressed: onLoginClicked,
                   )
@@ -71,45 +74,45 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   onLoginClicked() async {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState?.validate() == true) {
       // Form was filled out, attempt login
       var requestData = LoginRequest(this._email, this._password);
       try {
         var name = await Account.login(requestData);
-        ScaffoldState scaffoldState = _scaffoldKey.currentState;
-        scaffoldState.showSnackBar(
-            SnackBar(content: Text("Welcome Back $name")));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Welcome Back $name")));
       } catch (err) {
         // TODO logging
         print(err);
-        PopupUtils.showError(context, err);
+        PopupUtils.showError(context, err as ProblemResponse);
       }
     }
   }
 
-  String validateEmail(String currentValue) {
-    if (currentValue.isEmpty) {
+  String? validateEmail(String? currentValue) {
+    if (currentValue?.isEmpty == true) {
       return "Please enter an email address";
     }
-    if (!currentValue.contains("@")) {
+    if (currentValue?.contains("@") == false) {
       return "Please enter a valid email";
     }
 
     return null;
   }
 
-  String validatePassword(String currentValue) {
-    if (currentValue.isEmpty) {
-      return "Please enter a password";
-    }
-    if (currentValue.length < 5) {
-      return "Password must be at least 5 characters";
-    }
+  String? validatePassword(String? currentValue) {
+    if (currentValue != null) {
+      if (currentValue.isEmpty) {
+        return "Please enter a password";
+      }
+      if (currentValue.length < 5) {
+        return "Password must be at least 5 characters";
+      }
 
-    if (!currentValue.contains(RegExp("[1,2,3,4,5,6,7,8,9]"))) {
-      return "Password needs at least 1 number";
+      if (!currentValue.contains(RegExp("[1,2,3,4,5,6,7,8,9]"))) {
+        return "Password needs at least 1 number";
+      }
     }
-
     return null;
   }
 }

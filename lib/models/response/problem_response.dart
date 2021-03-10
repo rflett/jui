@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'problem_response.g.dart';
@@ -9,7 +8,7 @@ class ProblemResponse {
   int status;
   String detail;
   String traceId;
-  Map<String, List<String>> errors;
+  Map<String, List<String>>? errors;
 
   ProblemResponse(this.title, this.status, this.detail, this.traceId, this.errors);
 

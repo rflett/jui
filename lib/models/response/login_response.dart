@@ -1,11 +1,10 @@
-import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
 part 'login_response.g.dart';
 
 @JsonSerializable()
 class LoginResponse {
   String name;
-  String token;
+  String? token;
 
   LoginResponse(this.name, this.token);
 

@@ -17,7 +17,7 @@ abstract class DeviceStorage {
   }
 
   /// Retrieves a string value from secure storage, will return null if not present
-  static Future<String> retrieveValue(String key) async {
+  static Future<String?> retrieveValue(String key) async {
     if (kIsWeb) {
       // Store in the localstorage
       SharedPreferences prefs = await SharedPreferences.getInstance();
