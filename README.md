@@ -7,13 +7,13 @@ The fronted for the jui application
 To generate the automated files run the script inside the `scripts` folder. This will auto-generate JSON serialisation
 code for you for models that have the correct decorator on them
 
-This project is a starting point for a Flutter application.
+### Automation
+To automate the generation process a bit adding the following script:
+```
+#!/bin/sh
 
-A few resources to get you started if this is your first Flutter project:
+./scripts/generate-code
+```
+into 2 separate files name `post-checkout` and `post-merge` inside your .git/hooks folder.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials, samples, guidance on mobile development, and a
-full API reference.
+This will automatically regenerate the models for you every time you switch branches / merge code.
