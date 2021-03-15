@@ -42,55 +42,14 @@ class _LoginProviderPageState extends State<LoginProviderPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SocialLoginButton(SocialProviders.delegator),
                   SocialLoginButton(SocialProviders.google),
+                  SocialLoginButton(SocialProviders.spotify),
+                  SocialLoginButton(SocialProviders.facebook),
+                  SocialLoginButton(SocialProviders.instagram),
                 ],
               ),
             ),
           ),
         ));
-  }
-
-  onLoginClicked() async {
-    if (_formKey.currentState?.validate() == true) {
-      // Form was filled out, attempt login
-      var requestData = LoginRequest(this._email, this._password);
-      try {
-        var name = await Account.login(requestData);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Welcome Back $name")));
-      } catch (err) {
-        // TODO logging
-        print(err);
-        PopupUtils.showError(context, err as ProblemResponse);
-      }
-    }
-  }
-
-  String? validateEmail(String? currentValue) {
-    if (currentValue?.isEmpty == true) {
-      return "Please enter an email address";
-    }
-    if (currentValue?.contains("@") == false) {
-      return "Please enter a valid email";
-    }
-
-    return null;
-  }
-
-  String? validatePassword(String? currentValue) {
-    if (currentValue != null) {
-      if (currentValue.isEmpty) {
-        return "Please enter a password";
-      }
-      if (currentValue.length < 5) {
-        return "Password must be at least 5 characters";
-      }
-
-      if (!currentValue.contains(RegExp("[1,2,3,4,5,6,7,8,9]"))) {
-        return "Password needs at least 1 number";
-      }
-    }
-    return null;
   }
 }

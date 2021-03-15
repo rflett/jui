@@ -23,6 +23,17 @@ class _HomePageState extends State<HomePage> {
               children: [
                 TextButton(
                   style: TextButton.styleFrom(
+                    backgroundColor: appAccentColor,
+                    primary: Colors.white,
+                    padding: EdgeInsets.all(15),
+                    minimumSize: Size(300, 60),
+                  ),
+                  child: Text("Social Login", style: TextStyle(fontSize: 25)),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, "/login-provider"),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
                     backgroundColor: appPrimaryColor,
                     primary: Colors.white,
                     padding: EdgeInsets.all(15),
@@ -30,7 +41,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: Text("Login", style: TextStyle(fontSize: 25)),
                   onPressed: () =>
-                      Navigator.pushNamed(context, "/login-provider"),
+                      Navigator.pushNamed(context, "/login"),
                 ),
                 TextButton(
                   style: TextButton.styleFrom(
