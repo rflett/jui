@@ -4,6 +4,7 @@ import 'package:jui/view/pages/account/login_page.dart';
 import 'package:jui/view/pages/account/register_page.dart';
 import 'package:jui/view/pages/account/login_provider_page.dart';
 import 'package:jui/view/pages/home_page.dart';
+import 'package:jui/view/pages/leaderboard/leaderboard.dart';
 
 void main() {
   runApp(MyApp());
@@ -50,12 +51,13 @@ class _MyAppState extends State<MyApp> {
               title: 'JUI',
               theme: ThemeData(
                 primarySwatch: Colors.blue,
+                backgroundColor: Colors.grey.shade50,
                 // This makes the visual density adapt to the platform that you run
                 // the app on. For desktop platforms, the controls will be smaller and
                 // closer together (more dense) than on mobile platforms.
                 visualDensity: VisualDensity.adaptivePlatformDensity,
               ),
-              home: HomePage(),
+              home: Leaderboard(),
               routes: _visibleRoutes,
             );
           } else {

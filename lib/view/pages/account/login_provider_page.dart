@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jui/models/enums/social_providers.dart';
-import 'package:jui/models/request/login_request.dart';
-import 'package:jui/models/response/problem_response.dart';
-import 'package:jui/server/account.dart';
-import 'package:jui/utilities/popups.dart';
-import 'package:jui/view/components/social-login/social_login_button.dart';
+
+import 'components/social-login/social_login_button.dart';
 
 class LoginProviderPage extends StatefulWidget {
   @override
