@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/colors.dart';
-import 'package:jui/models/request/registration_request.dart';
-import 'package:jui/models/response/problem_response.dart';
+import 'package:jui/models/dto/request/account/signup.dart';
+import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/server/account.dart';
 import 'package:jui/utilities/popups.dart';
 
@@ -12,6 +12,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   String _username = "";
+  String? _nickname = "";
   String _email = "";
   String _password = "";
 
@@ -50,6 +51,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         border: OutlineInputBorder()),
                   ),
                   TextFormField(
+                    onChanged: (val) => _nickname = val,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(
+                        labelText: "Enter a Nickname (Optional)",
+                        border: OutlineInputBorder()),
+                  ),
+                  TextFormField(
                     onChanged: (val) => _email = val,
                     keyboardType: TextInputType.emailAddress,
                     validator: validateEmail,
@@ -85,8 +93,11 @@ class _RegisterPageState extends State<RegisterPage> {
   onRegisterClicked() async {
     if (_formKey.currentState?.validate() == true) {
       // Form was filled out, attempt login
-      var requestData =
-          RegistrationRequest(this._username, this._email, this._password);
+      var normalisedNickname =
+          this._nickname?.isNotEmpty ?? false ? this._nickname : this._username;
+
+      var requestData = SignUpRequest(
+          this._username, normalisedNickname!, this._email, this._password);
       try {
         var name = await Account.register(requestData);
         ScaffoldMessenger.of(context).showSnackBar(

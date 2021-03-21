@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/colors.dart';
-import 'package:jui/models/request/login_request.dart';
-import 'package:jui/models/response/problem_response.dart';
+import 'package:jui/models/dto/request/account/signin.dart';
+import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/server/account.dart';
 import 'package:jui/utilities/popups.dart';
 
@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
   onLoginClicked() async {
     if (_formKey.currentState?.validate() == true) {
       // Form was filled out, attempt login
-      var requestData = LoginRequest(this._email, this._password);
+      var requestData = SignInRequest(this._email, this._password);
       try {
         var name = await Account.login(requestData);
         ScaffoldMessenger.of(context)

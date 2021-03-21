@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:jui/models/dto/shared/vote.dart';
 
 part 'user.g.dart';
 
@@ -14,8 +15,8 @@ class UserResponse {
   final String authProvider;
   final String authProviderId;
   final String? avatarUrl;
-  final String? votes;
-  final String? updatedAt;
+  final List<Vote>? votes;
+  final DateTime? updatedAt;
 
   UserResponse(
       this.userID,
