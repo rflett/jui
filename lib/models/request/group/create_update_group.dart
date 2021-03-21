@@ -4,13 +4,13 @@ part 'create_update_group.g.dart';
 
 @JsonSerializable()
 @JsonSerializable()
-class CreateUpdateGroup {
+class CreateUpdateGroupRequest {
   final String name;
 
-  CreateUpdateGroup(this.name);
+  CreateUpdateGroupRequest(this.name);
 
-  factory CreateUpdateGroup.fromJson(Map<String, dynamic> json) =>
-      _$CreateUpdateGroupFromJson(json);
+  factory CreateUpdateGroupRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateUpdateGroupRequestFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CreateUpdateGroupToJson(this);
+  Map<String, dynamic> toJson() => _$CreateUpdateGroupRequestToJson(this);
 }

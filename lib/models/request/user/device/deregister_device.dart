@@ -3,14 +3,14 @@ import 'package:json_annotation/json_annotation.dart';
 part 'deregister_device.g.dart';
 
 @JsonSerializable()
-class DeregisterDevice {
+class DeregisterDeviceRequest {
   final String endpoint;
   final String platform;
 
-  DeregisterDevice(this.endpoint, this.platform);
+  DeregisterDeviceRequest(this.endpoint, this.platform);
 
-  factory DeregisterDevice.fromJson(Map<String, dynamic> json) =>
-      _$DeregisterDeviceFromJson(json);
+  factory DeregisterDeviceRequest.fromJson(Map<String, dynamic> json) =>
+      _$DeregisterDeviceRequestFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DeregisterDeviceToJson(this);
+  Map<String, dynamic> toJson() => _$DeregisterDeviceRequestToJson(this);
 }

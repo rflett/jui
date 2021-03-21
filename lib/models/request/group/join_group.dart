@@ -3,13 +3,13 @@ import 'package:json_annotation/json_annotation.dart';
 part 'join_group.g.dart';
 
 @JsonSerializable()
-class JoinGroup {
+class JoinGroupRequest {
   final String code;
 
-  JoinGroup(this.code);
+  JoinGroupRequest(this.code);
 
-  factory JoinGroup.fromJson(Map<String, dynamic> json) =>
-      _$JoinGroupFromJson(json);
+  factory JoinGroupRequest.fromJson(Map<String, dynamic> json) =>
+      _$JoinGroupRequestFromJson(json);
 
-  Map<String, dynamic> toJson() => _$JoinGroupToJson(this);
+  Map<String, dynamic> toJson() => _$JoinGroupRequestToJson(this);
 }

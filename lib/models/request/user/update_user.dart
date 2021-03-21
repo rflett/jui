@@ -3,13 +3,13 @@ import 'package:json_annotation/json_annotation.dart';
 part 'update_user.g.dart';
 
 @JsonSerializable()
-class UpdateUser {
+class UpdateUserRequest {
   final String nickName;
 
-  UpdateUser(this.nickName);
+  UpdateUserRequest(this.nickName);
 
-  factory UpdateUser.fromJson(Map<String, dynamic> json) =>
-      _$UpdateUserFromJson(json);
+  factory UpdateUserRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateUserRequestFromJson(json);
 
-  Map<String, dynamic> toJson() => _$UpdateUserToJson(this);
+  Map<String, dynamic> toJson() => _$UpdateUserRequestToJson(this);
 }
