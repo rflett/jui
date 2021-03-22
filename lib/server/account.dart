@@ -28,6 +28,7 @@ class Account {
     var responseObj = LoginResponse.fromJson(json.decode(response.body));
 
     await DeviceStorage.storeValue("jwt", responseObj.token);
+    _apiServer.updateTokenType(responseObj.tokenType);
     _apiServer.updateToken(responseObj.token);
 
     return responseObj.user.name;
@@ -49,6 +50,7 @@ class Account {
     var responseObj = LoginResponse.fromJson(json.decode(response.body));
 
     await DeviceStorage.storeValue("jwt", responseObj.token);
+    _apiServer.updateTokenType(responseObj.tokenType);
     _apiServer.updateToken(responseObj.token);
 
     return responseObj.user.name;

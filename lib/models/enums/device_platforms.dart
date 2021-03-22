@@ -1,0 +1,4 @@
+enum DevicePlatforms {
+  ios,
+  android
+}
