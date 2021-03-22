@@ -11,19 +11,19 @@ const oauthLoginUrl = "$_oauthUrl/login";
 const oauthRedirectUrl = "$_oauthUrl/redirect";
 
 // users
-const userUrl = "$serverBaseUrl/user";
-const userAvatarUrl = "$userUrl/user/avatar";
-const userDeviceUrl = "$userUrl/user/device";
-const userVoteUrl = "$userUrl/user/vote";
-const getUserUrl = "$userUrl/%s";
+const userBaseUrl = "$serverBaseUrl/user";
+const userAvatarUrl = "$userBaseUrl/user/avatar";
+const userDeviceUrl = "$userBaseUrl/user/device";
+const userVoteUrl = "$userBaseUrl/user/vote";
+const getUserUrl = "$userBaseUrl/%s";
 
 // groups
-const groupUrl = "$serverBaseUrl/group";
-const groupMembershipUrl = "$groupUrl/membership";
-const getGroupUrl = "$groupUrl/%s";
-const groupGameUrl = "$getGroupUrl/game";
-const groupMembersUrl = "$getGroupUrl/members";
-const groupQrUrl = "$getGroupUrl/qr";
+const groupBaseUrl = "$serverBaseUrl/group";
+const groupMembershipUrl = "$groupBaseUrl/membership";
+const groupUrl = "$groupBaseUrl/%s";
+const groupGameUrl = "$groupUrl/game";
+const groupMembersUrl = "$groupUrl/members?withVotes=";
+const groupQrUrl = "$groupUrl/qr";
 
 // misc
 const searchUrl = "$serverBaseUrl/search";
