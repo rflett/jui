@@ -6,8 +6,8 @@ part 'login_response.g.dart';
 @JsonSerializable()
 class LoginResponse {
   final UserResponse user;
-  final String token;
-  final String tokenType;
+  final String token; // JWT token for use in Authorization header of API requests
+  final String tokenType; // always Bearer
 
   LoginResponse(this.user, this.token, this.tokenType);
 

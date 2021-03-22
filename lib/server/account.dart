@@ -30,7 +30,7 @@ class Account {
     await DeviceStorage.storeValue("jwt", responseObj.token);
     _apiServer.updateToken(responseObj.token);
 
-    return responseObj.user.nickName;
+    return responseObj.user.name;
   }
 
   static Future<String> login(SignInRequest requestData) async {
@@ -51,6 +51,6 @@ class Account {
     await DeviceStorage.storeValue("jwt", responseObj.token);
     _apiServer.updateToken(responseObj.token);
 
-    return responseObj.user.nickName;
+    return responseObj.user.name;
   }
 }

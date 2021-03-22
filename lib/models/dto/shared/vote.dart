@@ -5,7 +5,7 @@ part 'vote.g.dart';
 
 @JsonSerializable()
 class Vote {
-  final String songId;
+  final String songId; // Spotify song ID
   final String name;
   final String album;
   final String artist;

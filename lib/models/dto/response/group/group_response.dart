@@ -5,9 +5,9 @@ part 'group_response.g.dart';
 @JsonSerializable()
 class GroupResponse {
   final String groupID;
-  final String ownerID;
+  final String ownerID; // id of the user who created the group
   final String name;
-  final String code;
+  final String code; // code used to invite users / join the group
   final String createdAt;
   final String? updatedAt;
 

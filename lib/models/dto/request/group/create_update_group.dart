@@ -3,7 +3,6 @@ import 'package:json_annotation/json_annotation.dart';
 part 'create_update_group.g.dart';
 
 @JsonSerializable()
-@JsonSerializable()
 class CreateUpdateGroupRequest {
   final String name;
 

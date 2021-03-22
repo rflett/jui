@@ -10,8 +10,8 @@ class UserResponse {
   final String email;
   final int points;
   final DateTime createdAt;
-  final String? groupID;
-  final String nickName;
+  final String? groupID; // groupID is null if user is not in a group
+  final String? nickName; // not set when signed up via socials
   final String authProvider;
   final String authProviderId;
   final String? avatarUrl;
