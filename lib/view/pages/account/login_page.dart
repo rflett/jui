@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/colors.dart';
+import 'package:jui/constants/routes.dart';
 import 'package:jui/models/dto/request/account/signin.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/server/account.dart';
@@ -11,6 +12,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool _hidePassword = true;
   String _email = "";
   String _password = "";
 
@@ -20,57 +22,81 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          title: Text("Login"),
-          actions: [
-            Hero(
-                tag: "app-logo",
-                child: Image.asset(
-                  "images/logo.png",
-                  width: 120,
-                ))
-          ],
-        ),
-        body: Center(
-          child: Container(
-            constraints:
-                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 300),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextFormField(
-                    onChanged: (val) => _email = val,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: validateEmail,
-                    decoration: const InputDecoration(
-                        labelText: "Email",
-                        border: OutlineInputBorder()),
-                  ),
-                  TextFormField(
-                    onChanged: (val) => _password = val,
-                    validator: validatePassword,
-                    decoration: const InputDecoration(
-                        labelText: "Password",
-                        border: OutlineInputBorder()),
-                  ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      backgroundColor: appAccentColor,
-                      primary: Colors.white,
-                      padding: EdgeInsets.all(15),
-                      minimumSize: Size(300, 60),
-                    ),
-                    child: Text("Login", style: TextStyle(fontSize: 25)),
-                    onPressed: onLoginClicked,
-                  )
-                ],
+      appBar: AppBar(
+        title: Text("Login"),
+      ),
+      body: Center(
+        child: Column(children: [
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Hero(
+              tag: "app-logo",
+              child: Image.asset(
+                "images/logo.png",
+                width: 300,
               ),
             ),
           ),
-        ));
+          ConstrainedBox(
+            constraints:
+                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 350),
+            child: Card(
+              elevation: 3,
+              child: Container(
+                padding: EdgeInsets.all(20),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextFormField(
+                        onChanged: (val) => _email = val,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: validateEmail,
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.account_circle_rounded),
+                            labelText: "Email",
+                            border: UnderlineInputBorder()),
+                      ),
+                      TextFormField(
+                        onChanged: (val) => _password = val,
+                        validator: validatePassword,
+                        obscureText: _hidePassword,
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.remove_red_eye),
+                              onPressed: onViewPasswordPressed,
+                            ),
+                            labelText: "Password",
+                            border: UnderlineInputBorder()),
+                      ),
+                      Hero(
+                        tag: "login-button",
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: appPrimaryColor,
+                            primary: Colors.white,
+                            padding: EdgeInsets.all(15),
+                            minimumSize: Size(300, 60),
+                          ),
+                          child: Text("Login", style: TextStyle(fontSize: 25)),
+                          onPressed: onLoginClicked,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pushNamed(context, registerRoute),
+                        child: Text("Sign up"),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ]),
+      ),
+    );
   }
 
   onLoginClicked() async {
@@ -87,6 +113,10 @@ class _LoginPageState extends State<LoginPage> {
         PopupUtils.showError(context, err as ProblemResponse);
       }
     }
+  }
+
+  onViewPasswordPressed() {
+    setState(() => this._hidePassword = !this._hidePassword);
   }
 
   String? validateEmail(String? currentValue) {

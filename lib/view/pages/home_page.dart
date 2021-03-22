@@ -33,16 +33,18 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () =>
                       Navigator.pushNamed(context, loginProviderRoute),
                 ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: appPrimaryColor,
-                    primary: Colors.white,
-                    padding: EdgeInsets.all(15),
-                    minimumSize: Size(300, 60),
+                Hero(
+                  tag: "login-button",
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: appPrimaryColor,
+                      primary: Colors.white,
+                      padding: EdgeInsets.all(15),
+                      minimumSize: Size(300, 60),
+                    ),
+                    child: Text("Login", style: TextStyle(fontSize: 25)),
+                    onPressed: () => Navigator.pushNamed(context, loginRoute),
                   ),
-                  child: Text("Login", style: TextStyle(fontSize: 25)),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, loginRoute),
                 ),
                 TextButton(
                   style: TextButton.styleFrom(
