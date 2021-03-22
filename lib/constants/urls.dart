@@ -2,8 +2,8 @@
 const serverBaseUrl = "https://api.staging.jaypi.online";
 
 // account management
-const loginUrl = "$serverBaseUrl/account/signin";
-const registerUrl = "$serverBaseUrl/account/signup";
+const signinUrl = "$serverBaseUrl/account/signin";
+const signupUrl = "$serverBaseUrl/account/signup";
 
 // oauth
 const _oauthUrl = "$serverBaseUrl/oauth/%s";

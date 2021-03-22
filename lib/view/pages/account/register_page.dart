@@ -24,7 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text("Register"),
+          title: Text("Sign Up"),
           actions: [
             Hero(
                 tag: "app-logo",
@@ -47,14 +47,14 @@ class _RegisterPageState extends State<RegisterPage> {
                     onChanged: (val) => _username = val,
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
-                        labelText: "Enter your Name",
+                        labelText: "Name",
                         border: OutlineInputBorder()),
                   ),
                   TextFormField(
                     onChanged: (val) => _nickname = val,
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
-                        labelText: "Enter a Nickname (Optional)",
+                        labelText: "Nickname (Optional)",
                         border: OutlineInputBorder()),
                   ),
                   TextFormField(
@@ -62,7 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     keyboardType: TextInputType.emailAddress,
                     validator: validateEmail,
                     decoration: const InputDecoration(
-                        labelText: "Enter your Email",
+                        labelText: "Email",
                         border: OutlineInputBorder()),
                   ),
                   TextFormField(
@@ -70,7 +70,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     obscureText: true,
                     validator: validatePassword,
                     decoration: const InputDecoration(
-                        labelText: "Enter your Password",
+                        labelText: "Password",
                         border: OutlineInputBorder()),
                   ),
                   TextButton(
@@ -80,7 +80,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       padding: EdgeInsets.all(15),
                       minimumSize: Size(300, 60),
                     ),
-                    child: Text("Register", style: TextStyle(fontSize: 25)),
+                    child: Text("Sign Up", style: TextStyle(fontSize: 25)),
                     onPressed: onRegisterClicked,
                   )
                 ],
@@ -99,9 +99,9 @@ class _RegisterPageState extends State<RegisterPage> {
       var requestData = SignUpRequest(
           this._username, normalisedNickname!, this._email, this._password);
       try {
-        var name = await Account.register(requestData);
+        var name = await Account.signUp(requestData);
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Thanks for registering $name")));
+            SnackBar(content: Text("Thanks for signing up $name!")));
       } on ProblemResponse catch (err) {
         // TODO logging
         print(err);
@@ -131,7 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
         return "Password must be at least 5 characters";
       }
 
-      if (!currentValue.contains(RegExp("[1,2,3,4,5,6,7,8,9]"))) {
+      if (!currentValue.contains(RegExp("\\d+"))) {
         return "Password needs at least 1 number";
       }
     }

@@ -5,7 +5,7 @@ part 'signup.g.dart';
 @JsonSerializable()
 class SignUpRequest {
   final String name;
-  final String nickName;
+  final String? nickName;
   final String email;
   final String password;
 

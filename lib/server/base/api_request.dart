@@ -7,14 +7,21 @@ import 'package:jui/models/dto/response/problem_response.dart';
 class ApiRequest {
   // Used to handle, deserialize and throw deserialized error objects back to the caller
   static void handleErrors(Response response) {
-    if (response.statusCode == HttpStatus.badRequest ||
-        response.statusCode == HttpStatus.unauthorized ||
-        response.statusCode == HttpStatus.forbidden ||
-        response.statusCode == HttpStatus.notFound ||
+    // redirect to login
+    if (response.statusCode == HttpStatus.unauthorized) {
+      throw ProblemResponse.fromJson(json.decode(response.body));
+    }
+
+    // these are bad, maybe an error styled notification
+    if (response.statusCode == HttpStatus.forbidden ||
         response.statusCode == HttpStatus.internalServerError) {
-      // Validation or other errors, show them
-      var problems = ProblemResponse.fromJson(json.decode(response.body));
-      throw problems;
+      throw ProblemResponse.fromJson(json.decode(response.body));
+    }
+
+    // these are not so bad, show a warning style notification
+    if (response.statusCode == HttpStatus.badRequest ||
+        response.statusCode == HttpStatus.notFound) {
+      throw ProblemResponse.fromJson(json.decode(response.body));
     }
   }
 }

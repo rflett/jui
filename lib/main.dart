@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:jui/constants/routes.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/account/login_page.dart';
 import 'package:jui/view/pages/account/register_page.dart';
 import 'package:jui/view/pages/account/login_provider_page.dart';
-import 'package:jui/view/pages/home_page.dart';
 import 'package:jui/view/pages/leaderboard/leaderboard.dart';
 
 void main() {
@@ -18,9 +18,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // Routes for users that aren't logged into the app right now
   final Map<String, WidgetBuilder> _loggedOutRoutes = {
-    "/login-provider": (BuildContext context) => LoginProviderPage(),
-    "/login": (BuildContext context) => LoginPage(),
-    "/register": (BuildContext context) => RegisterPage(),
+    loginProviderRoute: (BuildContext context) => LoginProviderPage(),
+    loginRoute: (BuildContext context) => LoginPage(),
+    registerRoute: (BuildContext context) => RegisterPage(),
   };
 
   // Routes for users that are currently logged into the app

@@ -41,15 +41,15 @@ class ApiServer {
     };
 
     // If the token is available set it too
-    if (this._token.isNotEmpty) {
+    if (this._token.isNotEmpty && this._tokenType.isNotEmpty) {
       headers.addAll({"Authorization": "${this._tokenType} ${this._token}"});
     }
 
     return headers;
   }
 
-  void updateToken(String jwt) {
-    this._token = jwt;
+  void updateToken(String token) {
+    this._token = token;
   }
 
   void updateTokenType(String tokenType) {

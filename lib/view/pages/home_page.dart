@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/colors.dart';
+import 'package:jui/constants/routes.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -30,7 +31,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: Text("Social Login", style: TextStyle(fontSize: 25)),
                   onPressed: () =>
-                      Navigator.pushNamed(context, "/login-provider"),
+                      Navigator.pushNamed(context, loginProviderRoute),
                 ),
                 TextButton(
                   style: TextButton.styleFrom(
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: Text("Login", style: TextStyle(fontSize: 25)),
                   onPressed: () =>
-                      Navigator.pushNamed(context, "/login"),
+                      Navigator.pushNamed(context, loginRoute),
                 ),
                 TextButton(
                   style: TextButton.styleFrom(
@@ -50,8 +51,8 @@ class _HomePageState extends State<HomePage> {
                     padding: EdgeInsets.all(15),
                     minimumSize: Size(300, 60),
                   ),
-                  child: Text("Register", style: TextStyle(fontSize: 25)),
-                  onPressed: () => Navigator.pushNamed(context, "/register"),
+                  child: Text("Sign Up", style: TextStyle(fontSize: 25)),
+                  onPressed: () => Navigator.pushNamed(context, registerRoute),
                 )
               ],
             ),

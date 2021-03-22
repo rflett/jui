@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 abstract class DeviceStorage {
   static Future<void> storeValue(String key, String value) async {
     if (kIsWeb) {
-      // Store in the localstorage
+      // Store in the local storage
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString(key, value);
     } else {
@@ -19,7 +19,7 @@ abstract class DeviceStorage {
   /// Retrieves a string value from secure storage, will return null if not present
   static Future<String?> retrieveValue(String key) async {
     if (kIsWeb) {
-      // Store in the localstorage
+      // Store in the local storage
       SharedPreferences prefs = await SharedPreferences.getInstance();
       try {
         return prefs.getString(key);

@@ -46,14 +46,14 @@ class _LoginPageState extends State<LoginPage> {
                     keyboardType: TextInputType.emailAddress,
                     validator: validateEmail,
                     decoration: const InputDecoration(
-                        labelText: "Enter your Email",
+                        labelText: "Email",
                         border: OutlineInputBorder()),
                   ),
                   TextFormField(
                     onChanged: (val) => _password = val,
                     validator: validatePassword,
                     decoration: const InputDecoration(
-                        labelText: "Enter your Password",
+                        labelText: "Password",
                         border: OutlineInputBorder()),
                   ),
                   TextButton(
@@ -78,9 +78,9 @@ class _LoginPageState extends State<LoginPage> {
       // Form was filled out, attempt login
       var requestData = SignInRequest(this._email, this._password);
       try {
-        var name = await Account.login(requestData);
+        var name = await Account.signIn(requestData);
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Welcome Back $name")));
+            .showSnackBar(SnackBar(content: Text("Welcome, $name!")));
       } catch (err) {
         // TODO logging
         print(err);
@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
         return "Password must be at least 5 characters";
       }
 
-      if (!currentValue.contains(RegExp("[1,2,3,4,5,6,7,8,9]"))) {
+      if (!currentValue.contains(RegExp("\\d+"))) {
         return "Password needs at least 1 number";
       }
     }

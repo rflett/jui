@@ -9,9 +9,6 @@ class LoginProviderPage extends StatefulWidget {
 }
 
 class _LoginProviderPageState extends State<LoginProviderPage> {
-  String _email = "";
-  String _password = "";
-
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -20,7 +17,7 @@ class _LoginProviderPageState extends State<LoginProviderPage> {
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text("Select a Login Provider"),
+          title: Text("Login with..."),
           actions: [
             Hero(
                 tag: "app-logo",

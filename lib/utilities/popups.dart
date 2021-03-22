@@ -15,13 +15,13 @@ class PopupUtils {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("Error!"),
+            title: Text("Unexpected error!"),
             content: SingleChildScrollView(
               child: Text(problem.error),
             ),
             actions: [
               TextButton(
-                child: Text('Ok'),
+                child: Text('Dismiss'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
