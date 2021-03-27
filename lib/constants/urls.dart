@@ -14,14 +14,16 @@ const oauthRedirectUrl = "$_oauthUrl/redirect";
 const userBaseUrl = "$serverBaseUrl/user";
 const userAvatarUrl = "$userBaseUrl/user/avatar";
 const userDeviceUrl = "$userBaseUrl/user/device";
-const userVoteUrl = "$userBaseUrl/user/vote";
+const userCreateVoteUrl = "$userBaseUrl/user/vote";
+const userDeleteVoteUrl = "$userBaseUrl/user/vote/%s";
 const getUserUrl = "$userBaseUrl/%s";
 
 // groups
 const groupBaseUrl = "$serverBaseUrl/group";
 const groupMembershipUrl = "$groupBaseUrl/membership";
 const groupUrl = "$groupBaseUrl/%s";
-const groupGameUrl = "$groupUrl/game";
+const gameBaseUrl = "$groupUrl/game";
+const gameModifyUrl = "$gameBaseUrl/%s";
 const groupMembersUrl = "$groupUrl/members?withVotes=";
 const groupQrUrl = "$groupUrl/qr";
 
