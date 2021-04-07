@@ -21,7 +21,7 @@ class Group {
 
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.post(groupBaseUrl, jsonBody);
+      response = await _apiServer.post(groupCreateUrl, jsonBody);
     } catch (err) {
       print(err);
     }
@@ -40,7 +40,7 @@ class Group {
 
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.put(sprintf(groupUrl, [groupId]), jsonBody);
+      response = await _apiServer.put(sprintf(groupUpdateUrl, [groupId]), jsonBody);
     } catch (err) {
       print(err);
     }
@@ -52,7 +52,7 @@ class Group {
   static Future<GroupResponse> get(String groupId) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.get(sprintf(groupUrl, [groupId]));
+      response = await _apiServer.get(sprintf(groupGetUrl, [groupId]));
     } catch (err) {
       print(err);
     }
@@ -67,7 +67,7 @@ class Group {
   /// get the members of a group, optionally with their votes as well
   static Future<GroupMembersResponse> getMembers(String groupId,
       {bool withVotes = false}) async {
-    var url = sprintf(groupMembersUrl, groupId) + withVotes.toString();
+    var url = sprintf(groupGetMembersUrl, [groupId]) + withVotes.toString();
 
     http.Response response = http.Response("", 500);
     try {
@@ -87,7 +87,7 @@ class Group {
   static Future<GroupGamesResponse> getGames(String groupId) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.get(sprintf(gameBaseUrl, [groupId]));
+      response = await _apiServer.get(sprintf(gameCreateUrl, [groupId]));
     } catch (err) {
       print(err);
     }
@@ -103,7 +103,7 @@ class Group {
   static Future<String> getQR(String groupId) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.get(sprintf(groupQrUrl, groupId));
+      response = await _apiServer.get(sprintf(groupQrUrl, [groupId]));
     } catch (err) {
       print(err);
     }
@@ -120,7 +120,7 @@ class Group {
 
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.post(groupMembershipUrl, jsonBody);
+      response = await _apiServer.post(groupJoinUrl, jsonBody);
     } catch (err) {
       print(err);
     }
@@ -129,10 +129,10 @@ class Group {
   }
 
   /// leave your group
-  static Future<void> leave() async {
+  static Future<void> leave(String groupId) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.delete(groupMembershipUrl);
+      response = await _apiServer.delete(sprintf(groupLeaveUrl, [groupId]));
     } catch (err) {
       print(err);
     }

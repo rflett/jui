@@ -11,21 +11,25 @@ const oauthLoginUrl = "$_oauthUrl/login";
 const oauthRedirectUrl = "$_oauthUrl/redirect";
 
 // users
-const userBaseUrl = "$serverBaseUrl/user";
-const userAvatarUrl = "$userBaseUrl/user/avatar";
-const userDeviceUrl = "$userBaseUrl/user/device";
-const userCreateVoteUrl = "$userBaseUrl/user/vote";
-const userDeleteVoteUrl = "$userBaseUrl/user/vote/%s";
-const getUserUrl = "$userBaseUrl/%s";
+const userUpdateUrl = "$serverBaseUrl/user";
+const userAvatarUrl = "$serverBaseUrl/user/avatar";
+const userDeviceUrl = "$serverBaseUrl/user/device";
+const userCreateVoteUrl = "$serverBaseUrl/user/vote";
+const userDeleteVoteUrl = "$serverBaseUrl/user/vote/%s";
+const userGetUrl = "$serverBaseUrl/user/%s";
 
 // groups
-const groupBaseUrl = "$serverBaseUrl/group";
-const groupMembershipUrl = "$groupBaseUrl/membership";
-const groupUrl = "$groupBaseUrl/%s";
-const gameBaseUrl = "$groupUrl/game";
-const gameModifyUrl = "$gameBaseUrl/%s";
-const groupMembersUrl = "$groupUrl/members?withVotes=";
-const groupQrUrl = "$groupUrl/qr";
+const groupCreateUrl = "$serverBaseUrl/group";
+const groupUrl = "$serverBaseUrl/group/%s";
+const groupUpdateUrl = "$serverBaseUrl/group/%s";
+const groupGetUrl = "$serverBaseUrl/group/%s";
+const gameCreateUrl = "$serverBaseUrl/group/%s/game";
+const gameUpdateUrl = "$serverBaseUrl/group/%s/game/%s";
+const gameDeleteUrl = "$serverBaseUrl/group/%s/game/%s";
+const groupGetMembersUrl = "$serverBaseUrl/group/%s/members?withVotes=";
+const groupJoinUrl = "$serverBaseUrl/group/members";
+const groupLeaveUrl = "$serverBaseUrl/group/%s/members";
+const groupQrUrl = "$serverBaseUrl/group/%s/qr";
 
 // misc
 const searchUrl = "$serverBaseUrl/search";

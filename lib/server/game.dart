@@ -19,7 +19,7 @@ class Game {
     http.Response response = http.Response("", 500);
     try {
       response =
-          await _apiServer.post(sprintf(gameBaseUrl, [groupID]), jsonBody);
+          await _apiServer.post(sprintf(gameCreateUrl, [groupID]), jsonBody);
     } catch (err) {
       print(err);
     }
@@ -39,7 +39,7 @@ class Game {
     http.Response response = http.Response("", 500);
     try {
       response = await _apiServer.put(
-          sprintf(gameModifyUrl, [groupId, gameId]), jsonBody);
+          sprintf(gameUpdateUrl, [groupId, gameId]), jsonBody);
     } catch (err) {
       print(err);
     }
@@ -52,7 +52,7 @@ class Game {
     http.Response response = http.Response("", 500);
     try {
       response =
-          await _apiServer.delete(sprintf(gameModifyUrl, [groupId, gameId]));
+          await _apiServer.delete(sprintf(gameDeleteUrl, [groupId, gameId]));
     } catch (err) {
       print(err);
     }

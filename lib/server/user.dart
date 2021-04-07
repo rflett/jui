@@ -18,7 +18,7 @@ class User {
 
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.put(userBaseUrl, jsonBody);
+      response = await _apiServer.put(userUpdateUrl, jsonBody);
     } catch (err) {
       print(err);
     }
@@ -30,7 +30,7 @@ class User {
   static Future<UserResponse> get(String userId) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.get(sprintf(getUserUrl, [userId]));
+      response = await _apiServer.get(sprintf(userGetUrl, [userId]));
     } catch (err) {
       print(err);
     }
