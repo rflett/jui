@@ -10,7 +10,7 @@ class UserResponse {
   final String email;
   final int points;
   final DateTime createdAt;
-  final String? groupID; // groupID is null if user is not in a group
+  final List<String>? groupIDs; // groupIDs is null if user is not in any group
   final String? nickName; // not set when signed up via socials
   final String authProvider;
   final String authProviderId;
@@ -24,7 +24,7 @@ class UserResponse {
       this.email,
       this.points,
       this.createdAt,
-      this.groupID,
+      this.groupIDs,
       this.nickName,
       this.authProvider,
       this.authProviderId,
