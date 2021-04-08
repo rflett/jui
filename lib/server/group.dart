@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:jui/constants/storage_values.dart';
 import 'package:jui/constants/urls.dart';
 import 'package:jui/models/dto/request/group/create_update_group.dart';
 import 'package:jui/models/dto/request/group/join_group.dart';
@@ -7,6 +8,7 @@ import 'package:jui/models/dto/response/group/group_games_response.dart';
 import 'package:jui/models/dto/response/group/group_members_response.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/server/api_server.dart';
+import 'package:jui/utilities/storage.dart';
 import 'package:sprintf/sprintf.dart';
 
 import 'base/api_request.dart';
@@ -30,6 +32,7 @@ class Group {
 
     // Response succeeded
     var responseObj = GroupResponse.fromJson(json.decode(response.body));
+    _storeGroupId(responseObj.groupID);
     return responseObj;
   }
 
@@ -115,7 +118,7 @@ class Group {
   }
 
   /// request to join a group
-  static Future<void> join(String groupId, JoinGroupRequest requestData) async {
+  static Future<GroupResponse> join(JoinGroupRequest requestData) async {
     var jsonBody = json.encode(requestData.toJson());
 
     http.Response response = http.Response("", 500);
@@ -126,6 +129,11 @@ class Group {
     }
 
     ApiRequest.handleErrors(response);
+
+    // Response succeeded
+    var responseObj = GroupResponse.fromJson(json.decode(response.body));
+    _storeGroupId(responseObj.groupID);
+    return responseObj;
   }
 
   /// leave your group
@@ -138,5 +146,10 @@ class Group {
     }
 
     ApiRequest.handleErrors(response);
+  }
+
+  /// Stores the groupID in local storage as the primary group ID
+  static void _storeGroupId(String groupId) async {
+    await DeviceStorage.storeValue(storagePrimaryGroupId, groupId);
   }
 }

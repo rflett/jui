@@ -4,6 +4,7 @@ import 'package:jui/constants/urls.dart';
 import 'package:jui/models/dto/request/account/signin.dart';
 import 'package:jui/models/dto/request/account/signup.dart';
 import 'package:jui/models/dto/response/account/login_response.dart';
+import 'package:jui/constants/storage_values.dart';
 import 'package:jui/utilities/storage.dart';
 
 import 'api_server.dart';
@@ -54,7 +55,7 @@ class Account {
 
   /// Stores the JWT token from the LoginResponse in the DeviceStorage
   static void _storeToken(LoginResponse response) async {
-    await DeviceStorage.storeValue("jwt", response.token);
+    await DeviceStorage.storeValue(storageJwt, response.token);
     _apiServer.updateTokenType(response.tokenType);
     _apiServer.updateToken(response.token);
   }
