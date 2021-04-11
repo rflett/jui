@@ -29,6 +29,7 @@ class Account {
     var responseObj = LoginResponse.fromJson(json.decode(response.body));
 
     _storeToken(responseObj);
+    _storeGroup(responseObj);
 
     return responseObj.user.name;
   }
@@ -49,6 +50,7 @@ class Account {
     var responseObj = LoginResponse.fromJson(json.decode(response.body));
 
     _storeToken(responseObj);
+    _storeGroup(responseObj);
 
     return responseObj.user.name;
   }
@@ -58,5 +60,23 @@ class Account {
     await DeviceStorage.storeValue(storageJwt, response.token);
     _apiServer.updateTokenType(response.tokenType);
     _apiServer.updateToken(response.token);
+  }
+
+  /// Stores the primary group (the first in the list response) in the DeviceStorage
+  static void _storeGroup(LoginResponse response) async {
+    var storedGroupId = await DeviceStorage.retrieveValue(storagePrimaryGroupId);
+
+    if (response.user.groupIDs == null) {
+      // user isn't in any groups
+      return;
+    }
+
+    // primary group
+    var groupId = response.user.groupIDs?[0];
+
+    // store group id if it doesn't match
+    if (storedGroupId != groupId) {
+      await DeviceStorage.storeValue(storagePrimaryGroupId, groupId!);
+    }
   }
 }
