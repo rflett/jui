@@ -6,7 +6,7 @@ import 'package:jui/server/api_server.dart';
 
 import 'base/api_request.dart';
 
-class Group {
+class Search {
   static final _apiServer = ApiServer.instance;
 
   /// search for a song on spotify

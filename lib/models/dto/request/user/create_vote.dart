@@ -1,13 +1,14 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:jui/models/dto/shared/vote.dart';
 
 part 'create_vote.g.dart';
 
 @JsonSerializable()
 class CreateVoteRequest {
   final int position;
-  final String song; // TODO this is actually a Song object
+  final Vote vote;
 
-  CreateVoteRequest(this.position, this.song);
+  CreateVoteRequest(this.position, this.vote);
 
   factory CreateVoteRequest.fromJson(Map<String, dynamic> json) =>
       _$CreateVoteRequestFromJson(json);

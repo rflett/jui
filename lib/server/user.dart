@@ -27,10 +27,12 @@ class User {
   }
 
   /// get a user
-  static Future<UserResponse> get(String userId) async {
+  static Future<UserResponse> get(String userId, {bool withVotes = false}) async {
+    var url = sprintf(userGetUrl, [userId]) + withVotes.toString();
+
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.get(sprintf(userGetUrl, [userId]));
+      response = await _apiServer.get(url);
     } catch (err) {
       print(err);
     }
