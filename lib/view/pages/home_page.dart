@@ -22,17 +22,6 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: appAccentColor,
-                    primary: Colors.white,
-                    padding: EdgeInsets.all(15),
-                    minimumSize: Size(300, 60),
-                  ),
-                  child: Text("Social Login", style: TextStyle(fontSize: 25)),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, loginProviderRoute),
-                ),
                 Hero(
                   tag: "login-button",
                   child: TextButton(
@@ -48,14 +37,15 @@ class _HomePageState extends State<HomePage> {
                 ),
                 TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: appSecondaryColor,
+                    backgroundColor: appAccentColor,
                     primary: Colors.white,
                     padding: EdgeInsets.all(15),
                     minimumSize: Size(300, 60),
                   ),
-                  child: Text("Sign Up", style: TextStyle(fontSize: 25)),
-                  onPressed: () => Navigator.pushNamed(context, registerRoute),
-                )
+                  child: Text("Social Login", style: TextStyle(fontSize: 25)),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, loginProviderRoute),
+                ),
               ],
             ),
           ),

@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           ConstrainedBox(
             constraints:
-                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 350),
+                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 400),
             child: Card(
               elevation: 3,
               child: Container(
@@ -84,10 +84,18 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: onLoginClicked,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () => Navigator.pushNamed(context, registerRoute),
-                        child: Text("Sign up"),
-                      )
+                      Column(children: [
+                        TextButton(
+                          onPressed: () =>
+                              Navigator.pushNamed(context, loginProviderRoute),
+                          child: Text("Social Login"),
+                        ),
+                        TextButton(
+                          onPressed: () =>
+                              Navigator.pushNamed(context, registerRoute),
+                          child: Text("Sign up"),
+                        ),
+                      ]),
                     ],
                   ),
                 ),

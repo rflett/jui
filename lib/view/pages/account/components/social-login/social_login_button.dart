@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:jui/models/enums/social_providers.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SocialLoginButton extends StatelessWidget {
   final SocialProviders _provider;
@@ -14,14 +17,23 @@ class SocialLoginButton extends StatelessWidget {
         color: Colors.transparent,
         elevation: 2,
         child: InkWell(
-          onTap: () => _onSocialTapped,
+          onTap: () => _onSocialTapped(),
           child: Image.asset(_getImageAsset()),
         ),
       ),
     );
   }
 
-  _onSocialTapped() {}
+  _onSocialTapped() async {
+    var providerName = this._provider.toString().split(".").last;
+    var url =
+        "https://37qx1mx5z9.execute-api.ap-southeast-2.amazonaws.com/dev/oauth/login/$providerName";
+    var shouldNavigate = await canLaunch(url);
+    if (shouldNavigate) {
+      await launch(
+          "https://37qx1mx5z9.execute-api.ap-southeast-2.amazonaws.com/dev/oauth/login/$providerName");
+    }
+  }
 
   String _getImageAsset() {
     switch (this._provider) {
