@@ -137,10 +137,10 @@ class Group {
   }
 
   /// leave your group
-  static Future<void> leave(String groupId) async {
+  static Future<void> leave(String groupId, String userId) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.delete(sprintf(groupLeaveUrl, [groupId]));
+      response = await _apiServer.delete(sprintf(groupLeaveUrl, [groupId, userId]));
     } catch (err) {
       print(err);
     }

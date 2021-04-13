@@ -28,7 +28,7 @@ const gameUpdateUrl = "$serverBaseUrl/group/%s/game/%s";
 const gameDeleteUrl = "$serverBaseUrl/group/%s/game/%s";
 const groupGetMembersUrl = "$serverBaseUrl/group/%s/members?withVotes=";
 const groupJoinUrl = "$serverBaseUrl/group/members";
-const groupLeaveUrl = "$serverBaseUrl/group/%s/members";
+const groupLeaveUrl = "$serverBaseUrl/group/%s/members/%s";
 const groupQrUrl = "$serverBaseUrl/group/%s/qr";
 
 // misc
