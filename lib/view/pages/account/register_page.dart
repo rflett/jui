@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/colors.dart';
 import 'package:jui/models/dto/request/account/signin.dart';
+import 'package:jui/models/dto/request/account/signup.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/server/account.dart';
 import 'package:jui/utilities/popups.dart';
+import 'package:jui/utilities/validation.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -12,9 +14,11 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool _hidePassword = true;
+
+  String _name = "";
+  String _nickName = "";
   String _email = "";
   String _password = "";
-  String _confirmPassword = "";
 
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -39,7 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           ConstrainedBox(
             constraints:
-            BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 350),
+            BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 450),
             child: Card(
               elevation: 3,
               child: Container(
@@ -52,10 +56,17 @@ class _RegisterPageState extends State<RegisterPage> {
                       TextFormField(
                         onChanged: (val) => _email = val,
                         keyboardType: TextInputType.emailAddress,
+                        validator: (val) => validateRequired(val),
+                        decoration: InputDecoration(
+                            labelText: "Name*",
+                            border: UnderlineInputBorder()),
+                      ),
+                      TextFormField(
+                        onChanged: (val) => _email = val,
+                        keyboardType: TextInputType.emailAddress,
                         validator: validateEmail,
                         decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.account_circle_rounded),
-                            labelText: "Email",
+                            labelText: "Email*",
                             border: UnderlineInputBorder()),
                       ),
                       TextFormField(
@@ -63,12 +74,19 @@ class _RegisterPageState extends State<RegisterPage> {
                         validator: validatePassword,
                         obscureText: _hidePassword,
                         decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock),
                             suffixIcon: IconButton(
                               icon: Icon(Icons.remove_red_eye),
                               onPressed: onViewPasswordPressed,
                             ),
-                            labelText: "Password",
+                            labelText: "Password*",
+                            border: UnderlineInputBorder()),
+                      ),
+                      TextFormField(
+                        onChanged: (val) => _email = val,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (val) => validateRequired(val),
+                        decoration: InputDecoration(
+                            labelText: "Nickname",
                             border: UnderlineInputBorder()),
                       ),
                       Hero(
@@ -81,13 +99,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             minimumSize: Size(300, 60),
                           ),
                           child: Text("Sign Up", style: TextStyle(fontSize: 25)),
-                          onPressed: onLoginClicked,
+                          onPressed: onSignupClicked,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text("Sign up"),
-                      )
                     ],
                   ),
                 ),
@@ -99,12 +113,12 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  onLoginClicked() async {
+  onSignupClicked() async {
     if (_formKey.currentState?.validate() == true) {
       // Form was filled out, attempt login
-      var requestData = SignInRequest(this._email, this._password);
+      var requestData = SignUpRequest(this._name, this._nickName, this._email, this._password);
       try {
-        var name = await Account.signIn(requestData);
+        var name = await Account.signUp(requestData);
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Welcome, $name!")));
       } catch (err) {

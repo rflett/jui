@@ -4,7 +4,6 @@ import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/account/login_page.dart';
 import 'package:jui/view/pages/account/register_page.dart';
 import 'package:jui/view/pages/account/login_provider_page.dart';
-import 'package:jui/view/pages/home_page.dart';
 import 'package:jui/view/pages/leaderboard/leaderboard.dart';
 
 void main() {
@@ -29,14 +28,18 @@ class _MyAppState extends State<MyApp> {
 
   late Map<String, WidgetBuilder> _visibleRoutes;
 
+  late Widget _homeWidget;
+
   Future<bool> _initialise() async {
     String? jwt = await DeviceStorage.retrieveValue("jwt");
     this._visibleRoutes = _loggedOutRoutes;
     if (jwt != null && jwt.isNotEmpty) {
       // User is logged in
+      _homeWidget = Leaderboard();
       return true;
     } else {
       // User not logged in
+      _homeWidget = LoginPage();
       return false;
     }
   }
@@ -57,7 +60,7 @@ class _MyAppState extends State<MyApp> {
                 // closer together (more dense) than on mobile platforms.
                 visualDensity: VisualDensity.adaptivePlatformDensity,
               ),
-              home: HomePage(),
+              home: _homeWidget,
               routes: _visibleRoutes,
             );
           } else {
