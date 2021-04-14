@@ -3,7 +3,6 @@ import 'package:jui/constants/app_routes.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/logged_in/home_page.dart';
 import 'package:jui/view/pages/logged_out/account/login_page.dart';
-import 'package:jui/view/pages/logged_out/account/login_provider_page.dart';
 import 'package:jui/view/pages/logged_out/account/register_page.dart';
 import 'package:jui/view/pages/shared/loading_page.dart';
 
@@ -20,7 +19,6 @@ class _MyAppState extends State<MyApp> {
   // Routes for users that aren't logged into the app right now
   final Map<String, WidgetBuilder> _topLevelRoutes = {
     loadingRoute: (BuildContext context) => LoadingPage(),
-    loginProviderRoute: (BuildContext context) => LoginProviderPage(),
     loginRoute: (BuildContext context) => LoginPage(),
     registerRoute: (BuildContext context) => RegisterPage(),
   };
@@ -71,7 +69,7 @@ class _MyAppState extends State<MyApp> {
             return MaterialApp(
               title: 'JUI',
               theme: ThemeData(
-                primarySwatch: Colors.blue,
+                primarySwatch: Colors.indigo,
                 // This makes the visual density adapt to the platform that you run
                 // the app on. For desktop platforms, the controls will be smaller and
                 // closer together (more dense) than on mobile platforms.

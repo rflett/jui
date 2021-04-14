@@ -7,7 +7,7 @@ import 'package:jwt_decode/jwt_decode.dart';
 abstract class Token {
 
   static Future<AuthToken> get() async {
-    var tkn = await DeviceStorage.retrieveValue(storageJwt);
+    var tkn = await DeviceStorage.retrieveValue(storageJwtKey);
     if (tkn != null) {
       Map<String, dynamic> payload = Jwt.parseJwt(tkn);
       var authToken = AuthToken.fromJson(payload);

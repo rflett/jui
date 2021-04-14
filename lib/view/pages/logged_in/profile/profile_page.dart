@@ -24,7 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.deepPurpleAccent.shade700,
+        backgroundColor: Colors.indigo,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.people), label: "Groups"),
           BottomNavigationBarItem(icon: Icon(Icons.local_play), label: "Games"),

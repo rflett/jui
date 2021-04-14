@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,12 +26,39 @@ abstract class DeviceStorage {
       try {
         return prefs.getString(key);
       } catch (error) {
+        log(error.toString());
         return null;
       }
     } else {
       // On other platforms store in secure storage
       var storage = FlutterSecureStorage();
-      return await storage.read(key: key);
+      try {
+        return await storage.read(key: key);
+      } catch (error) {
+        log(error.toString());
+        return null;
+      }
+    }
+  }
+
+  /// Removes the value located at the provided key. If not found no error occurs
+  static Future<void> removeValue(String key) async {
+    if (kIsWeb) {
+      // Store in the local storage
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      try {
+        prefs.remove(key);
+      } catch (error) {
+        log(error.toString());
+      }
+    } else {
+      // On other platforms stored in secure storage
+      var storage = FlutterSecureStorage();
+      try {
+        await storage.delete(key: key);
+      } catch (error) {
+        log(error.toString());
+      }
     }
   }
 }

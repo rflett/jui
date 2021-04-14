@@ -5,6 +5,7 @@ import 'package:jui/models/dto/request/account/signin.dart';
 import 'package:jui/models/dto/request/account/signup.dart';
 import 'package:jui/models/dto/response/account/login_response.dart';
 import 'package:jui/constants/storage_values.dart';
+import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/utilities/storage.dart';
 
 import 'api_server.dart';
@@ -13,7 +14,7 @@ import 'base/api_request.dart';
 class Account {
   static final _apiServer = ApiServer.instance;
 
-  static Future<String> signUp(SignUpRequest requestData) async {
+  static Future<UserResponse> signUp(SignUpRequest requestData) async {
     var jsonBody = json.encode(requestData.toJson());
 
     http.Response response = http.Response("", 500);
@@ -31,10 +32,10 @@ class Account {
     _storeToken(responseObj);
     _storeGroup(responseObj);
 
-    return responseObj.user.name;
+    return responseObj.user;
   }
 
-  static Future<String> signIn(SignInRequest requestData) async {
+  static Future<UserResponse> signIn(SignInRequest requestData) async {
     var jsonBody = json.encode(requestData.toJson());
 
     http.Response response = http.Response("", 500);
@@ -52,12 +53,12 @@ class Account {
     _storeToken(responseObj);
     _storeGroup(responseObj);
 
-    return responseObj.user.name;
+    return responseObj.user;
   }
 
   /// Stores the JWT token from the LoginResponse in the DeviceStorage
   static void _storeToken(LoginResponse response) async {
-    await DeviceStorage.storeValue(storageJwt, response.token);
+    await DeviceStorage.storeValue(storageJwtKey, response.token);
     _apiServer.updateTokenType(response.tokenType);
     _apiServer.updateToken(response.token);
   }

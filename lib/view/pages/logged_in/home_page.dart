@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
+import 'package:jui/constants/colors.dart';
+import 'package:jui/constants/storage_values.dart';
+import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/logged_in/game/leaderboard/leaderboard.dart';
 import 'package:jui/view/pages/logged_in/profile/profile_page.dart';
-import 'package:jui/view/pages/logged_out/account/login_provider_page.dart';
 
 class HomePage extends StatefulWidget {
   final String homePageRoute;
@@ -23,6 +25,18 @@ class _HomePageState extends State<HomePage> {
     profilePage: (BuildContext context) => ProfilePage(),
   };
 
+  String _title = "Games";
+
+  String get title => _title;
+
+  set title(String title) {
+    setState(() {
+      this._title = title;
+    });
+  }
+
+  String _currentRoute = gamePage;
+
   // Called whenever the app navigates to a route.
   MaterialPageRoute _handleRoute(RouteSettings settings) {
     if (!_loggedInRoutes.containsKey(settings.name)) {
@@ -34,47 +48,105 @@ class _HomePageState extends State<HomePage> {
     return MaterialPageRoute(builder: page, settings: settings);
   }
 
-
-
   void _onGameSelected() {
-    _navigatorKey.currentState!.pushNamed(gamePage);
+    if (this._currentRoute != gamePage) {
+      _navigatorKey.currentState!.pushNamed(gamePage);
+      title = "Games";
+      this._currentRoute = gamePage;
+    }
   }
 
   void _onProfileSelected() {
-    _navigatorKey.currentState!.pushNamed(profilePage);
+    if (this._currentRoute != profilePage) {
+      _navigatorKey.currentState!.pushNamed(profilePage);
+      title = "My Profile";
+      this._currentRoute = profilePage;
+    }
+  }
+
+  void _onLogoutSelected() async {
+    var shouldLogout = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Log Out"),
+            content: Text("Are you sure you want to log out?"),
+            actions: [
+              TextButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              TextButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+            ],
+          );
+        });
+
+    if (shouldLogout == true) {
+      // Delete jwt and navigate back to login
+      await DeviceStorage.removeValue(storageJwtKey);
+      Navigator.pushNamedAndRemoveUntil(context, loginRoute, (route) => false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('JUI Home'),
+        title: Text(_title),
       ),
       drawer: Drawer(
         child: ListView(
-          // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              child: Text('Drawer Header'),
+              child: Image.asset(
+                "images/logo.png",
+              ),
+              padding: EdgeInsets.zero,
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: appPrimaryColor,
               ),
             ),
             ListTile(
-              title: Text('Games'),
+              leading: Icon(Icons.music_note),
+              title: Text('Play'),
+              subtitle: Text("Check out the leaderboard and manage your votes"),
               onTap: () {
-                // Update the state of the app.
-                // ...
                 _onGameSelected();
                 Navigator.pop(context);
               },
             ),
+            Divider(),
             ListTile(
+              leading: Icon(Icons.settings),
               title: Text('Profile'),
+              subtitle: Text("Manage your Groups and Custom Games"),
               onTap: () {
-                // Update the state of the app.
-                // ...
+                _onProfileSelected();
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.logout,
+                color: Colors.red,
+              ),
+              title: Text(
+                "Log Out",
+                style: TextStyle(color: Colors.red),
+              ),
+              subtitle: Text(
+                "Log out of your account",
+                style: TextStyle(color: Colors.red),
+              ),
+              onTap: () {
                 _onProfileSelected();
                 Navigator.pop(context);
               },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jui/constants/app_routes.dart';
 import 'package:jui/constants/colors.dart';
 import 'package:jui/models/dto/request/account/signup.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
@@ -12,6 +13,8 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final _formKey = GlobalKey<FormState>();
+
   bool _hidePassword = true;
 
   String _name = "";
@@ -19,8 +22,54 @@ class _RegisterPageState extends State<RegisterPage> {
   String _email = "";
   String _password = "";
 
-  final _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  _onSignupClicked() async {
+    if (_formKey.currentState?.validate() == true) {
+      // Form was filled out, attempt login
+      var requestData = SignUpRequest(
+          this._name, this._nickName, this._email, this._password);
+      try {
+        var user = await Account.signUp(requestData);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Welcome, ${user.name}!")));
+        Navigator.pushNamedAndRemoveUntil(context, gameRoute, (route) => false);
+      } catch (err) {
+        // TODO logging
+        print(err);
+        PopupUtils.showError(context, err as ProblemResponse);
+      }
+    }
+  }
+
+  _onViewPasswordPressed() {
+    setState(() => this._hidePassword = !this._hidePassword);
+  }
+
+  String? _validateEmail(String? currentValue) {
+    if (currentValue?.isEmpty == true) {
+      return "Please enter an email address";
+    }
+    if (currentValue?.contains("@") == false) {
+      return "Please enter a valid email";
+    }
+
+    return null;
+  }
+
+  String? _validatePassword(String? currentValue) {
+    if (currentValue != null) {
+      if (currentValue.isEmpty) {
+        return "Please enter a password";
+      }
+      if (currentValue.length < 5) {
+        return "Password must be at least 5 characters";
+      }
+
+      if (!currentValue.contains(RegExp("\\d+"))) {
+        return "Password needs at least 1 number";
+      }
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           ConstrainedBox(
             constraints:
-            BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 450),
+                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 450),
             child: Card(
               elevation: 3,
               child: Container(
@@ -57,25 +106,24 @@ class _RegisterPageState extends State<RegisterPage> {
                         keyboardType: TextInputType.emailAddress,
                         validator: (val) => validateRequired(val),
                         decoration: InputDecoration(
-                            labelText: "Name*",
-                            border: UnderlineInputBorder()),
+                            labelText: "Name*", border: UnderlineInputBorder()),
                       ),
                       TextFormField(
                         onChanged: (val) => _email = val,
                         keyboardType: TextInputType.emailAddress,
-                        validator: validateEmail,
+                        validator: _validateEmail,
                         decoration: InputDecoration(
                             labelText: "Email*",
                             border: UnderlineInputBorder()),
                       ),
                       TextFormField(
                         onChanged: (val) => _password = val,
-                        validator: validatePassword,
+                        validator: _validatePassword,
                         obscureText: _hidePassword,
                         decoration: InputDecoration(
                             suffixIcon: IconButton(
                               icon: Icon(Icons.remove_red_eye),
-                              onPressed: onViewPasswordPressed,
+                              onPressed: _onViewPasswordPressed,
                             ),
                             labelText: "Password*",
                             border: UnderlineInputBorder()),
@@ -97,8 +145,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             padding: EdgeInsets.all(15),
                             minimumSize: Size(300, 60),
                           ),
-                          child: Text("Sign Up", style: TextStyle(fontSize: 25)),
-                          onPressed: onSignupClicked,
+                          child:
+                              Text("Sign Up", style: TextStyle(fontSize: 25)),
+                          onPressed: _onSignupClicked,
                         ),
                       ),
                     ],
@@ -110,52 +159,5 @@ class _RegisterPageState extends State<RegisterPage> {
         ]),
       ),
     );
-  }
-
-  onSignupClicked() async {
-    if (_formKey.currentState?.validate() == true) {
-      // Form was filled out, attempt login
-      var requestData = SignUpRequest(this._name, this._nickName, this._email, this._password);
-      try {
-        var name = await Account.signUp(requestData);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Welcome, $name!")));
-      } catch (err) {
-        // TODO logging
-        print(err);
-        PopupUtils.showError(context, err as ProblemResponse);
-      }
-    }
-  }
-
-  onViewPasswordPressed() {
-    setState(() => this._hidePassword = !this._hidePassword);
-  }
-
-  String? validateEmail(String? currentValue) {
-    if (currentValue?.isEmpty == true) {
-      return "Please enter an email address";
-    }
-    if (currentValue?.contains("@") == false) {
-      return "Please enter a valid email";
-    }
-
-    return null;
-  }
-
-  String? validatePassword(String? currentValue) {
-    if (currentValue != null) {
-      if (currentValue.isEmpty) {
-        return "Please enter a password";
-      }
-      if (currentValue.length < 5) {
-        return "Password must be at least 5 characters";
-      }
-
-      if (!currentValue.contains(RegExp("\\d+"))) {
-        return "Password needs at least 1 number";
-      }
-    }
-    return null;
   }
 }
