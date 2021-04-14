@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/logged_in/home_page.dart';
-import 'package:jui/view/pages/logged_in/leaderboard/leaderboard.dart';
 import 'package:jui/view/pages/logged_out/account/login_page.dart';
 import 'package:jui/view/pages/logged_out/account/login_provider_page.dart';
 import 'package:jui/view/pages/logged_out/account/register_page.dart';
+import 'package:jui/view/pages/shared/loading_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,6 +19,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // Routes for users that aren't logged into the app right now
   final Map<String, WidgetBuilder> _topLevelRoutes = {
+    loadingRoute: (BuildContext context) => LoadingPage(),
     loginProviderRoute: (BuildContext context) => LoginProviderPage(),
     loginRoute: (BuildContext context) => LoginPage(),
     registerRoute: (BuildContext context) => RegisterPage(),
@@ -30,7 +31,7 @@ class _MyAppState extends State<MyApp> {
     String? jwt = await DeviceStorage.retrieveValue("jwt");
     if (jwt != null && jwt.isNotEmpty) {
       // User is logged in
-      _defaultRoute = leaderboardRoute;
+      _defaultRoute = gameRoute;
       return true;
     } else {
       // User not logged in
@@ -40,7 +41,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   // Called whenever the app navigates to a route (Allows handling nested routing)
-  _handleRoute(RouteSettings settings) {
+  MaterialPageRoute _handleRoute(RouteSettings settings) {
     late WidgetBuilder page;
     if (settings.name == null) {
       throw Exception('App route was empty');
@@ -54,10 +55,10 @@ class _MyAppState extends State<MyApp> {
       // Is a top level route instead
       page = _topLevelRoutes[settings.name]!;
     } else {
-      throw Exception('Unsupported application route');
+      throw Exception('Unsupported application route ${settings.name}');
     }
 
-    return MaterialPageRoute(builder: page);
+    return MaterialPageRoute(builder: page, settings: settings);
   }
 
   // This widget is the root of your application.
