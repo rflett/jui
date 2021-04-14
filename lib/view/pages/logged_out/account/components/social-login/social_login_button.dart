@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:jui/constants/urls.dart';
 import 'package:jui/models/enums/social_providers.dart';
@@ -27,7 +25,7 @@ class SocialLoginButton extends StatelessWidget {
 
   _onSocialTapped() async {
     var providerName = this._provider.toString().split(".").last;
-    var url = "$oauthLoginUrl/$providerName";
+    var url = "$oauthUrl/$providerName/login";
     var shouldNavigate = await canLaunch(url);
     if (shouldNavigate) {
       await launch(url);

@@ -9,7 +9,6 @@ import 'package:jui/models/dto/response/group/group_members_response.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/server/api_server.dart';
 import 'package:jui/utilities/storage.dart';
-import 'package:sprintf/sprintf.dart';
 
 import 'base/api_request.dart';
 
@@ -23,7 +22,7 @@ class Group {
 
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.post(groupCreateUrl, jsonBody);
+      response = await _apiServer.post(groupUrl, jsonBody);
     } catch (err) {
       print(err);
     }
@@ -43,7 +42,7 @@ class Group {
 
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.put(sprintf(groupUpdateUrl, [groupId]), jsonBody);
+      response = await _apiServer.put("$groupUrl/$groupId", jsonBody);
     } catch (err) {
       print(err);
     }
@@ -55,7 +54,7 @@ class Group {
   static Future<GroupResponse> get(String groupId) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.get(sprintf(groupGetUrl, [groupId]));
+      response = await _apiServer.get("$groupUrl/$groupId");
     } catch (err) {
       print(err);
     }
@@ -70,7 +69,8 @@ class Group {
   /// get the members of a group, optionally with their votes as well
   static Future<GroupMembersResponse> getMembers(String groupId,
       {bool withVotes = false}) async {
-    var url = sprintf(groupGetMembersUrl, [groupId]) + withVotes.toString();
+    // TODO sprintf deprecated, remove once figured out routing
+    var url = "$groupUrl/$groupId/members?withVotes=${withVotes.toString()}";
 
     http.Response response = http.Response("", 500);
     try {
@@ -90,7 +90,7 @@ class Group {
   static Future<GroupGamesResponse> getGames(String groupId) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.get(sprintf(gameCreateUrl, [groupId]));
+      response = await _apiServer.get("$groupUrl/$groupId/game");
     } catch (err) {
       print(err);
     }
@@ -106,7 +106,7 @@ class Group {
   static Future<String> getQR(String groupId) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.get(sprintf(groupQrUrl, [groupId]));
+      response = await _apiServer.get("$groupUrl/$groupId/qr");
     } catch (err) {
       print(err);
     }
@@ -140,7 +140,8 @@ class Group {
   static Future<void> leave(String groupId, String userId) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.delete(sprintf(groupLeaveUrl, [groupId, userId]));
+      response =
+          await _apiServer.delete("$groupUrl/$groupId/members/$userId");
     } catch (err) {
       print(err);
     }

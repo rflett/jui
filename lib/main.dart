@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/routes.dart';
 import 'package:jui/utilities/storage.dart';
-import 'package:jui/view/pages/account/login_page.dart';
-import 'package:jui/view/pages/account/register_page.dart';
-import 'package:jui/view/pages/account/login_provider_page.dart';
-import 'package:jui/view/pages/leaderboard/leaderboard.dart';
+import 'package:jui/view/pages/logged_in/leaderboard/leaderboard.dart';
+import 'package:jui/view/pages/logged_out/account/login_page.dart';
+import 'package:jui/view/pages/logged_out/account/login_provider_page.dart';
+import 'package:jui/view/pages/logged_out/account/register_page.dart';
 
 void main() {
   runApp(MyApp());

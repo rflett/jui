@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:jui/constants/urls.dart';
 import 'package:jui/models/dto/request/group/games/create_update_game.dart';
 import 'package:jui/models/dto/response/group/games/game_response.dart';
-import 'package:sprintf/sprintf.dart';
 
 import 'api_server.dart';
 import 'base/api_request.dart';
@@ -18,8 +17,7 @@ class Game {
 
     http.Response response = http.Response("", 500);
     try {
-      response =
-          await _apiServer.post(sprintf(gameCreateUrl, [groupID]), jsonBody);
+      response = await _apiServer.post("$groupUrl/$groupID/game", jsonBody);
     } catch (err) {
       print(err);
     }
@@ -38,8 +36,8 @@ class Game {
 
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.put(
-          sprintf(gameUpdateUrl, [groupId, gameId]), jsonBody);
+      response =
+          await _apiServer.put("$groupUrl/$groupId/game/$gameId", jsonBody);
     } catch (err) {
       print(err);
     }
@@ -52,7 +50,7 @@ class Game {
     http.Response response = http.Response("", 500);
     try {
       response =
-          await _apiServer.delete(sprintf(gameDeleteUrl, [groupId, gameId]));
+          await _apiServer.delete("$groupUrl/$groupId/game/$gameId");
     } catch (err) {
       print(err);
     }

@@ -7,7 +7,6 @@ import 'package:jui/models/dto/request/user/update_user.dart';
 import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/server/api_server.dart';
 import 'package:jui/server/base/api_request.dart';
-import 'package:sprintf/sprintf.dart';
 
 class User {
   static final _apiServer = ApiServer.instance;
@@ -27,8 +26,9 @@ class User {
   }
 
   /// get a user
-  static Future<UserResponse> get(String userId, {bool withVotes = false}) async {
-    var url = sprintf(userGetUrl, [userId]) + withVotes.toString();
+  static Future<UserResponse> get(String userId,
+      {bool withVotes = false}) async {
+    var url = "$userGetUrl/$userId?withVotes=${withVotes.toString()}";
 
     http.Response response = http.Response("", 500);
     try {
@@ -77,13 +77,14 @@ class User {
   static Future<void> removeVote(String songId) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.delete(sprintf(userDeleteVoteUrl, [songId]));
-    } catch (err) {
-      print(err);
-    }
+      response = await _apiServer.delete("$userDeleteVoteUrl/$songId");
+      } catch (err)
+      {
+        print(err);
+      }
 
-    ApiRequest.handleErrors(response);
-  }
+      ApiRequest.handleErrors(response);
+    }
 
   /// register a device for notifications
   static Future<void> registerDevice(RegisterDeviceRequest requestData) async {

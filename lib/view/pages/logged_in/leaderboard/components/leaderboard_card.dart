@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LeaderboardCard extends StatelessWidget {
-  int position;
-  String user;
+  final int position;
+  final String user;
 
   LeaderboardCard(this.user, this.position);
 
