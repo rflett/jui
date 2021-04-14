@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jui/constants/routes.dart';
+import 'package:jui/constants/app_routes.dart';
 import 'package:jui/utilities/storage.dart';
+import 'package:jui/view/pages/logged_in/home_page.dart';
 import 'package:jui/view/pages/logged_in/leaderboard/leaderboard.dart';
 import 'package:jui/view/pages/logged_out/account/login_page.dart';
 import 'package:jui/view/pages/logged_out/account/login_provider_page.dart';
@@ -17,31 +18,46 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   // Routes for users that aren't logged into the app right now
-  final Map<String, WidgetBuilder> _loggedOutRoutes = {
+  final Map<String, WidgetBuilder> _topLevelRoutes = {
     loginProviderRoute: (BuildContext context) => LoginProviderPage(),
     loginRoute: (BuildContext context) => LoginPage(),
     registerRoute: (BuildContext context) => RegisterPage(),
   };
 
-  // Routes for users that are currently logged into the app
-  final Map<String, WidgetBuilder> _loggedInRoutes = {};
-
-  late Map<String, WidgetBuilder> _visibleRoutes;
-
-  late Widget _homeWidget;
+  late String _defaultRoute;
 
   Future<bool> _initialise() async {
     String? jwt = await DeviceStorage.retrieveValue("jwt");
-    this._visibleRoutes = _loggedOutRoutes;
     if (jwt != null && jwt.isNotEmpty) {
       // User is logged in
-      _homeWidget = Leaderboard();
+      _defaultRoute = leaderboardRoute;
       return true;
     } else {
       // User not logged in
-      _homeWidget = LoginPage();
+      _defaultRoute = loginRoute;
       return false;
     }
+  }
+
+  // Called whenever the app navigates to a route (Allows handling nested routing)
+  _handleRoute(RouteSettings settings) {
+    late WidgetBuilder page;
+    if (settings.name == null) {
+      throw Exception('App route was empty');
+    }
+
+    if (settings.name!.startsWith(dashboardRoute) == true) {
+      // Get the initial subroute
+      var subRoute = settings.name!.substring(dashboardRoute.length);
+      page = (BuildContext context) => HomePage(homePageRoute: subRoute);
+    } else if (_topLevelRoutes.containsKey(settings.name)) {
+      // Is a top level route instead
+      page = _topLevelRoutes[settings.name]!;
+    } else {
+      throw Exception('Unsupported application route');
+    }
+
+    return MaterialPageRoute(builder: page);
   }
 
   // This widget is the root of your application.
@@ -60,8 +76,9 @@ class _MyAppState extends State<MyApp> {
                 // closer together (more dense) than on mobile platforms.
                 visualDensity: VisualDensity.adaptivePlatformDensity,
               ),
-              home: _homeWidget,
-              routes: _visibleRoutes,
+              initialRoute: _defaultRoute,
+              routes: _topLevelRoutes,
+              onGenerateRoute: (settings) => _handleRoute(settings),
             );
           } else {
             // Still loading
