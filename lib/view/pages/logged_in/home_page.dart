@@ -73,15 +73,15 @@ class _HomePageState extends State<HomePage> {
             content: Text("Are you sure you want to log out?"),
             actions: [
               TextButton(
-                child: Text('Yes'),
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-              ),
-              TextButton(
                 child: Text('No'),
                 onPressed: () {
                   Navigator.of(context).pop(false);
+                },
+              ),
+              TextButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
                 },
               ),
             ],
@@ -147,8 +147,8 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.red),
               ),
               onTap: () {
-                _onProfileSelected();
                 Navigator.pop(context);
+                _onLogoutSelected();
               },
             ),
           ],

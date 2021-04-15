@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
-import 'package:jui/constants/colors.dart';
 import 'package:jui/models/dto/request/account/signup.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/server/account.dart';
@@ -75,7 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title: Text("Register"),
       ),
       body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -107,10 +106,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       TextFormField(
                         onChanged: (val) => _nickName = val,
                         keyboardType: TextInputType.name,
-                        validator: validateRequired,
                         decoration: InputDecoration(
                             prefixIcon: Icon(Icons.contact_mail),
-                            labelText: "Nickname*",
+                            labelText: "Nickname",
                             border: OutlineInputBorder()),
                       ),
                       TextFormField(
