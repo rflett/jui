@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jui/view/pages/logged_in/profile/sub_pages/groups_page.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/my_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -12,7 +13,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int _selectedIndex = 0;
   List<Widget> _profilePages = [
     MyProfilePage(),
-    Text("I'm the groups Page"),
+    GroupsPage(),
     Text("I'm the games Page"),
   ];
 
