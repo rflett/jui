@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
 
 class GroupsPage extends StatefulWidget {
   GroupsPage({Key? key}) : super(key: key);
@@ -9,11 +10,13 @@ class GroupsPage extends StatefulWidget {
 
 class _GroupsPageState extends State<GroupsPage> {
   List<DropdownMenuItem<String>> _dropdownOptions = [
-    DropdownMenuItem<String>(value: "a", child: Text("Group a")),
-    DropdownMenuItem<String>(value: "b", child: Text("Group b")),
-    DropdownMenuItem<String>(value: "c", child: Text("Group c")),
-    DropdownMenuItem<String>(value: "d", child: Text("Group d"))
+    DropdownMenuItem<String>(value: "Group a", child: Text("Group a")),
+    DropdownMenuItem<String>(value: "Group b", child: Text("Group b")),
+    DropdownMenuItem<String>(value: "Group c", child: Text("Group c")),
+    DropdownMenuItem<String>(value: "Group d", child: Text("Group d"))
   ];
+
+  String? _selectedTeamName;
 
   List<String> _memberOptions = [
     "Nancy",
@@ -24,7 +27,15 @@ class _GroupsPageState extends State<GroupsPage> {
 
   void _leaveGroup() {}
 
-  void _showQrCode() {}
+  void _showQrCode() {
+    if (_selectedTeamName != null) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return QrWidget(teamName: _selectedTeamName!, qrUrl: "Whatever");
+          });
+    }
+  }
 
   void _shareInviteCode() {}
 
@@ -56,8 +67,9 @@ class _GroupsPageState extends State<GroupsPage> {
                 ),
                 SizedBox(width: 20),
                 DropdownButton(
-                  value: _dropdownOptions[0].value,
-                  onChanged: (String? newValue) => print(newValue),
+                  value: _selectedTeamName,
+                  onChanged: (String? newValue) =>
+                      setState(() => _selectedTeamName = newValue),
                   items: _dropdownOptions,
                 )
               ],
@@ -91,7 +103,7 @@ class _GroupsPageState extends State<GroupsPage> {
                 ),
                 SizedBox(width: 20),
                 TextButton(
-                  child: Text("UPDATE"),
+                  child: Text("SHOW QR"),
                   onPressed: _showQrCode,
                   style: TextButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
