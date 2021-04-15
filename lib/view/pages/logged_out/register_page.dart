@@ -78,80 +78,72 @@ class _RegisterPageState extends State<RegisterPage> {
         title: Text("Login"),
       ),
       body: Center(
-        child: Column(children: [
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(
             padding: EdgeInsets.symmetric(vertical: 20),
-            child: Hero(
-              tag: "app-logo",
-              child: Image.asset(
-                "images/logo.png",
-                width: 300,
-              ),
+            child: Image.asset(
+              "assets/images/logo.png",
+              width: 300,
             ),
           ),
           ConstrainedBox(
             constraints:
-                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 450),
-            child: Card(
-              elevation: 3,
-              child: Container(
-                padding: EdgeInsets.all(20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+            BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 500),
+            child: Container(
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  children: [
+                    Wrap(runSpacing: 10, children: [
                       TextFormField(
-                        onChanged: (val) => _email = val,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (val) => validateRequired(val),
+                        onChanged: (val) => _name = val,
+                        keyboardType: TextInputType.name,
+                        validator: validateRequired,
                         decoration: InputDecoration(
-                            labelText: "Name*", border: UnderlineInputBorder()),
+                            prefixIcon: Icon(Icons.contact_mail),
+                            labelText: "Name*",
+                            border: OutlineInputBorder()),
+                      ),
+                      TextFormField(
+                        onChanged: (val) => _nickName = val,
+                        keyboardType: TextInputType.name,
+                        validator: validateRequired,
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.contact_mail),
+                            labelText: "Nickname*",
+                            border: OutlineInputBorder()),
                       ),
                       TextFormField(
                         onChanged: (val) => _email = val,
                         keyboardType: TextInputType.emailAddress,
                         validator: _validateEmail,
                         decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.account_circle_rounded),
                             labelText: "Email*",
-                            border: UnderlineInputBorder()),
+                            border: OutlineInputBorder()),
                       ),
                       TextFormField(
                         onChanged: (val) => _password = val,
                         validator: _validatePassword,
                         obscureText: _hidePassword,
                         decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.lock),
                             suffixIcon: IconButton(
                               icon: Icon(Icons.remove_red_eye),
                               onPressed: _onViewPasswordPressed,
                             ),
                             labelText: "Password*",
-                            border: UnderlineInputBorder()),
+                            border: OutlineInputBorder()),
                       ),
-                      TextFormField(
-                        onChanged: (val) => _email = val,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (val) => validateRequired(val),
-                        decoration: InputDecoration(
-                            labelText: "Nickname",
-                            border: UnderlineInputBorder()),
-                      ),
-                      Hero(
-                        tag: "login-button",
+                      Align(
+                        alignment: AlignmentDirectional.centerEnd,
                         child: TextButton(
-                          style: TextButton.styleFrom(
-                            backgroundColor: appPrimaryColor,
-                            primary: Colors.white,
-                            padding: EdgeInsets.all(15),
-                            minimumSize: Size(300, 60),
-                          ),
-                          child:
-                              Text("Sign Up", style: TextStyle(fontSize: 25)),
+                          child: Text("Signup"),
                           onPressed: _onSignupClicked,
                         ),
                       ),
-                    ],
-                  ),
+                    ]),
+                  ],
                 ),
               ),
             ),

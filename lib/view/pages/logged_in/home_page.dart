@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             DrawerHeader(
               child: Image.asset(
-                "images/logo.png",
+                "assets/images/logo.png",
               ),
               padding: EdgeInsets.zero,
               decoration: BoxDecoration(

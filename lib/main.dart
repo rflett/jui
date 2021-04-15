@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/logged_in/home_page.dart';
-import 'package:jui/view/pages/logged_out/account/login_page.dart';
-import 'package:jui/view/pages/logged_out/account/register_page.dart';
+import 'package:jui/view/pages/logged_out/login_page.dart';
+import 'package:jui/view/pages/logged_out/register_page.dart';
 import 'package:jui/view/pages/shared/loading_page.dart';
+import 'package:lottie/lottie.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,6 +29,8 @@ class _MyAppState extends State<MyApp> {
   late String _defaultRoute;
 
   Future<bool> _initialise() async {
+    // Simulate contacting server for JWT authenticity
+    sleep(Duration(seconds: 2));
     String? jwt = await DeviceStorage.retrieveValue("jwt");
     if (jwt != null && jwt.isNotEmpty) {
       // User is logged in
@@ -81,12 +86,7 @@ class _MyAppState extends State<MyApp> {
             );
           } else {
             // Still loading
-            return Center(
-                child: SizedBox(
-              child: CircularProgressIndicator(),
-              width: 60,
-              height: 60,
-            ));
+            return LoadingPage();
           }
         });
   }

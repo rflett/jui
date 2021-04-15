@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jui/view/pages/logged_in/profile/sub_pages/my_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
@@ -10,6 +11,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   int _selectedIndex = 0;
   List<Widget> _profilePages = [
+    MyProfilePage(),
     Text("I'm the groups Page"),
     Text("I'm the games Page"),
   ];
@@ -26,6 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.indigo,
         items: [
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Me"),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: "Groups"),
           BottomNavigationBarItem(icon: Icon(Icons.local_play), label: "Games"),
         ],

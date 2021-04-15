@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:jui/constants/colors.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/models/dto/request/account/signin.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
@@ -87,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
           Container(
             padding: EdgeInsets.symmetric(vertical: 20),
             child: Image.asset(
-              "images/logo.png",
+              "assets/images/logo.png",
               width: 300,
             ),
           ),

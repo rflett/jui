@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 
 class LeaderboardCard extends StatelessWidget {
   final int position;
@@ -41,21 +42,7 @@ class LeaderboardCard extends StatelessWidget {
           ),
           Positioned(
             top: 15,
-            child: Container(
-              height: 120,
-              width: 120,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                boxShadow: [BoxShadow(blurRadius: 2, spreadRadius: 0.1)],
-                image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: NetworkImage(
-                    "https://www.thispersondoesnotexist.com/image?value=${this.user}",
-                  ),
-                ),
-              ),
-            ),
+            child: UserAvatar(uuid: this.user),
           )
         ],
       ),
