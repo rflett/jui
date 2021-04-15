@@ -3,7 +3,7 @@ import 'package:jui/constants/app_routes.dart';
 import 'package:jui/constants/colors.dart';
 import 'package:jui/constants/storage_values.dart';
 import 'package:jui/utilities/storage.dart';
-import 'package:jui/view/pages/logged_in/game/leaderboard/leaderboard.dart';
+import 'package:jui/view/pages/logged_in/game/game_page.dart';
 import 'package:jui/view/pages/logged_in/profile/profile_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   // SubRoutes for logged in users
   final Map<String, WidgetBuilder> _loggedInRoutes = {
     "/": (BuildContext context) => Container(),
-    gamePage: (BuildContext context) => Leaderboard(),
+    gamePage: (BuildContext context) => GamePage(),
     profilePage: (BuildContext context) => ProfilePage(),
   };
 

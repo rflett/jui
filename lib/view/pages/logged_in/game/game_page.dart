@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/groups_page.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/my_profile_page.dart';
+import 'package:jui/view/pages/logged_in/game/sub_pages/leaderboard/leaderboard.dart';
 
-class ProfilePage extends StatefulWidget {
-  ProfilePage({Key? key}) : super(key: key);
+class GamePage extends StatefulWidget {
+  GamePage({Key? key}) : super(key: key);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _GamePageState createState() => _GamePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _GamePageState extends State<GamePage> {
   int _selectedIndex = 0;
   List<Widget> _profilePages = [
-    MyProfilePage(),
-    GroupsPage(),
-    Text("I'm the games Page"),
+    Leaderboard(),
+    Leaderboard(),
   ];
 
   void _onItemTapped(int index) {
@@ -29,9 +27,8 @@ class _ProfilePageState extends State<ProfilePage> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).primaryColor,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Me"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Groups"),
-          BottomNavigationBarItem(icon: Icon(Icons.local_play), label: "Games"),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Leaderboard"),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Played Songs"),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,
