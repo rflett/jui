@@ -10,6 +10,8 @@ class Leaderboard extends StatefulWidget {
 }
 
 class _LeaderboardState extends State<Leaderboard> {
+  bool _showVotes = false;
+
   List<String> users = [
     "Roma",
     "Florry",
@@ -30,13 +32,29 @@ class _LeaderboardState extends State<Leaderboard> {
       child: Center(
         child: FractionallySizedBox(
           widthFactor: 0.9,
-          child: ListView.separated(
-            itemBuilder: renderCard,
-            separatorBuilder: (context, index) => Padding(
-              padding: EdgeInsets.symmetric(vertical: 30),
+          child: Column(children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: SizedBox(
+                height: 50,
+                width: 200,
+                child: SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text("Show Votes"),
+                    value: _showVotes,
+                    onChanged: (val) => setState(() => _showVotes = val)),
+              ),
             ),
-            itemCount: users.length,
-          ),
+            Expanded(
+              child: ListView.separated(
+                itemBuilder: renderCard,
+                separatorBuilder: (context, index) => Padding(
+                  padding: EdgeInsets.symmetric(vertical: 30),
+                ),
+                itemCount: users.length,
+              ),
+            ),
+          ]),
         ),
       ),
     );
@@ -44,6 +62,6 @@ class _LeaderboardState extends State<Leaderboard> {
 
   Widget renderCard(BuildContext context, int index) {
     String name = users[index];
-    return LeaderboardCard(name, ++index);
+    return LeaderboardCard(_showVotes, name, ++index);
   }
 }

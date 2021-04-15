@@ -5,7 +5,7 @@ class UserAvatar extends StatelessWidget {
   final String uuid;
 
   const UserAvatar(
-      {Key? key, required this.uuid, this.size = 120})
+      {Key? key, required this.uuid, this.size = 80})
       : super(key: key);
 
   @override
