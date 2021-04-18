@@ -80,9 +80,12 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(
             padding: EdgeInsets.symmetric(vertical: 20),
-            child: Image.asset(
-              "assets/images/logo.png",
-              width: 300,
+            child: Hero(
+              tag: "login-logo",
+              child: Image.asset(
+                "assets/images/logo.png",
+                width: 300,
+              ),
             ),
           ),
           ConstrainedBox(

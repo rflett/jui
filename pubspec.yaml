@@ -35,6 +35,7 @@ dependencies:
   jwt_decode: ^0.3.1
   url_launcher: ^6.0.3
   lottie: ^1.0.1
+  qr_flutter: ^4.0.0
 
 dev_dependencies:
   flutter_test:

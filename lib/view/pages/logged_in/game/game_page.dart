@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jui/view/pages/logged_in/game/sub_pages/leaderboard/leaderboard.dart';
+import 'package:jui/view/pages/logged_in/game/sub_pages/my_votes/my_votes_page.dart';
 
 class GamePage extends StatefulWidget {
   GamePage({Key? key}) : super(key: key);
@@ -13,6 +14,7 @@ class _GamePageState extends State<GamePage> {
   List<Widget> _profilePages = [
     Leaderboard(),
     Leaderboard(),
+    MyVotesPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -28,7 +30,8 @@ class _GamePageState extends State<GamePage> {
         backgroundColor: Theme.of(context).primaryColor,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Leaderboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Played Songs"),
+          BottomNavigationBarItem(icon: Icon(Icons.music_note), label: "Played Songs"),
+          BottomNavigationBarItem(icon: Icon(Icons.person_add), label: "My Votes"),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,

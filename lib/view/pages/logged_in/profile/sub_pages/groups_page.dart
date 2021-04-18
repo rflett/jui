@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jui/view/components/material_autocomplete.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
 
 class GroupsPage extends StatefulWidget {
@@ -118,23 +119,9 @@ class _GroupsPageState extends State<GroupsPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Autocomplete(
-                    fieldViewBuilder: ((BuildContext context,
-                            TextEditingController textEditingController,
-                            FocusNode focusNode,
-                            VoidCallback onFieldSubmitted) =>
-                        TextFormField(
-                          controller: textEditingController,
-                          focusNode: focusNode,
-                          onFieldSubmitted: (String value) {
-                            onFieldSubmitted();
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Members",
-                            border: OutlineInputBorder(),
-                          ),
-                        )),
+                  child: MaterialAutocomplete(
                     optionsBuilder: _searchMembers,
+                    labelText: "Members",
                   ),
                 ),
                 SizedBox(width: 20),
