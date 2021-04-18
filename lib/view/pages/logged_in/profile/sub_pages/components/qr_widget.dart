@@ -1,4 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class QrWidget extends StatelessWidget {
   final String teamName;
@@ -23,9 +26,16 @@ class QrWidget extends StatelessWidget {
               direction: Axis.vertical,
               spacing: 20,
               children: [
-                Text(teamName),
-                Image.asset("assets/images/test-qr.png",
-                    width: 200, height: 200)
+                Text(teamName, textAlign: TextAlign.center),
+                SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: GestureDetector(
+                    onTap: () => launch("https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+                    child: QrImage(
+                      data: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+                  )
+                ),
               ],
             ),
           ),

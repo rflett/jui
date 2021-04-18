@@ -36,8 +36,8 @@ class _LoginPageState extends State<LoginPage> {
       var requestData = SignInRequest(this._email, this._password);
       try {
         var user = await Account.signIn(requestData);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Welcome back, ${user.name}!")));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Welcome back, ${user.name}!")));
         Navigator.pushNamedAndRemoveUntil(context, gameRoute, (route) => false);
       } catch (err) {
         // TODO logging
@@ -85,9 +85,12 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(
             padding: EdgeInsets.symmetric(vertical: 20),
-            child: Image.asset(
-              "assets/images/logo.png",
-              width: 300,
+            child: Hero(
+              tag: "login-logo",
+              child: Image.asset(
+                "assets/images/logo.png",
+                width: 300,
+              ),
             ),
           ),
           ConstrainedBox(
