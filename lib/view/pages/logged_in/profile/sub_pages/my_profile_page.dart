@@ -16,11 +16,9 @@ class MyProfilePage extends StatefulWidget {
 
 class _MyProfilePageState extends State<MyProfilePage> {
   UserResponse? _user;
-  String _nickname = "";
+  TextEditingController _nicknameController = new TextEditingController(text: '');
 
-  @override
-  void initState() {
-    super.initState();
+  _MyProfilePageState() {
     this._getProfileData();
   }
 
@@ -30,8 +28,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
       var tkn = await Token.get();
       var user = await User.get(tkn.sub, withVotes: false);
       // set the vars
-      this._user = user;
-      this._nickname = user.nickName == null ? "" : user.nickName!;
+      setState(() {
+        this._user = user;
+        this._nicknameController.text = user.nickName == null ? "" : user.nickName!;
+      });
     } catch (err) {
       // TODO logging
       print(err);
@@ -40,7 +40,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   }
 
   void _onUpdateClicked() async {
-    var requestData = UpdateUserRequest(this._nickname);
+    var requestData = UpdateUserRequest(this._nicknameController.text);
     try {
       await User.update(requestData);
     } catch (err) {
@@ -60,19 +60,19 @@ class _MyProfilePageState extends State<MyProfilePage> {
         child: Column(
           children: [
             UserAvatar(
-              uuid: _user!.userID,
+              uuid: (this._user == null ? "" : this._user!.userID),
               size: 200,
             ),
             SizedBox(height: 20),
             Text(
-              _user!.name,
+              (this._user == null ? "" : this._user!.name),
               style: TextStyle(
                 fontSize: 25,
               ),
             ),
             SizedBox(height: 20),
-            TextFormField(
-              onChanged: (val) => _nickname = val,
+            TextField(
+              controller: _nicknameController,
               decoration: InputDecoration(
                 labelText: "Nickname",
                 border: OutlineInputBorder(),

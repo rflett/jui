@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
 
     if (shouldLogout == true) {
       // Delete jwt and navigate back to login
-      await DeviceStorage.removeValue(storageJwtKey);
+      await DeviceStorage.removeValue(storageToken);
       Navigator.pushNamedAndRemoveUntil(context, loginRoute, (route) => false);
     }
   }

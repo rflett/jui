@@ -5,8 +5,10 @@ part 'auth_token.g.dart';
 @JsonSerializable()
 class AuthToken {
   final String name;
-  final String picture;
+  final String? picture;
+  @JsonKey(name: 'https://delegator.com.au/AuthProvider')
   final String authProvider;
+  @JsonKey(name: 'https://delegator.com.au/AuthProviderId')
   final String authProviderId;
   final String aud;
   final int exp;

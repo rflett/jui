@@ -1,2 +1,2 @@
-const storageJwtKey = "jwt";
+const storageToken = "jwt";
 const storagePrimaryGroupId = "primaryGroupId";

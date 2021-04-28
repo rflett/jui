@@ -7,6 +7,11 @@ import 'package:jui/models/dto/response/problem_response.dart';
 class ApiRequest {
   // Used to handle, deserialize and throw deserialized error objects back to the caller
   static void handleErrors(Response response) {
+    // nothing to handle if there's no content
+    if (response.statusCode == HttpStatus.noContent) {
+      return;
+    }
+
     var jsonBody = json.decode(response.body);
 
     // redirect to login
