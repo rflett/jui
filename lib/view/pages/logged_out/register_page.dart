@@ -30,7 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
         var user = await Account.signUp(requestData);
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Welcome, ${user.name}!")));
-        Navigator.pushNamedAndRemoveUntil(context, gameRoute, (route) => false);
+        Navigator.pushNamedAndRemoveUntil(context, firstTimeSetupGroup, (route) => false);
       } catch (err) {
         // TODO logging
         print(err);
