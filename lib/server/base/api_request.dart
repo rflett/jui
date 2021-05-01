@@ -21,6 +21,7 @@ class ApiRequest {
 
     // these are bad, maybe an error styled notification
     if (response.statusCode == HttpStatus.forbidden ||
+        response.statusCode == HttpStatus.conflict ||
         response.statusCode == HttpStatus.internalServerError) {
       throw ProblemResponse.fromJson(jsonBody);
     }

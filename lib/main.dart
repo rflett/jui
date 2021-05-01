@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/logged_in/home_page.dart';
+import 'package:jui/view/pages/logged_in/setup/invite_group_page.dart';
+import 'package:jui/view/pages/logged_in/setup/setup_group_page.dart';
 import 'package:jui/view/pages/logged_out/login_page.dart';
 import 'package:jui/view/pages/logged_out/register_page.dart';
 import 'package:jui/view/pages/shared/loading_page.dart';
@@ -24,6 +26,8 @@ class _MyAppState extends State<MyApp> {
     loadingRoute: (BuildContext context) => LoadingPage(),
     loginRoute: (BuildContext context) => LoginPage(),
     registerRoute: (BuildContext context) => RegisterPage(),
+    firstTimeSetupGroupRoute: (BuildContext context) => SetupGroupPage(),
+    firstTimeSetupInviteRoute: (BuildContext context) => InviteGroupPage(),
   };
 
   late String _defaultRoute;

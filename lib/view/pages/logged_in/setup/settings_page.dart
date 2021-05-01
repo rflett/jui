@@ -64,7 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     // handle case where user isn't in a group
     // we will end up here if you leave the last group you're in
-    if (this._user!.groupIDs == null) {
+    if (this._user!.groups == null) {
       // TODO redirect to the create/join group page
       return;
     }
@@ -244,7 +244,7 @@ class _SettingsPageState extends State<SettingsPage> {
   /// call the server to get every group the user is a member of
   _getGroupData() async {
     // get every group the the user is a member of
-    for (var groupId in _user!.groupIDs!) {
+    for (var groupId in _user!.groups!) {
       try {
         // add the group to the list
         var group = await Group.get(groupId);
