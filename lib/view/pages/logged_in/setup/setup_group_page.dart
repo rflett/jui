@@ -1,4 +1,9 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:jui/constants/app_routes.dart';
 import 'package:jui/constants/colors.dart';
 import 'package:jui/models/dto/request/group/create_update_group.dart';
 import 'package:jui/models/dto/request/group/join_group.dart';
@@ -12,29 +17,38 @@ class SetupGroupPage extends StatefulWidget {
 }
 
 class _SetupGroupPageState extends State<SetupGroupPage> {
-  TextEditingController _groupCode = new TextEditingController(text: '');
+  // group code used to join an existing group
+  TextEditingController _groupCodeController = new TextEditingController(text: '');
+  // whether the current code is a valid code or not
   bool _codeIsValid = false;
-  bool _codeValidityVisible = false;
+  // whether to show the cross/check for code validity
+  bool _codeValidityIconIsVisible = false;
+  // group name used to create a new group
   String _groupName = "";
 
+  // qr code stuff
+  bool scanQrVisible = false;
+  Barcode? qrResult;
+  QRViewController? qrCodeController;
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+
+  // forms
   final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    _groupCode.dispose();
+    _groupCodeController.dispose();
+    qrCodeController?.dispose();
     super.dispose();
   }
 
-  void checkCodeValidity() {
-    this._codeIsValid =
-        this._groupCode.text.contains(RegExp("^[a-zA-Z0-9]{6}\$"));
-    ;
-  }
-
-  void setCodeValidityVisibility(bool visible) {
-    setState(() {
-      this._codeValidityVisible = visible;
-    });
+  @override
+  void reassemble() {
+    super.reassemble();
+    if (Platform.isAndroid) {
+      qrCodeController!.pauseCamera();
+    }
+    qrCodeController!.resumeCamera();
   }
 
   @override
@@ -45,6 +59,12 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
       ),
       body: Center(
         child: Column(children: [
+          Visibility(
+              visible: scanQrVisible,
+              child: Expanded(
+                flex: 5,
+                child: _buildQrView(context),
+              )),
           ConstrainedBox(
             constraints:
                 BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 350),
@@ -60,13 +80,13 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
                       TextFormField(
                         onChanged: (val) =>
                             this._formKey.currentState!.validate(),
-                        controller: _groupCode,
+                        controller: _groupCodeController,
                         validator: validateGroupCode,
                         decoration: InputDecoration(
                           labelText: "Code",
                           border: UnderlineInputBorder(),
                           suffixIcon: Visibility(
-                              visible: this._codeValidityVisible,
+                              visible: this._codeValidityIconIsVisible,
                               child: Padding(
                                 padding: EdgeInsets.only(top: 15),
                                 child: Icon(
@@ -124,49 +144,76 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
     );
   }
 
-  onScanQRClicked() {
+  Widget _buildQrView(BuildContext context) {
+    // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
+    var scanArea = (MediaQuery.of(context).size.width < 400 ||
+            MediaQuery.of(context).size.height < 400)
+        ? 200.0
+        : 300.0;
+    // To ensure the Scanner view is properly sizes after rotation
+    // we need to listen for Flutter SizeChanged notification and update controller
+    return QRView(
+      key: qrKey,
+      onQRViewCreated: _onQRViewCreated,
+      overlay: QrScannerOverlayShape(
+          borderColor: Colors.green,
+          borderRadius: 10,
+          borderLength: 30,
+          borderWidth: 10,
+          cutOutSize: scanArea),
+    );
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
     setState(() {
-      // TODO scan from the QR, duh
-      this._groupCode.text = "abj95I";
-      this._formKey.currentState!.validate();
+      this.qrCodeController = controller;
+    });
+    controller.scannedDataStream.listen((scanData) {
+      setState(() {
+        qrResult = scanData;
+        this._groupCodeController.text = qrResult == null ? "" : qrResult!.code;
+        this._formKey.currentState!.validate();
+        // TODO show some kind of loading spinner
+        this.joinGroup();
+      });
     });
   }
 
+  /// Called when the scan QR code button is pressed
+  onScanQRClicked() {
+    setState(() {
+      this.scanQrVisible = !scanQrVisible;
+    });
+  }
+
+  /// Called when the 'next' button is clicked
   onNextClicked() async {
     if (_formKey.currentState?.validate() == true) {
-      if (this._groupCode.text != "") {
-        // attempt to join the group
-        // var msg = await this.joinGroup();
-        var msg = "Joined!";
-        if (msg != null) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(msg)));
-          // TODO move on to next page
-        }
+      // favour joining a group over creating a new one if a code is entered
+      if (this._groupCodeController.text != "") {
+        await this.joinGroup();
       } else if (this._groupName != "") {
-        // attempt to create the group
-        // var msg = await this.createGroup();
-        var msg = "Created!";
-        if (msg != null) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(msg)));
-          // TODO move on to next page
-        }
+        await this.createGroup();
       }
     }
   }
 
-  bool isCodeValid() {
-    return this._groupCode.text.contains(RegExp("^[a-zA-Z0-9]{6}\$"));
+  /// Sets whether the check or cross mark for the group code validity check is visible
+  void setCodeValidityVisibility(bool visible) {
+    setState(() {
+      this._codeValidityIconIsVisible = visible;
+    });
   }
 
+  /// Handles form field validation for the group code
   String? validateGroupCode(String? currentValue) {
     if (currentValue == "" && this._groupName == "") {
       this.setCodeValidityVisibility(false);
       return "Either a code or name are required";
     }
 
-    this.checkCodeValidity();
+    this._codeIsValid =
+        this._groupCodeController.text.contains(RegExp("^[a-zA-Z0-9]{6}\$"));
 
     if (currentValue != "" && this._codeIsValid) {
       // valid
@@ -182,17 +229,18 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
     }
   }
 
+  /// Handles form field validation for the group name
   String? validateGroupName(String? currentValue) {
-    if (currentValue == "" && this._groupCode.text == "") {
+    if (currentValue == "" && this._groupCodeController.text == "") {
       return "Either a code or name are required";
     }
 
-    if (this._groupCode.text != "" && currentValue != "") {
+    if (this._groupCodeController.text != "" && currentValue != "") {
       // favouring usage of the group code as it's not empty
       return null;
     }
 
-    if (this._groupCode.text == "" && currentValue != "") {
+    if (this._groupCodeController.text == "" && currentValue != "") {
       // TODO more validation of the group name
       return null;
     }
@@ -200,27 +248,35 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
     return null;
   }
 
-  Future<Text?> joinGroup() async {
-    var requestData = JoinGroupRequest(this._groupCode.text);
+  /// join a group
+  Future<void> joinGroup() async {
+    var requestData = JoinGroupRequest(this._groupCodeController.text);
+
     try {
       var group = await Group.join(requestData);
-      return Text("Welcome to " + group.name + "!");
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Welcome to " + group.name + "!")));
+      Navigator.pushNamedAndRemoveUntil(context, firstTimeSetupInviteRoute, (route) => false);
     } catch (err) {
-      // TODO logging
-      print(err);
-      PopupUtils.showError(context, err as ProblemResponse);
+      PopupUtils.showError(context, err as ProblemResponse,
+          title: "Invalid group code!");
+      this._codeIsValid = false;
+      this.setCodeValidityVisibility(true);
     }
   }
 
-  Future<Text?> createGroup() async {
+  /// create a group
+  Future<void> createGroup() async {
     var requestData = CreateUpdateGroupRequest(this._groupName);
+
     try {
       var group = await Group.create(requestData);
-      return Text("Welcome to " + group.name + "!");
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("You've created " + group.name + "!")));
+      Navigator.pushNamedAndRemoveUntil(context, firstTimeSetupInviteRoute, (route) => false);
     } catch (err) {
-      // TODO logging
-      print(err);
-      PopupUtils.showError(context, err as ProblemResponse);
+      PopupUtils.showError(context, err as ProblemResponse,
+          title: "Can't create group!");
     }
   }
 }

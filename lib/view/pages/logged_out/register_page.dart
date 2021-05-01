@@ -30,7 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
         var user = await Account.signUp(requestData);
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Welcome, ${user.name}!")));
-        Navigator.pushNamedAndRemoveUntil(context, firstTimeSetupGroup, (route) => false);
+        Navigator.pushNamedAndRemoveUntil(context, firstTimeSetupGroupRoute, (route) => false);
       } catch (err) {
         // TODO logging
         print(err);
@@ -74,7 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Register"),
+        title: Text("Register with email"),
       ),
       body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -102,15 +102,15 @@ class _RegisterPageState extends State<RegisterPage> {
                         keyboardType: TextInputType.name,
                         validator: validateRequired,
                         decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.contact_mail),
-                            labelText: "Name*",
+                            prefixIcon: Icon(Icons.person_outline_rounded),
+                            labelText: "Name \*",
                             border: OutlineInputBorder()),
                       ),
                       TextFormField(
                         onChanged: (val) => _nickName = val,
                         keyboardType: TextInputType.name,
                         decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.contact_mail),
+                            prefixIcon: Icon(Icons.person_outline_rounded),
                             labelText: "Nickname",
                             border: OutlineInputBorder()),
                       ),
@@ -119,8 +119,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         keyboardType: TextInputType.emailAddress,
                         validator: _validateEmail,
                         decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.account_circle_rounded),
-                            labelText: "Email*",
+                            prefixIcon: Icon(Icons.email_outlined),
+                            labelText: "Email \*",
                             border: OutlineInputBorder()),
                       ),
                       TextFormField(
@@ -128,18 +128,18 @@ class _RegisterPageState extends State<RegisterPage> {
                         validator: _validatePassword,
                         obscureText: _hidePassword,
                         decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock),
+                            prefixIcon: Icon(Icons.lock_outline_rounded),
                             suffixIcon: IconButton(
                               icon: Icon(Icons.remove_red_eye),
                               onPressed: _onViewPasswordPressed,
                             ),
-                            labelText: "Password*",
+                            labelText: "Password \*",
                             border: OutlineInputBorder()),
                       ),
                       Align(
                         alignment: AlignmentDirectional.centerEnd,
                         child: TextButton(
-                          child: Text("Signup"),
+                          child: Text("SIGNUP"),
                           onPressed: _onSignupClicked,
                         ),
                       ),

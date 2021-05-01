@@ -67,13 +67,13 @@ class Account {
   static void _storeGroup(LoginResponse response) async {
     var storedGroupId = await DeviceStorage.retrieveValue(storagePrimaryGroupId);
 
-    if (response.user.groupIDs == null) {
+    if (response.user.groups == null) {
       // user isn't in any groups
       return;
     }
 
     // primary group
-    var groupId = response.user.groupIDs?[0];
+    var groupId = response.user.groups?[0];
 
     // store group id if it doesn't match
     if (storedGroupId != groupId) {

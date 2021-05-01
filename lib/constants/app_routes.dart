@@ -8,9 +8,9 @@ const registerRoute = "/register";
 
 // Logged in routes
 const dashboardRoute = "/home";
-const firstTimeSetupGroup = "setup-group";
-const firstTimeSetupVotes = "setup-votes";
-const firstTimeSetupInvite = "setup-invite";
+const firstTimeSetupGroupRoute = "setup-group";
+const firstTimeSetupVotesRoute = "setup-votes";
+const firstTimeSetupInviteRoute = "setup-invite";
 
 // Nested logged in routes
 const gameRoute = "$dashboardRoute/game";
