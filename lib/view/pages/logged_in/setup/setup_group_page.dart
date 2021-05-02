@@ -129,7 +129,7 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
                             padding: EdgeInsets.all(15),
                             minimumSize: Size(300, 60),
                           ),
-                          child: Text("Next", style: TextStyle(fontSize: 25)),
+                          child: Text("NEXT", style: TextStyle(fontSize: 25)),
                           onPressed: onNextClicked,
                         ),
                       ),
