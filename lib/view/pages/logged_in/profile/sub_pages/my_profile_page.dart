@@ -16,10 +16,17 @@ class MyProfilePage extends StatefulWidget {
 
 class _MyProfilePageState extends State<MyProfilePage> {
   UserResponse? _user;
-  TextEditingController _nicknameController = new TextEditingController(text: '');
+  TextEditingController _nicknameController =
+      new TextEditingController(text: '');
 
   _MyProfilePageState() {
     this._getProfileData();
+  }
+
+  @override
+  void dispose() {
+    this._nicknameController.dispose();
+    super.dispose();
   }
 
   _getProfileData() async {
@@ -30,7 +37,8 @@ class _MyProfilePageState extends State<MyProfilePage> {
       // set the vars
       setState(() {
         this._user = user;
-        this._nicknameController.text = user.nickName == null ? "" : user.nickName!;
+        this._nicknameController.text =
+            user.nickName == null ? "" : user.nickName!;
       });
     } catch (err) {
       // TODO logging
@@ -43,6 +51,8 @@ class _MyProfilePageState extends State<MyProfilePage> {
     var requestData = UpdateUserRequest(this._nicknameController.text);
     try {
       await User.update(requestData);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Profile updated.")));
     } catch (err) {
       // TODO logging
       print(err);

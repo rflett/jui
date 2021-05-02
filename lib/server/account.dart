@@ -65,19 +65,12 @@ class Account {
 
   /// Stores the primary group (the first in the list response) in the DeviceStorage
   static void _storeGroup(LoginResponse response) async {
-    var storedGroupId = await DeviceStorage.retrieveValue(storagePrimaryGroupId);
-
     if (response.user.groups == null) {
       // user isn't in any groups
       return;
     }
-
     // primary group
-    var groupId = response.user.groups?[0];
-
-    // store group id if it doesn't match
-    if (storedGroupId != groupId) {
-      await DeviceStorage.storeValue(storagePrimaryGroupId, groupId!);
-    }
+    var groupId = response.user.groups![0];
+    await DeviceStorage.storeValue(storagePrimaryGroupId, groupId);
   }
 }

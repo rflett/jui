@@ -4,11 +4,9 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class QrWidget extends StatelessWidget {
-  final String teamName;
-  final String qrUrl;
+  final String qrContent;
 
-  const QrWidget({Key? key, required this.teamName, required this.qrUrl})
-      : super(key: key);
+  const QrWidget({Key? key, required this.qrContent}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +24,12 @@ class QrWidget extends StatelessWidget {
               direction: Axis.vertical,
               spacing: 20,
               children: [
-                Text(teamName, textAlign: TextAlign.center),
                 SizedBox(
-                  width: 200,
-                  height: 200,
-                  child: GestureDetector(
-                    onTap: () => launch("https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
-                    child: QrImage(
-                      data: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
-                  )
-                ),
+                    width: 200,
+                    height: 200,
+                    child: GestureDetector(
+                      child: QrImage(data: this.qrContent),
+                    )),
               ],
             ),
           ),

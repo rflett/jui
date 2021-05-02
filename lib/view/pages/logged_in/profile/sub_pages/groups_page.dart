@@ -33,7 +33,7 @@ class _GroupsPageState extends State<GroupsPage> {
       showDialog(
           context: context,
           builder: (context) {
-            return QrWidget(teamName: _selectedTeamName!, qrUrl: "Whatever");
+            return QrWidget(qrContent: "Whatever");
           });
     }
   }

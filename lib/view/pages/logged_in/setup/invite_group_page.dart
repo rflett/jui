@@ -1,9 +1,7 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/constants/colors.dart';
+import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
 import 'package:share/share.dart';
 import 'package:jui/constants/storage_values.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
@@ -19,8 +17,6 @@ class InviteGroupPage extends StatefulWidget {
 class _InviteGroupPageState extends State<InviteGroupPage> {
   TextEditingController _groupCodeController =
       new TextEditingController(text: '');
-  TextEditingController _groupQRController =
-      new TextEditingController(text: '');
 
   _InviteGroupPageState() {
     this.getData();
@@ -29,7 +25,6 @@ class _InviteGroupPageState extends State<InviteGroupPage> {
   @override
   void dispose() {
     _groupCodeController.dispose();
-    _groupQRController.dispose();
     super.dispose();
   }
 
@@ -63,7 +58,7 @@ class _InviteGroupPageState extends State<InviteGroupPage> {
                         border: OutlineInputBorder()),
                   ),
                   SizedBox(height: 40),
-                  Visibility(child: qrcode(context), visible: this._groupQRController.text != ""),
+                  QrWidget(qrContent: this._groupCodeController.text),
                   SizedBox(height: 40),
                   Hero(
                     tag: "go-to-leaderboard",
@@ -83,12 +78,6 @@ class _InviteGroupPageState extends State<InviteGroupPage> {
         ])));
   }
 
-  @override
-  Widget qrcode(BuildContext context) {
-    Uint8List bytes = base64.decode(this._groupQRController.text);
-    return new Image.memory(bytes);
-  }
-
   void _onSharePressed() {
     var shareUrl =
         "Vote and compete in the Hottest 100 with me on JUI! https://jaypi.online/join/${this._groupCodeController.text}";
@@ -103,7 +92,6 @@ class _InviteGroupPageState extends State<InviteGroupPage> {
   getData() async {
     var groupId = await DeviceStorage.retrieveValue(storagePrimaryGroupId);
     await getGroupCode(groupId!);
-    await getGroupQR(groupId);
   }
 
   getGroupCode(String groupId) async {
@@ -111,19 +99,6 @@ class _InviteGroupPageState extends State<InviteGroupPage> {
       var group = await Group.get(groupId);
       setState(() {
         this._groupCodeController.text = group.code;
-      });
-    } catch (err) {
-      // TODO logging
-      print(err);
-      PopupUtils.showError(context, err as ProblemResponse);
-    }
-  }
-
-  getGroupQR(String groupId) async {
-    try {
-      var qr = await Group.getQR(groupId);
-      setState(() {
-        this._groupQRController.text = qr;
       });
     } catch (err) {
       // TODO logging
