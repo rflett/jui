@@ -29,9 +29,9 @@ class _GamePageState extends State<GamePage> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).primaryColor,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Leaderboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.music_note), label: "Played Songs"),
-          BottomNavigationBarItem(icon: Icon(Icons.person_add), label: "My Votes"),
+          BottomNavigationBarItem(icon: Icon(Icons.list_alt_rounded), label: "Leaderboard"),
+          BottomNavigationBarItem(icon: Icon(Icons.history_rounded), label: "Played Songs"),
+          BottomNavigationBarItem(icon: Icon(Icons.music_note_outlined), label: "My Votes"),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,

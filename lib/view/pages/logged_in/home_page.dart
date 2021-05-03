@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     profilePage: (BuildContext context) => ProfilePage(),
   };
 
-  String _title = "Games";
+  String _title = "JUI";
 
   String get title => _title;
 
@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
   void _onGameSelected() {
     if (this._currentRoute != gamePage) {
       _navigatorKey.currentState!.pushNamed(gamePage);
-      title = "Games";
+      title = "JUI";
       this._currentRoute = gamePage;
     }
   }
@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
   void _onProfileSelected() {
     if (this._currentRoute != profilePage) {
       _navigatorKey.currentState!.pushNamed(profilePage);
-      title = "My Profile";
+      title = "Settings";
       this._currentRoute = profilePage;
     }
   }
@@ -127,7 +127,7 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               leading: Icon(Icons.settings),
               title: Text('Profile'),
-              subtitle: Text("Manage your Groups and Custom Games"),
+              subtitle: Text("Manage your profile, groups and games"),
               onTap: () {
                 _onProfileSelected();
                 Navigator.pop(context);

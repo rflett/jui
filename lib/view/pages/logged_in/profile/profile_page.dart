@@ -29,9 +29,9 @@ class _ProfilePageState extends State<ProfilePage> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).primaryColor,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Me"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "Groups"),
-          BottomNavigationBarItem(icon: Icon(Icons.local_play), label: "Games"),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline_rounded), label: "My Profile"),
+          BottomNavigationBarItem(icon: Icon(Icons.people_alt_outlined), label: "Groups"),
+          BottomNavigationBarItem(icon: Icon(Icons.local_play_outlined), label: "Games"),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,

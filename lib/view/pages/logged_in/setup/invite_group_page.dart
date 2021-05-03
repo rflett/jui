@@ -58,7 +58,7 @@ class _InviteGroupPageState extends State<InviteGroupPage> {
                         border: OutlineInputBorder()),
                   ),
                   SizedBox(height: 40),
-                  QrWidget(qrContent: this._groupCodeController.text),
+                  Visibility(child: QrWidget(qrContent: this._groupCodeController.text), visible: this._groupCodeController.text != "",),
                   SizedBox(height: 40),
                   Hero(
                     tag: "go-to-leaderboard",
