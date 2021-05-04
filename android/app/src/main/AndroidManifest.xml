@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="au.com.delegator.jui">
+   <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="jui"
         android:icon="@mipmap/ic_launcher">

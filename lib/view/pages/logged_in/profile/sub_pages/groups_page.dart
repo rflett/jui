@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:jui/constants/storage_values.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/server/user.dart';
 import 'package:jui/utilities/popups.dart';
+import 'package:jui/utilities/storage.dart';
 import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
 import 'package:share/share.dart';
@@ -66,6 +68,20 @@ class _GroupsPageState extends State<GroupsPage> {
       // TODO logging
       print(err);
       PopupUtils.showError(context, err as ProblemResponse);
+    }
+  }
+
+  /// returns whether leave icons should be disabled as you only have 1 group
+  bool _canLeave() {
+    return !(this.user == null || this.user!.groups!.length == 1);
+  }
+
+  /// returns whether the user can remove themselves from the group from the list
+  bool _canRemoveMember(String userId) {
+    if (userId == this.user!.userID) {
+      return this._canLeave();
+    } else {
+      return true;
     }
   }
 
@@ -166,19 +182,35 @@ class _GroupsPageState extends State<GroupsPage> {
   /// removes the current user from the group
   void _leaveGroup(String userId) async {
     try {
-      // leave the group
-      // var groupToLeave = this._selectedGroup!;
-      // await Group.leave(groupToLeave, userId);
+      if (this.user!.groups!.length == 1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("You can't leave your last group.")));
+        return;
+      }
 
-      // refresh the group lists
-      // this.getData();
+      // leave the group
+      var groupToLeave = this._selectedGroupId!;
+      await Group.leave(groupToLeave, userId);
+
+      // remove group from lists, we could get the data again but that's slow af
+      setState(() {
+        this._groups.removeWhere((group) => group.groupID == groupToLeave);
+        this.user!.groups!.removeWhere((groupId) => groupId == groupToLeave);
+        this._generateDropDownItems();
+      });
 
       // update the primary group id if you just left it
-      // var groupId = await DeviceStorage.retrieveValue(storagePrimaryGroupId);
-      // if (groupId == groupToLeave) {
-      //   await DeviceStorage.storeValue(
-      //       storagePrimaryGroupId, this.user!.groups![0]);
-      // }
+      var primaryGroupId =
+          await DeviceStorage.retrieveValue(storagePrimaryGroupId);
+      if (primaryGroupId == groupToLeave) {
+        await DeviceStorage.storeValue(
+            storagePrimaryGroupId, this.user!.groups![0]);
+      }
+
+      // select the primary
+      this._groupSelected(primaryGroupId);
+
+      // let the user know we're gucci
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("You have left the group.")));
     } catch (err) {
@@ -203,17 +235,21 @@ class _GroupsPageState extends State<GroupsPage> {
     List<Widget> listItems = [];
 
     for (var i = 0; i < this._selectedGroupMembers.length; i++) {
+      var thisUser = this._selectedGroupMembers[i].userID;
       listItems.add(Expanded(
         child: Card(
-            child: ListTile(
-          leading: FlutterLogo(), // TODO user profile pic
-          title: Text(this._selectedGroupMembers[i].name),
-          trailing: IconButton(
-              icon: Icon(Icons.delete_outline_rounded, color: Colors.red),
-              onPressed: () => _onRemoveMemberPressed(
-                  this._selectedGroupMembers[i].userID,
-                  this._selectedGroupMembers[i].name)),
-        )),
+          child: ListTile(
+            leading: FlutterLogo(), // TODO user profile pic
+            title: Text(this._selectedGroupMembers[i].name),
+            trailing: IconButton(
+              icon: Icon(Icons.delete_outline_rounded, color: _canRemoveMember(thisUser) ? Colors.red : Colors.grey),
+              onPressed: () => !_canRemoveMember(thisUser) ? null : _onRemoveMemberPressed(
+                this._selectedGroupMembers[i].userID,
+                this._selectedGroupMembers[i].name,
+              ),
+            ),
+          ),
+        ),
       ));
     }
 
@@ -239,8 +275,12 @@ class _GroupsPageState extends State<GroupsPage> {
                 ),
                 SizedBox(width: 10),
                 IconButton(
-                    icon: Icon(Icons.exit_to_app_rounded, color: Colors.red),
-                    onPressed: () => _leaveGroup(this.user!.userID)),
+                  icon: Icon(Icons.exit_to_app_rounded,
+                      color: this._canLeave() ? Colors.red : Colors.grey),
+                  onPressed: this._canLeave()
+                      ? () => _leaveGroup(this.user!.userID)
+                      : null,
+                ),
               ],
             ),
             Divider(),
