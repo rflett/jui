@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
               context, firstTimeSetupGroupRoute, (route) => false);
         } else {
           Navigator.pushNamedAndRemoveUntil(
-              context, firstTimeSetupInviteRoute, (route) => false);
+              context, gameRoute, (route) => false);
         }
       } catch (err) {
         // TODO logging
