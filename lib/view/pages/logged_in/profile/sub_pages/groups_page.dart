@@ -8,6 +8,7 @@ import 'package:jui/server/user.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/utilities/token.dart';
+import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
 import 'package:share/share.dart';
 
@@ -80,6 +81,8 @@ class _GroupsPageState extends State<GroupsPage> {
   bool _canRemoveMember(String userId) {
     if (userId == this.user!.userID) {
       return this._canLeave();
+    } else if (!_memberIsOwner(this.user!.userID)){
+      return false;
     } else {
       return true;
     }
@@ -143,14 +146,13 @@ class _GroupsPageState extends State<GroupsPage> {
             content:
                 Text("Are you sure you want to remove $name from your group?"),
             actions: [
-              ElevatedButton(
-                child: Text('NO'),
+              TextButton(
+                child: Text('Cancel'),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
               ),
               TextButton(
-                style: TextButton.styleFrom(primary: Colors.red),
                 child: Text('YES'),
                 onPressed: () {
                   Navigator.of(context).pop(true);
@@ -167,8 +169,15 @@ class _GroupsPageState extends State<GroupsPage> {
 
   /// removes a member from the group
   void _removeMember(String userId, String name) async {
+    var memberIsOwner = _memberIsOwner(userId);
+
     // removing yourself from the group using the members list
     if (userId == this.user!.userID) {
+      if (memberIsOwner) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("You can't leave your group if you are the owner.")));
+        return;
+      }
       this._leaveGroup(userId);
       return;
     }
@@ -245,10 +254,13 @@ class _GroupsPageState extends State<GroupsPage> {
 
     for (var i = 0; i < this._selectedGroupMembers.length; i++) {
       var thisUserId = this._selectedGroupMembers[i].userID;
-      listItems.add(Expanded(
+      listItems.add(Container(
         child: Card(
           child: ListTile(
-            leading: FlutterLogo(), // TODO user profile pic
+            leading: UserAvatar(
+              uuid: (this.user == null ? "" : this.user!.userID),
+              size: 30,
+            ), // TODO user profile pic
             title: RichText(
               text: TextSpan(
                 children: [
@@ -305,7 +317,7 @@ class _GroupsPageState extends State<GroupsPage> {
                   icon: Icon(Icons.exit_to_app_rounded,
                       color: this._canLeave() ? Colors.red : Colors.grey),
                   onPressed: this._canLeave()
-                      ? () => _leaveGroup(this.user!.userID)
+                      ? () => _onRemoveMemberPressed(this.user!.userID, "yourself")
                       : null,
                 ),
               ],
