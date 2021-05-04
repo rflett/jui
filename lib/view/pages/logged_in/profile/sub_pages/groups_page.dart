@@ -85,6 +85,15 @@ class _GroupsPageState extends State<GroupsPage> {
     }
   }
 
+  /// returns whether the member is the group owner
+  bool _memberIsOwner(String userId) {
+    return this
+            ._groups
+            .firstWhere((group) => group.groupID == this._selectedGroupId)
+            .ownerID ==
+        userId;
+  }
+
   /// generates the group drop down menu items from the users groups
   void _generateDropDownItems() {
     this._selectedGroupOptions = this
@@ -235,18 +244,36 @@ class _GroupsPageState extends State<GroupsPage> {
     List<Widget> listItems = [];
 
     for (var i = 0; i < this._selectedGroupMembers.length; i++) {
-      var thisUser = this._selectedGroupMembers[i].userID;
+      var thisUserId = this._selectedGroupMembers[i].userID;
       listItems.add(Expanded(
         child: Card(
           child: ListTile(
             leading: FlutterLogo(), // TODO user profile pic
-            title: Text(this._selectedGroupMembers[i].name),
-            trailing: IconButton(
-              icon: Icon(Icons.delete_outline_rounded, color: _canRemoveMember(thisUser) ? Colors.red : Colors.grey),
-              onPressed: () => !_canRemoveMember(thisUser) ? null : _onRemoveMemberPressed(
-                this._selectedGroupMembers[i].userID,
-                this._selectedGroupMembers[i].name,
+            title: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: "${this._selectedGroupMembers[i].name} ",
+                    style: TextStyle(color: Colors.black, fontSize: 18),
+                  ),
+                  WidgetSpan(
+                    child: this._memberIsOwner(thisUserId)
+                        ? Icon(Icons.star_rounded, size: 18)
+                        : Container(),
+                  ),
+                ],
               ),
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.delete_outline_rounded,
+                  color:
+                      _canRemoveMember(thisUserId) ? Colors.red : Colors.grey),
+              onPressed: () => !_canRemoveMember(thisUserId)
+                  ? null
+                  : _onRemoveMemberPressed(
+                      thisUserId,
+                      this._selectedGroupMembers[i].name,
+                    ),
             ),
           ),
         ),
