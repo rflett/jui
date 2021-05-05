@@ -8,9 +8,9 @@ import 'package:jui/server/user.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/utilities/token.dart';
+import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
-import 'package:share/share.dart';
 
 class GroupsPage extends StatefulWidget {
   GroupsPage({Key? key}) : super(key: key);
@@ -27,8 +27,7 @@ class _GroupsPageState extends State<GroupsPage> {
   // members of the currently selected group
   List<UserResponse> _selectedGroupMembers = [];
   // code of the currently selected group
-  TextEditingController _selectedGroupCodeController =
-      new TextEditingController(text: '');
+  String _selectedGroupCode = "";
   // the current logged in user
   UserResponse? user;
   // all groups that a user is a member of
@@ -36,12 +35,6 @@ class _GroupsPageState extends State<GroupsPage> {
 
   _GroupsPageState() {
     this._getData();
-  }
-
-  @override
-  void dispose() {
-    _selectedGroupCodeController.dispose();
-    super.dispose();
   }
 
   /// load all the data required on first visit to the page
@@ -87,7 +80,7 @@ class _GroupsPageState extends State<GroupsPage> {
     var group = await Group.getMembers(groupId!, withVotes: false);
     setState(() {
       this._selectedGroupId = groupId;
-      this._selectedGroupCodeController.text = this
+      this._selectedGroupCode = this
           ._groups
           .firstWhere((group) => group.groupID == this._selectedGroupId)
           .code;
@@ -150,20 +143,13 @@ class _GroupsPageState extends State<GroupsPage> {
     }
   }
 
-  /// called when the share invite code button is pressed
-  void _onShare() {
-    var shareUrl =
-        "Vote and compete in the Hottest 100 with me on JUI! https://jaypi.online/join/${this._selectedGroupCodeController.text}";
-    Share.share(shareUrl);
-  }
-
   /// displays the group QR code
   void _onShowQR() {
     if (_selectedGroupId != null) {
       showDialog(
           context: context,
           builder: (context) {
-            return QrWidget(qrContent: this._selectedGroupCodeController.text);
+            return QrWidget(qrContent: this._selectedGroupCode);
           });
     }
   }
@@ -329,17 +315,7 @@ class _GroupsPageState extends State<GroupsPage> {
               children: [
                 Expanded(
                   child: Stack(children: [
-                    TextField(
-                      controller: _selectedGroupCodeController,
-                      decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.share_rounded),
-                            onPressed: _onShare,
-                          ),
-                          labelText: "Invite Code",
-                          isDense: true,
-                          border: OutlineInputBorder()),
-                    ),
+                    ShareGroupCode(code: this._selectedGroupCode),
                   ]),
                 ),
                 SizedBox(width: 20),

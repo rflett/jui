@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/constants/colors.dart';
+import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
-import 'package:share/share.dart';
 import 'package:jui/constants/storage_values.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/utilities/popups.dart';
@@ -15,17 +15,10 @@ class InviteGroupPage extends StatefulWidget {
 }
 
 class _InviteGroupPageState extends State<InviteGroupPage> {
-  TextEditingController _groupCodeController =
-      new TextEditingController(text: '');
+  String _groupCode = "";
 
   _InviteGroupPageState() {
     this.getData();
-  }
-
-  @override
-  void dispose() {
-    _groupCodeController.dispose();
-    super.dispose();
   }
 
   @override
@@ -47,18 +40,12 @@ class _InviteGroupPageState extends State<InviteGroupPage> {
                     textAlign: TextAlign.left,
                   ),
                   SizedBox(height: 20),
-                  TextField(
-                    controller: _groupCodeController,
-                    decoration: InputDecoration(
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.share_rounded),
-                          onPressed: _onSharePressed,
-                        ),
-                        labelText: "Invite Code",
-                        border: OutlineInputBorder()),
-                  ),
+                  ShareGroupCode(code: this._groupCode),
                   SizedBox(height: 40),
-                  Visibility(child: QrWidget(qrContent: this._groupCodeController.text), visible: this._groupCodeController.text != "",),
+                  Visibility(
+                    child: QrWidget(qrContent: this._groupCode),
+                    visible: this._groupCode != "",
+                  ),
                   SizedBox(height: 40),
                   Hero(
                     tag: "go-to-leaderboard",
@@ -78,12 +65,6 @@ class _InviteGroupPageState extends State<InviteGroupPage> {
         ])));
   }
 
-  void _onSharePressed() {
-    var shareUrl =
-        "Vote and compete in the Hottest 100 with me on JUI! https://jaypi.online/join/${this._groupCodeController.text}";
-    Share.share(shareUrl);
-  }
-
   /// Called when the 'next' button is clicked
   onNextClicked() async {
     Navigator.pushNamedAndRemoveUntil(context, gameRoute, (route) => false);
@@ -98,7 +79,7 @@ class _InviteGroupPageState extends State<InviteGroupPage> {
     try {
       var group = await Group.get(groupId);
       setState(() {
-        this._groupCodeController.text = group.code;
+        this._groupCode = group.code;
       });
     } catch (err) {
       // TODO logging

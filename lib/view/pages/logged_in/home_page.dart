@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               TextButton(
-                child: Text('Yes'),
+                child: Text('YES'),
                 onPressed: () {
                   Navigator.of(context).pop(true);
                 },
