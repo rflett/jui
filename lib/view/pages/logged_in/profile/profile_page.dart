@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jui/constants/settings_pages.dart';
+import 'package:jui/view/pages/logged_in/profile/sub_pages/games_page.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/groups_page.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/my_profile_page.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -11,20 +13,18 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool _groupDialVisible = false;
   int _selectedIndex = 0;
+  bool _groupFabVisible = false;
   List<Widget> _profilePages = [
     MyProfilePage(),
     GroupsPage(),
-    Text("I'm the games Page"),
+    GamesPage(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-
-      // group dial is only visible on the group tab
-      this._groupDialVisible = _selectedIndex == 1;
+      _groupFabVisible = index == GroupSettingsPageIdx;
     });
   }
 
@@ -36,6 +36,22 @@ class _ProfilePageState extends State<ProfilePage> {
   void _joinGroupPressed() {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text("TODO prompt to join a group.")));
+  }
+
+  void _createGamePressed() {}
+
+  Widget? _currentFab() {
+    switch (this._selectedIndex) {
+      case ProfileSettingsPageIdx: {
+        return null;
+      }
+      case GroupSettingsPageIdx: {
+        return groupsPageFab();
+      }
+      case GamesSettingsPageIdx: {
+        return gamesPageFab();
+      }
+    }
   }
 
   @override
@@ -59,19 +75,19 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Center(
         child: _profilePages.elementAt(_selectedIndex),
       ),
-      floatingActionButton: buildSpeedDial(),
+      // TODO when this is set to groupsPageFab() the fab doesn't rotate in from the center when you switch pages
+      floatingActionButton: _currentFab(),
     );
   }
 
-  SpeedDial buildSpeedDial() {
+  SpeedDial groupsPageFab() {
     return SpeedDial(
-      /// both default to 16
-      marginEnd: 18,
-      marginBottom: 20,
+      marginEnd: 16,
+      marginBottom: 16,
       icon: Icons.add,
       activeIcon: Icons.close,
       buttonSize: 56.0,
-      visible: this._groupDialVisible,
+      visible: _groupFabVisible,
       closeManually: false,
       curve: Curves.bounceIn,
       overlayColor: Colors.black,
@@ -80,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
       heroTag: 'create-join-group-fab',
       backgroundColor: Colors.indigo,
       foregroundColor: Colors.white,
-      elevation: 10.0,
+      elevation: 6,
       shape: CircleBorder(),
 
       children: [
@@ -99,6 +115,14 @@ class _ProfilePageState extends State<ProfilePage> {
           onTap: () => _joinGroupPressed(),
         ),
       ],
+    );
+  }
+
+  Widget gamesPageFab() {
+    return FloatingActionButton(
+      onPressed: () => _createGamePressed(),
+      child: const Icon(Icons.add),
+      backgroundColor: Colors.indigo,
     );
   }
 }
