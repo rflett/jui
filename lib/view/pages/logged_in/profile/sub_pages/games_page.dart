@@ -1,5 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:jui/models/dto/response/group/games/game_response.dart';
+import 'package:jui/models/dto/response/group/group_response.dart';
+import 'package:jui/models/dto/response/problem_response.dart';
+import 'package:jui/models/dto/response/user/user.dart';
+import 'package:jui/server/group.dart';
+import 'package:jui/server/user.dart';
+import 'package:jui/utilities/popups.dart';
+import 'package:jui/utilities/token.dart';
+import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
 
 class GamesPage extends StatefulWidget {
   GamesPage({Key? key}) : super(key: key);
@@ -8,83 +17,103 @@ class GamesPage extends StatefulWidget {
   _GamesPageState createState() => _GamesPageState();
 }
 
-class _Game {
-  final String name;
-  final String description;
-
-  _Game(this.name, this.description);
-}
-
 class _GamesPageState extends State<GamesPage> {
-  List<_Game> games = [];
+  // drop down menu item for selecting the current group
+  List<DropdownMenuItem<String>> _selectedGroupOptions = [];
+  // id of the currently selected group from the drop down
+  String? _selectedGroupId;
+  // all groups that a user is a member of
+  List<GroupResponse> _groups = [];
+  // all the games in the current group
+  List<GameResponse> _games = [];
+  // the current logged in user
+  UserResponse? user;
 
   _GamesPageState() {
     this.getData();
   }
 
-  void getData() {
-    this.games = [
-      _Game("Waterfall",
-          "Start drinking at the same time as the person to your left"),
-      _Game("You", "Choose someone to drink"),
-      _Game("Me", "You drink"),
-      _Game("Floor", "Last person to touch the floor drinks"),
-      _Game("Guys", "Guys drink"),
-      _Game("Girls", "Girls drink"),
-      _Game("Heaven", "Last person to raise their hand drinks"),
-      _Game("Mate",
-          "Choose someone to be your mate, they have to drink whenenever you drink"),
-    ];
-  }
+  void getData() async {
+    try {
+      // retrieve the user id from the stored token
+      var tkn = await Token.get();
+      var user = await User.get(tkn.sub, withVotes: false);
+      this.user = user;
 
-  void _editGame(String name) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("Edit $name!")));
-  }
+      // get all the users groups
+      // TODO this should be 1 API call
+      List<GroupResponse> groups = [];
+      for (var i = 0; i < this.user!.groups!.length; i++) {
+        var group = await this._getGroup(this.user!.groups![i]);
+        if (group != null) {
+          groups.add(group);
+        }
+      }
+      this._groups = groups;
 
-  void _confirmDeleteGame(_Game game) async {
-    var shouldRemove = await showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Confirm"),
-            content: Text(
-                "Are you sure you want to delete the game \"${game.name}\"?"),
-            actions: [
-              TextButton(
-                child: Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              ),
-              TextButton(
-                child: Text('YES'),
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-              ),
-            ],
-          );
-        });
-
-    if (shouldRemove == true) {
-      _deleteGame(game);
+      // generate the drop down items and select the first group in the list
+      _generateDropDownItems();
+      this._selectGroup(this._groups[0].groupID);
+    } catch (err) {
+      // TODO logging
+      print(err);
+      PopupUtils.showError(context, err as ProblemResponse);
     }
   }
 
-  void _deleteGame(_Game game) {
-    setState(() {
-      this.games.removeWhere((element) => element == game);
-    });
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("Deleted ${game.name}!")));
+  Future<GroupResponse?> _getGroup(String groupId) async {
+    try {
+      var group = await Group.get(groupId);
+      return group;
+    } catch (err) {
+      // TODO logging
+      print(err);
+      PopupUtils.showError(context, err as ProblemResponse);
+    }
   }
 
-  List<Widget> _games(BuildContext context) {
+  /// generates the group drop down menu items from the users groups
+  void _generateDropDownItems() {
+    this._selectedGroupOptions = this
+        ._groups
+        .map((element) => DropdownMenuItem<String>(
+        value: element.groupID, child: Text(element.name)))
+        .toList();
+  }
+
+  /// called when a group is selected from the drop down, updates the page data
+  void _selectGroup(String? groupId) async {
+    try {
+      var gamesResponse = await Group.getGames(groupId!);
+      setState(() {
+        this._selectedGroupId = groupId;
+        this._games = gamesResponse.games;
+      });
+    } catch (err) {
+      // TODO logging
+      print(err);
+      PopupUtils.showError(context, err as ProblemResponse);
+    }
+  }
+
+  void _editGame(GameResponse game) async {
+    var shouldRefresh = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return CreateUpdateGamePopup(game: game, groupId: this._selectedGroupId!);
+      },
+    );
+    if (shouldRefresh == true) {
+      setState(() {
+        _selectGroup(this._selectedGroupId);
+      });
+    }
+  }
+
+  List<Widget> _gameList(BuildContext context) {
     List<Widget> gameWidgets = [];
 
-    for (var i = 0; i < this.games.length; i++) {
+    for (var i = 0; i < this._games.length; i++) {
       gameWidgets.add(Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -92,28 +121,17 @@ class _GamesPageState extends State<GamesPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                this.games[i].name,
+                this._games[i].name,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () => _editGame(this.games[i].name)),
-                      IconButton(
-                          icon: Icon(Icons.delete_outline_rounded),
-                          onPressed: () => _confirmDeleteGame(this.games[i])),
-                    ],
-                  )
-                ],
+              IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () => _editGame(this._games[i]),
               ),
             ],
           ),
           Text(
-            this.games[i].description,
+            this._games[i].description,
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 16),
           ),
@@ -149,8 +167,13 @@ class _GamesPageState extends State<GamesPage> {
                 style: TextStyle(fontSize: 16),
               ),
             ),
+            DropdownButton(
+              value: _selectedGroupId,
+              onChanged: (String? newValue) => _selectGroup(newValue),
+              items: _selectedGroupOptions,
+            ),
             Divider(),
-            ..._games(context),
+            ..._gameList(context),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/settings_pages.dart';
+import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/games_page.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/groups_page.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/my_profile_page.dart';
@@ -38,7 +39,11 @@ class _ProfilePageState extends State<ProfilePage> {
         .showSnackBar(SnackBar(content: Text("TODO prompt to join a group.")));
   }
 
-  void _createGamePressed() {}
+  void _createGamePressed() {
+    showDialog(context: context, builder: (context) {
+      return CreateUpdateGamePopup(groupId: "ad9c5208-e7f4-4fd8-bc03-305741f95a97");
+    });
+  }
 
   Widget? _currentFab() {
     switch (this._selectedIndex) {
