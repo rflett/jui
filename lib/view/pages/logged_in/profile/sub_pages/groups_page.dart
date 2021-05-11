@@ -243,7 +243,7 @@ class _GroupsPageState extends State<GroupsPage> {
               children: [
                 GroupDropDown(
                     groups: this._groups,
-                    callback: (groupId) => this._selectGroup(groupId),
+                    onGroupSelected: (groupId) => this._selectGroup(groupId),
                 ),
                 SizedBox(width: 10),
                 IconButton(

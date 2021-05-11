@@ -26,6 +26,9 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _groupFabVisible = false;
   List<Widget> _profilePages = [];
 
+  // id of the currently selected group from the drop down
+  String? _selectedGroupId;
+
   _ProfilePageState() {
     this._getData();
   }
@@ -41,7 +44,10 @@ class _ProfilePageState extends State<ProfilePage> {
         this._profilePages = [
           MyProfilePage(user: user),
           GroupsPage(user: user, groups: groups),
-          GamesPage(groups: groups),
+          GamesPage(
+            groups: groups,
+            onGroupSelected: (groupId) => this._selectGroup(groupId),
+          ),
         ];
       });
     } catch (err) {
@@ -49,6 +55,13 @@ class _ProfilePageState extends State<ProfilePage> {
       print(err);
       PopupUtils.showError(context, err as ProblemResponse);
     }
+  }
+
+  /// called when a group is selected from the drop down, updates the page data
+  void _selectGroup(String? groupId) async {
+    setState(() {
+      this._selectedGroupId = groupId;
+    });
   }
 
   Future<List<GroupResponse>> _getUsersGroups(UserResponse user) async {
@@ -75,7 +88,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -94,22 +106,28 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _createGamePressed() {
-    showDialog(context: context, builder: (context) {
-      return CreateUpdateGamePopup(groupId: "ad9c5208-e7f4-4fd8-bc03-305741f95a97");
-    });
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CreateUpdateGamePopup(groupId: this._selectedGroupId!);
+      },
+    );
   }
 
   Widget? _currentFab() {
     switch (this._selectedIndex) {
-      case ProfileSettingsPageIdx: {
-        return null;
-      }
-      case GroupSettingsPageIdx: {
-        return groupsPageFab();
-      }
-      case GamesSettingsPageIdx: {
-        return gamesPageFab();
-      }
+      case ProfileSettingsPageIdx:
+        {
+          return null;
+        }
+      case GroupSettingsPageIdx:
+        {
+          return groupsPageFab();
+        }
+      case GamesSettingsPageIdx:
+        {
+          return gamesPageFab();
+        }
     }
   }
 
@@ -132,7 +150,9 @@ class _ProfilePageState extends State<ProfilePage> {
         onTap: _onItemTapped,
       ),
       body: Center(
-        child: this._profilePages.length == 0 ? null : _profilePages.elementAt(_selectedIndex),
+        child: this._profilePages.length == 0
+            ? null
+            : _profilePages.elementAt(_selectedIndex),
       ),
       // TODO when this is set to groupsPageFab() the fab doesn't rotate in from the center when you switch pages
       floatingActionButton: _currentFab(),
@@ -157,7 +177,6 @@ class _ProfilePageState extends State<ProfilePage> {
       foregroundColor: Colors.white,
       elevation: 6,
       shape: CircleBorder(),
-
       children: [
         SpeedDialChild(
           child: Icon(Icons.add),

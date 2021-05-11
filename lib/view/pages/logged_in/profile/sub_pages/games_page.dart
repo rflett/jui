@@ -11,22 +11,25 @@ import 'components/group_dropdown.dart';
 
 class GamesPage extends StatefulWidget {
   final List<GroupResponse> groups;
+  final void Function(String) onGroupSelected;
 
-  GamesPage({Key? key, required this.groups}) : super(key: key);
+  GamesPage({Key? key, required this.groups, required this.onGroupSelected}) : super(key: key);
 
   @override
-  _GamesPageState createState() => _GamesPageState(groups);
+  _GamesPageState createState() => _GamesPageState(groups, onGroupSelected);
 }
 
 class _GamesPageState extends State<GamesPage> {
   // id of the currently selected group from the drop down
   String? _selectedGroupId;
+  late void Function(String) _selectGroupCallback;
   // all groups that a user is a member of
   List<GroupResponse> _groups = [];
   // all the games in the current group
   List<GameResponse> _games = [];
 
-  _GamesPageState(List<GroupResponse> groups) {
+  _GamesPageState(List<GroupResponse> groups, Function(String) selectGroupCallback) {
+    this._selectGroupCallback = selectGroupCallback;
     this._groups = groups;
   }
 
@@ -37,6 +40,7 @@ class _GamesPageState extends State<GamesPage> {
       setState(() {
         this._selectedGroupId = groupId;
         this._games = gamesResponse.games;
+        this._selectGroupCallback(groupId);
       });
     } catch (err) {
       // TODO logging
@@ -118,7 +122,7 @@ class _GamesPageState extends State<GamesPage> {
             ),
             GroupDropDown(
               groups: this._groups,
-              callback: (groupId) => this._selectGroup(groupId),
+              onGroupSelected: (groupId) => this._selectGroup(groupId),
             ),
             Divider(),
             ..._gameList(context),

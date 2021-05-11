@@ -4,12 +4,12 @@ import 'package:jui/models/dto/response/group/group_response.dart';
 
 class GroupDropDown extends StatefulWidget {
   final List<GroupResponse> groups;
-  final void Function(String) callback;
+  final void Function(String) onGroupSelected;
 
-  GroupDropDown({Key? key, required this.groups, required this.callback}) : super(key: key);
+  GroupDropDown({Key? key, required this.groups, required this.onGroupSelected}) : super(key: key);
 
   @override
-  _GroupDropDownState createState() => _GroupDropDownState(groups, callback);
+  _GroupDropDownState createState() => _GroupDropDownState(groups, onGroupSelected);
 }
 
 class _GroupDropDownState extends State<GroupDropDown> {
@@ -17,10 +17,10 @@ class _GroupDropDownState extends State<GroupDropDown> {
   List<DropdownMenuItem<String>> _selectedGroupOptions = [];
   // id of the currently selected group from the drop down
   String? _selectedGroupId;
-  late void Function(String) callback;
+  late void Function(String) _selectGroupCallback;
 
-  _GroupDropDownState(List<GroupResponse> groups, Function(String) callback) {
-    this.callback = callback;
+  _GroupDropDownState(List<GroupResponse> groups, Function(String) selectGroupCallback) {
+    this._selectGroupCallback = selectGroupCallback;
     this._selectedGroupOptions = groups
         .map(
           (element) => DropdownMenuItem<String>(
@@ -35,7 +35,7 @@ class _GroupDropDownState extends State<GroupDropDown> {
   /// called when a group is selected from the drop down, updates the page data
   void selectGroup(String? groupId) {
     this._selectedGroupId = groupId;
-    this.callback(groupId!);
+    this._selectGroupCallback(groupId!);
   }
 
   @override

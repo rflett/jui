@@ -108,22 +108,26 @@ class _LoginPageState extends State<LoginPage> {
                         keyboardType: TextInputType.emailAddress,
                         validator: _validateEmail,
                         decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.email_outlined),
-                            labelText: "Email",
-                            border: OutlineInputBorder()),
+                          prefixIcon: Icon(Icons.email_outlined),
+                          labelText: "Email",
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
                       ),
                       TextFormField(
                         onChanged: (val) => _password = val,
                         validator: _validatePassword,
                         obscureText: _hidePassword,
                         decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock_outline_rounded),
-                            suffixIcon: IconButton(
-                              icon: Icon(Icons.remove_red_eye),
-                              onPressed: _onViewPasswordPressed,
-                            ),
-                            labelText: "Password",
-                            border: OutlineInputBorder()),
+                          prefixIcon: Icon(Icons.lock_outline_rounded),
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.remove_red_eye),
+                            onPressed: _onViewPasswordPressed,
+                          ),
+                          labelText: "Password",
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
                       ),
                       Align(
                         alignment: AlignmentDirectional.centerEnd,
