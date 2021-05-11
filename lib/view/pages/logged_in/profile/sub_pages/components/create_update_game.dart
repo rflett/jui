@@ -46,51 +46,43 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
     }
   }
 
-  void _onAction(BuildContext context) async {
+  void _onAction() async {
     if (_formKey.currentState?.validate() != true) {
       return;
     }
 
-    bool success;
     if (this._game == null) {
-      success = await this._createGame(this._name.text, this._description.text);
+      this._createGame(this._name.text, this._description.text);
     } else {
-      success = await this._updateGame(this._name.text, this._description.text);
-    }
-
-    if (success == true) {
-      Navigator.of(context).pop(true);
+      this._updateGame(this._name.text, this._description.text);
     }
   }
 
-  Future<bool> _createGame(String name, String description) async {
+  void _createGame(String name, String description) async {
     var requestData = CreateUpdateGameRequest(name, description);
     try {
-      // TODO
       await Game.create(this._groupId, requestData);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Created $name.")));
-      return true;
+      Navigator.of(context).pop(true);
     } catch (err) {
       // TODO logging
       print(err);
       PopupUtils.showError(context, err as ProblemResponse);
-      return false;
     }
   }
 
-  Future<bool> _updateGame(String name, String description) async {
+  void _updateGame(String name, String description) async {
     var requestData = CreateUpdateGameRequest(name, description);
     try {
       await Game.update(this._game!.groupID, this._game!.gameID, requestData);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Updated $name.")));
-      return true;
+      Navigator.of(context).pop(true);
     } catch (err) {
       // TODO logging
       print(err);
       PopupUtils.showError(context, err as ProblemResponse);
-      return false;
     }
   }
 
@@ -99,6 +91,7 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
       await Game.delete(this._game!.groupID, this._game!.gameID);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Successfully deleted game.")));
+      Navigator.of(context).pop(true);
     } catch (err) {
       // TODO logging
       print(err);
@@ -148,10 +141,8 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
           child: IconButton(
               alignment: Alignment.centerLeft,
               icon: Icon(Icons.delete_outline_rounded, color: Colors.red),
-              onPressed: () {
-                _deleteGame();
-                Navigator.of(context).pop(true);
-              }),
+              onPressed: () => this._deleteGame(),
+          ),
         ),
         TextButton(
           child: Text('Cancel'),
@@ -161,7 +152,7 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
         ),
         TextButton(
           child: Text(this._actionBtnText),
-          onPressed: () => this._onAction(context),
+          onPressed: () => this._onAction(),
         ),
       ],
     );

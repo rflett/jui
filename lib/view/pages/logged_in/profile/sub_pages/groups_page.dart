@@ -8,6 +8,7 @@ import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
+import 'package:jui/view/pages/logged_in/profile/sub_pages/components/group_dropdown.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
 
 class GroupsPage extends StatefulWidget {
@@ -21,8 +22,6 @@ class GroupsPage extends StatefulWidget {
 }
 
 class _GroupsPageState extends State<GroupsPage> {
-  // drop down menu item for selecting the current group
-  List<DropdownMenuItem<String>> _selectedGroupOptions = [];
   // id of the currently selected group from the drop down
   String? _selectedGroupId;
   // members of the currently selected group
@@ -37,19 +36,6 @@ class _GroupsPageState extends State<GroupsPage> {
   _GroupsPageState(UserResponse user, List<GroupResponse> groups) {
     this._user = user;
     this._groups = groups;
-
-    // generate the drop down items and select the first group in the list
-    _generateDropDownItems();
-    this._selectGroup(this._groups[0].groupID);
-  }
-
-  /// generates the group drop down menu items from the users groups
-  void _generateDropDownItems() {
-    this._selectedGroupOptions = this
-        ._groups
-        .map((element) => DropdownMenuItem<String>(
-            value: element.groupID, child: Text(element.name)))
-        .toList();
   }
 
   /// called when a group is selected from the drop down, updates the page data
@@ -95,7 +81,6 @@ class _GroupsPageState extends State<GroupsPage> {
       setState(() {
         this._groups.removeWhere((group) => group.groupID == groupToLeave);
         this._user!.groups!.removeWhere((groupId) => groupId == groupToLeave);
-        this._generateDropDownItems();
       });
 
       // update the primary group id if you just left it
@@ -256,10 +241,9 @@ class _GroupsPageState extends State<GroupsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                DropdownButton(
-                  value: _selectedGroupId,
-                  onChanged: (String? newValue) => _selectGroup(newValue),
-                  items: _selectedGroupOptions,
+                GroupDropDown(
+                    groups: this._groups,
+                    callback: (groupId) => this._selectGroup(groupId),
                 ),
                 SizedBox(width: 10),
                 IconButton(

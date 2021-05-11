@@ -7,6 +7,8 @@ import 'package:jui/server/group.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
 
+import 'components/group_dropdown.dart';
+
 class GamesPage extends StatefulWidget {
   final List<GroupResponse> groups;
 
@@ -17,8 +19,6 @@ class GamesPage extends StatefulWidget {
 }
 
 class _GamesPageState extends State<GamesPage> {
-  // drop down menu item for selecting the current group
-  List<DropdownMenuItem<String>> _selectedGroupOptions = [];
   // id of the currently selected group from the drop down
   String? _selectedGroupId;
   // all groups that a user is a member of
@@ -28,19 +28,6 @@ class _GamesPageState extends State<GamesPage> {
 
   _GamesPageState(List<GroupResponse> groups) {
     this._groups = groups;
-
-    // generate the drop down items and select the first group in the list
-    _generateDropDownItems();
-    this._selectGroup(this._groups[0].groupID);
-  }
-
-  /// generates the group drop down menu items from the users groups
-  void _generateDropDownItems() {
-    this._selectedGroupOptions = this
-        ._groups
-        .map((element) => DropdownMenuItem<String>(
-        value: element.groupID, child: Text(element.name)))
-        .toList();
   }
 
   /// called when a group is selected from the drop down, updates the page data
@@ -129,10 +116,9 @@ class _GamesPageState extends State<GamesPage> {
                 style: TextStyle(fontSize: 16),
               ),
             ),
-            DropdownButton(
-              value: _selectedGroupId,
-              onChanged: (String? newValue) => _selectGroup(newValue),
-              items: _selectedGroupOptions,
+            GroupDropDown(
+              groups: this._groups,
+              callback: (groupId) => this._selectGroup(groupId),
             ),
             Divider(),
             ..._gameList(context),
