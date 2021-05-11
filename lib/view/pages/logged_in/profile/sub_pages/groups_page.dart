@@ -10,12 +10,14 @@ import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/group_dropdown.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
+import 'package:jui/view/pages/logged_in/profile/sub_pages/components/view_user_popup.dart';
 
 class GroupsPage extends StatefulWidget {
   final UserResponse user;
   final List<GroupResponse> groups;
 
-  GroupsPage({Key? key, required this.user, required this.groups}) : super(key: key);
+  GroupsPage({Key? key, required this.user, required this.groups})
+      : super(key: key);
 
   @override
   _GroupsPageState createState() => _GroupsPageState(user, groups);
@@ -183,6 +185,20 @@ class _GroupsPageState extends State<GroupsPage> {
     }
   }
 
+  void _showUser(UserResponse user) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ViewUserPopup(
+          user: user,
+          canRemoveUser: this._userIsGroupOwner(this._user!.userID) &&
+              this._user!.userID != user.userID,
+          isGroupOwner: this._userIsGroupOwner(user.userID),
+        );
+      },
+    );
+  }
+
   Widget groupMembers(BuildContext context) {
     List<Widget> listItems = [];
 
@@ -191,37 +207,31 @@ class _GroupsPageState extends State<GroupsPage> {
       listItems.add(Container(
         child: Card(
           child: ListTile(
-              leading: UserAvatar(
-                uuid: (this._user == null ? "" : this._user!.userID),
-                size: 30,
-              ),
-              title: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "${this._selectedGroupMembers[i].name} ",
-                      style: TextStyle(color: Colors.black, fontSize: 18),
-                    ),
-                    WidgetSpan(
-                      /// show a star next to the group owner's name
-                      child: this._userIsGroupOwner(thisUserId)
-                          ? Icon(Icons.star_rounded, size: 18)
-                          : Container(),
-                    ),
-                  ],
-                ),
-              ),
-              trailing: Visibility(
-                visible: this._userIsGroupOwner(this._user!.userID) &&
-                    this._user!.userID != thisUserId,
-                child: IconButton(
-                  icon: Icon(Icons.delete_outline_rounded, color: Colors.red),
-                  onPressed: () => _confirmRemoveMember(
-                    thisUserId,
-                    this._selectedGroupMembers[i].name,
+            leading: UserAvatar(
+              uuid: (this._user == null ? "" : this._user!.userID),
+              size: 30,
+            ),
+            title: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: "${this._selectedGroupMembers[i].name} ",
+                    style: TextStyle(color: Colors.black, fontSize: 18),
                   ),
-                ),
-              )),
+                  WidgetSpan(
+                    /// show a star next to the group owner's name
+                    child: this._userIsGroupOwner(thisUserId)
+                        ? Icon(Icons.star_rounded, size: 18)
+                        : Container(),
+                  ),
+                ],
+              ),
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.info_outline_rounded, color: Colors.black),
+              onPressed: () => this._showUser(this._selectedGroupMembers[i]),
+            ),
+          ),
         ),
       ));
     }
@@ -242,8 +252,8 @@ class _GroupsPageState extends State<GroupsPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GroupDropDown(
-                    groups: this._groups,
-                    onGroupSelected: (groupId) => this._selectGroup(groupId),
+                  groups: this._groups,
+                  onGroupSelected: (groupId) => this._selectGroup(groupId),
                 ),
                 SizedBox(width: 10),
                 IconButton(
