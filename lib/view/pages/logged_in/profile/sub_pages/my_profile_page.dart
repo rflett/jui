@@ -4,14 +4,15 @@ import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/server/user.dart';
 import 'package:jui/utilities/popups.dart';
-import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 
 class MyProfilePage extends StatefulWidget {
-  MyProfilePage({Key? key}) : super(key: key);
+  final UserResponse user;
+
+  MyProfilePage({Key? key, required this.user}) : super(key: key);
 
   @override
-  _MyProfilePageState createState() => _MyProfilePageState();
+  _MyProfilePageState createState() => _MyProfilePageState(user);
 }
 
 class _MyProfilePageState extends State<MyProfilePage> {
@@ -19,8 +20,9 @@ class _MyProfilePageState extends State<MyProfilePage> {
   TextEditingController _nicknameController =
       new TextEditingController(text: '');
 
-  _MyProfilePageState() {
-    this._getProfileData();
+  _MyProfilePageState(UserResponse user) {
+    this._user = user;
+    this._nicknameController.text = user.nickName == null ? "" : user.nickName!;
   }
 
   @override
@@ -29,30 +31,15 @@ class _MyProfilePageState extends State<MyProfilePage> {
     super.dispose();
   }
 
-  _getProfileData() async {
-    try {
-      // retrieve the user id from the stored token
-      var tkn = await Token.get();
-      var user = await User.get(tkn.sub, withVotes: false);
-      // set the vars
-      setState(() {
-        this._user = user;
-        this._nicknameController.text =
-            user.nickName == null ? "" : user.nickName!;
-      });
-    } catch (err) {
-      // TODO logging
-      print(err);
-      PopupUtils.showError(context, err as ProblemResponse);
-    }
-  }
-
   void _onUpdateClicked() async {
     var requestData = UpdateUserRequest(this._nicknameController.text);
     try {
       await User.update(requestData);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Profile updated.")));
+      setState(() {
+        this._nicknameController.text = requestData.nickName;
+      });
     } catch (err) {
       // TODO logging
       print(err);

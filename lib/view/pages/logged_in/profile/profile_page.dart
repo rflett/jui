@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/settings_pages.dart';
+import 'package:jui/models/dto/response/group/group_response.dart';
+import 'package:jui/models/dto/response/problem_response.dart';
+import 'package:jui/models/dto/response/user/user.dart';
+import 'package:jui/server/group.dart';
+import 'package:jui/server/user.dart';
+import 'package:jui/utilities/popups.dart';
+import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/games_page.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/groups_page.dart';
@@ -14,13 +21,60 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  // navigation
   int _selectedIndex = 0;
   bool _groupFabVisible = false;
-  List<Widget> _profilePages = [
-    MyProfilePage(),
-    GroupsPage(),
-    GamesPage(),
-  ];
+  List<Widget> _profilePages = [];
+
+  _ProfilePageState() {
+    this._getData();
+  }
+
+  _getData() async {
+    try {
+      // retrieve the user id from the stored token
+      var tkn = await Token.get();
+      var user = await User.get(tkn.sub, withVotes: false);
+      var groups = await this._getUsersGroups(user);
+      // set the vars
+      setState(() {
+        this._profilePages = [
+          MyProfilePage(user: user),
+          GroupsPage(user: user, groups: groups),
+          GamesPage(groups: groups),
+        ];
+      });
+    } catch (err) {
+      // TODO logging
+      print(err);
+      PopupUtils.showError(context, err as ProblemResponse);
+    }
+  }
+
+  Future<List<GroupResponse>> _getUsersGroups(UserResponse user) async {
+    // get all the users groups
+    // TODO this should be 1 API call
+    List<GroupResponse> groups = [];
+    for (var i = 0; i < user.groups!.length; i++) {
+      var group = await this._getGroup(user.groups![i]);
+      if (group != null) {
+        groups.add(group);
+      }
+    }
+    return groups;
+  }
+
+  Future<GroupResponse?> _getGroup(String groupId) async {
+    try {
+      var group = await Group.get(groupId);
+      return group;
+    } catch (err) {
+      // TODO logging
+      print(err);
+      PopupUtils.showError(context, err as ProblemResponse);
+    }
+  }
+
 
   void _onItemTapped(int index) {
     setState(() {
@@ -78,7 +132,7 @@ class _ProfilePageState extends State<ProfilePage> {
         onTap: _onItemTapped,
       ),
       body: Center(
-        child: _profilePages.elementAt(_selectedIndex),
+        child: this._profilePages.length == 0 ? null : _profilePages.elementAt(_selectedIndex),
       ),
       // TODO when this is set to groupsPageFab() the fab doesn't rotate in from the center when you switch pages
       floatingActionButton: _currentFab(),

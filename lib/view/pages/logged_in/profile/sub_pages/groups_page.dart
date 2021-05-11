@@ -4,19 +4,20 @@ import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/server/group.dart';
-import 'package:jui/server/user.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/storage.dart';
-import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
 
 class GroupsPage extends StatefulWidget {
-  GroupsPage({Key? key}) : super(key: key);
+  final UserResponse user;
+  final List<GroupResponse> groups;
+
+  GroupsPage({Key? key, required this.user, required this.groups}) : super(key: key);
 
   @override
-  _GroupsPageState createState() => _GroupsPageState();
+  _GroupsPageState createState() => _GroupsPageState(user, groups);
 }
 
 class _GroupsPageState extends State<GroupsPage> {
@@ -29,41 +30,17 @@ class _GroupsPageState extends State<GroupsPage> {
   // code of the currently selected group
   String _selectedGroupCode = "";
   // the current logged in user
-  UserResponse? user;
+  UserResponse? _user;
   // all groups that a user is a member of
   List<GroupResponse> _groups = [];
 
-  _GroupsPageState() {
-    this._getData();
-  }
+  _GroupsPageState(UserResponse user, List<GroupResponse> groups) {
+    this._user = user;
+    this._groups = groups;
 
-  /// load all the data required on first visit to the page
-  _getData() async {
-    try {
-      // retrieve the user id from the stored token
-      var tkn = await Token.get();
-      var user = await User.get(tkn.sub, withVotes: false);
-      this.user = user;
-
-      // get all the users groups
-      // TODO this should be 1 API call
-      List<GroupResponse> groups = [];
-      for (var i = 0; i < this.user!.groups!.length; i++) {
-        var group = await this.getGroup(this.user!.groups![i]);
-        if (group != null) {
-          groups.add(group);
-        }
-      }
-      this._groups = groups;
-
-      // generate the drop down items and select the first group in the list
-      _generateDropDownItems();
-      this._selectGroup(this._groups[0].groupID);
-    } catch (err) {
-      // TODO logging
-      print(err);
-      PopupUtils.showError(context, err as ProblemResponse);
-    }
+    // generate the drop down items and select the first group in the list
+    _generateDropDownItems();
+    this._selectGroup(this._groups[0].groupID);
   }
 
   /// generates the group drop down menu items from the users groups
@@ -90,20 +67,20 @@ class _GroupsPageState extends State<GroupsPage> {
 
   /// returns whether leave icon should be disabled
   bool get _canLeaveCurrentGroup {
-    return !(this.user == null || this.user!.groups!.length == 1);
+    return !(this._user == null || this._user!.groups!.length == 1);
   }
 
   /// removes the current user from the group
   void _leaveCurrentGroup() async {
     try {
-      if (this.user!.groups!.length == 1) {
+      if (this._user!.groups!.length == 1) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("You can't leave your last group.")),
         );
         return;
       }
 
-      if (this._userIsGroupOwner(this.user!.userID)) {
+      if (this._userIsGroupOwner(this._user!.userID)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("TODO prompt to neknominate a new owner.")),
         );
@@ -112,12 +89,12 @@ class _GroupsPageState extends State<GroupsPage> {
 
       // leave the group
       var groupToLeave = this._selectedGroupId!;
-      await Group.leave(groupToLeave, this.user!.userID);
+      await Group.leave(groupToLeave, this._user!.userID);
 
       // remove group from lists, we could get the data again but that's slow af
       setState(() {
         this._groups.removeWhere((group) => group.groupID == groupToLeave);
-        this.user!.groups!.removeWhere((groupId) => groupId == groupToLeave);
+        this._user!.groups!.removeWhere((groupId) => groupId == groupToLeave);
         this._generateDropDownItems();
       });
 
@@ -126,7 +103,7 @@ class _GroupsPageState extends State<GroupsPage> {
           await DeviceStorage.retrieveValue(storagePrimaryGroupId);
       if (primaryGroupId == groupToLeave) {
         await DeviceStorage.storeValue(
-            storagePrimaryGroupId, this.user!.groups![0]);
+            storagePrimaryGroupId, this._user!.groups![0]);
       }
 
       // select the primary
@@ -199,7 +176,7 @@ class _GroupsPageState extends State<GroupsPage> {
      * This shouldn't be reachable. The remove member button should always be
      * hidden for yourself.
      */
-    if (userId == this.user!.userID) {
+    if (userId == this._user!.userID) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("You can't leave using this button!")),
       );
@@ -221,17 +198,6 @@ class _GroupsPageState extends State<GroupsPage> {
     }
   }
 
-  Future<GroupResponse?> getGroup(String groupId) async {
-    try {
-      var group = await Group.get(groupId);
-      return group;
-    } catch (err) {
-      // TODO logging
-      print(err);
-      PopupUtils.showError(context, err as ProblemResponse);
-    }
-  }
-
   Widget groupMembers(BuildContext context) {
     List<Widget> listItems = [];
 
@@ -241,7 +207,7 @@ class _GroupsPageState extends State<GroupsPage> {
         child: Card(
           child: ListTile(
               leading: UserAvatar(
-                uuid: (this.user == null ? "" : this.user!.userID),
+                uuid: (this._user == null ? "" : this._user!.userID),
                 size: 30,
               ),
               title: RichText(
@@ -261,8 +227,8 @@ class _GroupsPageState extends State<GroupsPage> {
                 ),
               ),
               trailing: Visibility(
-                visible: this._userIsGroupOwner(this.user!.userID) &&
-                    this.user!.userID != thisUserId,
+                visible: this._userIsGroupOwner(this._user!.userID) &&
+                    this._user!.userID != thisUserId,
                 child: IconButton(
                   icon: Icon(Icons.delete_outline_rounded, color: Colors.red),
                   onPressed: () => _confirmRemoveMember(

@@ -3,18 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:jui/models/dto/response/group/games/game_response.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
-import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/server/group.dart';
-import 'package:jui/server/user.dart';
 import 'package:jui/utilities/popups.dart';
-import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
 
 class GamesPage extends StatefulWidget {
-  GamesPage({Key? key}) : super(key: key);
+  final List<GroupResponse> groups;
+
+  GamesPage({Key? key, required this.groups}) : super(key: key);
 
   @override
-  _GamesPageState createState() => _GamesPageState();
+  _GamesPageState createState() => _GamesPageState(groups);
 }
 
 class _GamesPageState extends State<GamesPage> {
@@ -26,50 +25,13 @@ class _GamesPageState extends State<GamesPage> {
   List<GroupResponse> _groups = [];
   // all the games in the current group
   List<GameResponse> _games = [];
-  // the current logged in user
-  UserResponse? user;
 
-  _GamesPageState() {
-    this.getData();
-  }
+  _GamesPageState(List<GroupResponse> groups) {
+    this._groups = groups;
 
-  void getData() async {
-    try {
-      // retrieve the user id from the stored token
-      var tkn = await Token.get();
-      var user = await User.get(tkn.sub, withVotes: false);
-      this.user = user;
-
-      // get all the users groups
-      // TODO this should be 1 API call
-      List<GroupResponse> groups = [];
-      for (var i = 0; i < this.user!.groups!.length; i++) {
-        var group = await this._getGroup(this.user!.groups![i]);
-        if (group != null) {
-          groups.add(group);
-        }
-      }
-      this._groups = groups;
-
-      // generate the drop down items and select the first group in the list
-      _generateDropDownItems();
-      this._selectGroup(this._groups[0].groupID);
-    } catch (err) {
-      // TODO logging
-      print(err);
-      PopupUtils.showError(context, err as ProblemResponse);
-    }
-  }
-
-  Future<GroupResponse?> _getGroup(String groupId) async {
-    try {
-      var group = await Group.get(groupId);
-      return group;
-    } catch (err) {
-      // TODO logging
-      print(err);
-      PopupUtils.showError(context, err as ProblemResponse);
-    }
+    // generate the drop down items and select the first group in the list
+    _generateDropDownItems();
+    this._selectGroup(this._groups[0].groupID);
   }
 
   /// generates the group drop down menu items from the users groups
