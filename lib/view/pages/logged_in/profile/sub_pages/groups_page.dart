@@ -186,14 +186,29 @@ class _GroupsPageState extends State<GroupsPage> {
   }
 
   void _showUser(UserResponse user) async {
+    var currentUser = this._user!.userID;
+    var isGroupOwner = this._userIsGroupOwner(user.userID);
+
+    // can the logged in user remove this user?
+    bool canRemoveUser = false;
+    if (this._userIsGroupOwner(currentUser) && currentUser != user.userID) {
+      canRemoveUser = true;
+    }
+
+    // can the logged in user promote this user?
+    bool canPromoteUser = false;
+    if (canRemoveUser == true && isGroupOwner == false) {
+      canPromoteUser = true;
+    }
+
     showDialog(
       context: context,
       builder: (context) {
         return ViewUserPopup(
           user: user,
-          canRemoveUser: this._userIsGroupOwner(this._user!.userID) &&
-              this._user!.userID != user.userID,
-          isGroupOwner: this._userIsGroupOwner(user.userID),
+          canRemoveUser: canRemoveUser,
+          isGroupOwner: isGroupOwner,
+          canPromoteUser: canPromoteUser,
         );
       },
     );
