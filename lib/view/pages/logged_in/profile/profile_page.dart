@@ -3,8 +3,10 @@ import 'package:jui/constants/settings_pages.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
+import 'package:jui/models/enums/social_providers.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/server/user.dart';
+import 'package:jui/services/settings_service.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
@@ -25,13 +27,43 @@ class _ProfilePageState extends State<ProfilePage> {
   // navigation
   int _selectedIndex = 0;
   bool _groupFabVisible = false;
-  List<Widget> _profilePages = [];
+  Map<String, Widget> _profilePages = {};
 
   // id of the currently selected group from the drop down
   String? _selectedGroupId;
 
+  late SettingsService _service;
+
   _ProfilePageState() {
     this._getData();
+    this._service = SettingsService.getInstance();
+
+    _service.messages.listen(onMessageReceived);
+  }
+
+  void onMessageReceived(SocialProviders event) {
+    // From Singleton
+    switch (event) {
+      case SocialProviders.delegator:
+        _reloadGroups();
+        break;
+      default:
+        throw UnsupportedError("WTF are you doing?");
+        break;
+    }
+  }
+
+  _reloadGroups() async {
+    // retrieve the user id from the stored token
+    var tkn = await Token.get();
+    var user = await User.get(tkn.sub, withVotes: false);
+    var groups = await this._getUsersGroups(user);
+
+    this._profilePages["groups"] = GroupsPage(user: user, groups: groups);
+
+    setState(() {
+      this._profilePages = this._profilePages;
+    });
   }
 
   _getData() async {
@@ -42,14 +74,17 @@ class _ProfilePageState extends State<ProfilePage> {
       var groups = await this._getUsersGroups(user);
       // set the vars
       setState(() {
-        this._profilePages = [
-          MyProfilePage(user: user),
-          GroupsPage(user: user, groups: groups),
-          GamesPage(
-            groups: groups,
-            onGroupSelected: (groupId) => this._selectGroup(groupId),
+        this._profilePages = Map.fromEntries([
+          MapEntry("profile", MyProfilePage(user: user)),
+          MapEntry("groups", GroupsPage(user: user, groups: groups)),
+          MapEntry(
+            "games",
+            GamesPage(
+              groups: groups,
+              onGroupSelected: (groupId) => this._selectGroup(groupId),
+            ),
           ),
-        ];
+        ]);
       });
     } catch (err) {
       // TODO logging
@@ -157,7 +192,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Center(
         child: this._profilePages.length == 0
             ? null
-            : _profilePages.elementAt(_selectedIndex),
+            : _profilePages.entries.elementAt(_selectedIndex).value,
       ),
       // TODO when this is set to groupsPageFab() the fab doesn't rotate in from the center when you switch pages
       floatingActionButton: _currentFab(),

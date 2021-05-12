@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:jui/models/dto/request/group/create_update_group.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
+import 'package:jui/models/enums/social_providers.dart';
 import 'package:jui/server/group.dart';
+import 'package:jui/services/settings_service.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/validation.dart';
 
 class CreateUpdateGroupPopup extends StatefulWidget {
   final GroupResponse? group;
+
   CreateUpdateGroupPopup({Key? key, this.group}) : super(key: key);
 
   @override
@@ -20,6 +23,7 @@ class _CreateUpdateGroupPopupState extends State<CreateUpdateGroupPopup> {
   GroupResponse? _group;
   String _title = "";
   String _actionBtnText = "";
+  late SettingsService _service;
 
   // forms
   final _formKey = GlobalKey<FormState>();
@@ -35,6 +39,7 @@ class _CreateUpdateGroupPopupState extends State<CreateUpdateGroupPopup> {
       this._name.text = group.name;
       this._group = group;
     }
+    this._service = SettingsService.getInstance();
   }
 
   void _onAction() async {
@@ -56,6 +61,8 @@ class _CreateUpdateGroupPopupState extends State<CreateUpdateGroupPopup> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Created $name.")));
       Navigator.of(context).pop(true);
+      // Send to singleton
+      this._service.sendMessage(SocialProviders.delegator);
     } catch (err) {
       // TODO logging
       print(err);
