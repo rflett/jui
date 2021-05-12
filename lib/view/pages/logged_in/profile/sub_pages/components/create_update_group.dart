@@ -83,6 +83,8 @@ class _CreateUpdateGroupPopupState extends State<CreateUpdateGroupPopup> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Updated $name.")));
       Navigator.of(context).pop(true);
+      // Send to singleton
+      this._service.sendMessage(ProfileEvents.reloadGroups);
     } catch (err) {
       // TODO logging
       print(err);
