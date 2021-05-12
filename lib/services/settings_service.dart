@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:jui/models/enums/events.dart';
+import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/models/enums/social_providers.dart';
 
 class SettingsService {
@@ -10,7 +10,7 @@ class SettingsService {
   late Stream<ProfileEvents> messages;
 
   SettingsService._internal() {
-    _messenger = StreamController();
+    _messenger = StreamController.broadcast();
     messages = _messenger.stream;
   }
 

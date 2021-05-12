@@ -6,7 +6,7 @@ import 'package:jui/models/auth_token.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
-import 'package:jui/models/enums/events.dart';
+import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/models/enums/social_providers.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/server/user.dart';
@@ -29,23 +29,26 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   // navigation
-  int _selectedIndex = 0;
-  bool _groupFabVisible = false;
-  Map<String, Widget> _profilePages = {};
-
-  // current logged in user
-  late UserResponse _user;
+  ProfilePages _currentPage = ProfilePages.myProfile;
+  Map<ProfilePages, Widget> _profilePages = {};
 
   // id of the currently selected group from the drop down
   String? _selectedGroupId;
 
   // listeners
   late SettingsService _service;
+  late StreamSubscription _serviceStream;
 
   _ProfilePageState() {
     this._getData();
     this._service = SettingsService.getInstance();
-    _service.messages.listen(onMessageReceived);
+    this._serviceStream = _service.messages.listen(onMessageReceived);
+  }
+
+  @override
+  void dispose() {
+    this._serviceStream.cancel();
+    super.dispose();
   }
 
   void onMessageReceived(ProfileEvents event) {
@@ -54,16 +57,39 @@ class _ProfilePageState extends State<ProfilePage> {
       case ProfileEvents.reloadGroups:
         _reloadGroups();
         break;
-      default:
-        throw UnsupportedError("WTF are you doing?");
+      case ProfileEvents.reloadGames:
+        _reloadGames();
         break;
+      default:
+        throw UnsupportedError(
+            "WTF are you doing, do you know how dangerous that is?");
     }
   }
 
   _reloadGroups() async {
+    var token = await Token.get();
+    var user = await User.get(token.sub, withVotes: false);
+
     // get groups
-    var groups = await this._getUsersGroups(this._user);
-    this._profilePages["groups"] = GroupsPage(user: this._user, groups: groups);
+    var groups = await this._getUsersGroups(user);
+    this._profilePages[ProfilePages.myGroups] =
+        GroupsPage(user: user, groups: groups);
+
+    setState(() {
+      this._profilePages = this._profilePages;
+    });
+  }
+
+  _reloadGames() async {
+    var token = await Token.get();
+    var user = await User.get(token.sub, withVotes: false);
+
+    // get groups
+    var groups = await this._getUsersGroups(user);
+    this._profilePages[ProfilePages.myGames] = GamesPage(
+      groups: groups,
+      onGroupSelected: (groupId) => this._selectGroup(groupId),
+    );
 
     setState(() {
       this._profilePages = this._profilePages;
@@ -75,18 +101,16 @@ class _ProfilePageState extends State<ProfilePage> {
       // retrieve the user id from the stored token
       var token = await Token.get();
       var user = await User.get(token.sub, withVotes: false);
-
-      // set state vars
-      this._user = user;
-
       var groups = await this._getUsersGroups(user);
+
       // set the vars
       setState(() {
         this._profilePages = Map.fromEntries([
-          MapEntry("profile", MyProfilePage(user: user)),
-          MapEntry("groups", GroupsPage(user: user, groups: groups)),
+          MapEntry(ProfilePages.myProfile, MyProfilePage(user: user)),
           MapEntry(
-            "games",
+              ProfilePages.myGroups, GroupsPage(user: user, groups: groups)),
+          MapEntry(
+            ProfilePages.myGames,
             GamesPage(
               groups: groups,
               onGroupSelected: (groupId) => this._selectGroup(groupId),
@@ -133,9 +157,24 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _onItemTapped(int index) {
+    ProfilePages currentPage;
+    switch (index) {
+      case 0:
+        currentPage = ProfilePages.myProfile;
+        break;
+      case 1:
+        currentPage = ProfilePages.myGroups;
+        break;
+      case 2:
+        currentPage = ProfilePages.myGames;
+        break;
+      default:
+        currentPage = ProfilePages.myProfile;
+        break;
+    }
+
     setState(() {
-      _selectedIndex = index;
-      _groupFabVisible = index == GroupSettingsPageIdx;
+      this._currentPage = currentPage;
     });
   }
 
@@ -163,19 +202,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget? _currentFab() {
-    switch (this._selectedIndex) {
-      case ProfileSettingsPageIdx:
-        {
-          return null;
-        }
-      case GroupSettingsPageIdx:
-        {
-          return groupsPageFab();
-        }
-      case GamesSettingsPageIdx:
-        {
-          return gamesPageFab();
-        }
+    switch (this._currentPage) {
+      case ProfilePages.myProfile:
+        return null;
+      case ProfilePages.myGroups:
+        return groupsPageFab();
+      case ProfilePages.myGames:
+        return gamesPageFab();
     }
   }
 
@@ -192,16 +225,15 @@ class _ProfilePageState extends State<ProfilePage> {
           BottomNavigationBarItem(
               icon: Icon(Icons.local_play_outlined), label: "Games"),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: this._currentPage.index,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey.shade300.withAlpha(150),
         onTap: _onItemTapped,
       ),
       body: Center(
-        child: this._profilePages.length == 0
-            ? null
-            : _profilePages.entries.elementAt(_selectedIndex).value,
-      ),
+          child: this._profilePages.length == 0
+              ? null
+              : this._profilePages[this._currentPage]),
       // TODO when this is set to groupsPageFab() the fab doesn't rotate in from the center when you switch pages
       floatingActionButton: _currentFab(),
     );
@@ -214,7 +246,7 @@ class _ProfilePageState extends State<ProfilePage> {
       icon: Icons.add,
       activeIcon: Icons.close,
       buttonSize: 56.0,
-      visible: _groupFabVisible,
+      visible: this._currentPage == ProfilePages.myGroups,
       closeManually: false,
       curve: Curves.bounceIn,
       overlayColor: Colors.black,

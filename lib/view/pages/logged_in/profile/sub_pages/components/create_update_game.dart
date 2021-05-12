@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:jui/models/dto/request/group/games/create_update_game.dart';
 import 'package:jui/models/dto/response/group/games/game_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
+import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/game.dart';
+import 'package:jui/services/settings_service.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/validation.dart';
 
@@ -24,6 +26,7 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
   String _title = "";
   String _actionBtnText = "";
   bool _deleteVisible = false;
+  late SettingsService _service;
 
   // forms
   final _formKey = GlobalKey<FormState>();
@@ -44,6 +47,14 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
       this._description.text = game.description;
       this._game = game;
     }
+    this._service = SettingsService.getInstance();
+  }
+
+  @override
+  void dispose() {
+    this._name.dispose();
+    this._description.dispose();
+    super.dispose();
   }
 
   void _onAction() async {
@@ -64,6 +75,7 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
       await Game.create(this._groupId, requestData);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Created $name.")));
+      this._service.sendMessage(ProfileEvents.reloadGames);
       Navigator.of(context).pop(true);
     } catch (err) {
       // TODO logging

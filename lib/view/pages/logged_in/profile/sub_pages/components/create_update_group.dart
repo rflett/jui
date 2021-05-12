@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jui/models/dto/request/group/create_update_group.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
-import 'package:jui/models/enums/events.dart';
+import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/services/settings_service.dart';
 import 'package:jui/utilities/popups.dart';
@@ -40,6 +40,12 @@ class _CreateUpdateGroupPopupState extends State<CreateUpdateGroupPopup> {
       this._group = group;
     }
     this._service = SettingsService.getInstance();
+  }
+
+  @override
+  void dispose() {
+    this._name.dispose();
+    super.dispose();
   }
 
   void _onAction() async {

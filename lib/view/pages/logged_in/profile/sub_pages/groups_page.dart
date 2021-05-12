@@ -3,6 +3,7 @@ import 'package:jui/constants/storage_values.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
+import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/services/settings_service.dart';
 import 'package:jui/utilities/popups.dart';
@@ -36,10 +37,13 @@ class _GroupsPageState extends State<GroupsPage> {
   UserResponse? _user;
   // all groups that a user is a member of
   List<GroupResponse> _groups = [];
+  // service to publish events on
+  late SettingsService _service;
 
   _GroupsPageState(UserResponse user, List<GroupResponse> groups) {
     this._user = user;
     this._groups = groups;
+    this._service = SettingsService.getInstance();
   }
 
   /// called when a group is selected from the drop down, updates the page data
@@ -176,7 +180,7 @@ class _GroupsPageState extends State<GroupsPage> {
 
     try {
       await Group.leave(this._selectedGroupId!, userId);
-      // TODO tell the parent to reload the members or all the groups
+      this._service.sendMessage(ProfileEvents.reloadGroups);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Successfully removed $name from the group.")));
     } catch (err) {
