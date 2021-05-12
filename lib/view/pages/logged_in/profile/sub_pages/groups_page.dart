@@ -8,6 +8,7 @@ import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
+import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_group.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/group_dropdown.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/view_user_popup.dart';
@@ -120,21 +121,21 @@ class _GroupsPageState extends State<GroupsPage> {
 
   /// returns whether the member is the owner of the selected group
   bool _userIsGroupOwner(String userId) {
-    return this
-            ._groups
-            .firstWhere((group) => group.groupID == this._selectedGroupId)
-            .ownerID ==
-        userId;
+    // occurs during build
+    if (this._selectedGroupId == null) {
+      return false;
+    }
+    return this._groups.firstWhere((group) => group.groupID == this._selectedGroupId).ownerID == userId;
   }
 
-  void _confirmRemoveMember(String userId, String name) async {
+  void _confirmRemoveMember(UserResponse user) async {
     var shouldRemove = await showDialog<bool>(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: Text("Confirm"),
-            content:
-                Text("Are you sure you want to remove $name from the group?"),
+            content: Text(
+                "Are you sure you want to remove ${user.name} from the group?"),
             actions: [
               TextButton(
                 child: Text('Cancel'),
@@ -153,7 +154,9 @@ class _GroupsPageState extends State<GroupsPage> {
         });
 
     if (shouldRemove == true) {
-      _removeMember(userId, name);
+      _removeMember(user.userID, user.name);
+    } else {
+      _showUser(user);
     }
   }
 
@@ -207,8 +210,22 @@ class _GroupsPageState extends State<GroupsPage> {
           canRemoveUser: canRemoveUser,
           isGroupOwner: isGroupOwner,
           canPromoteUser: canPromoteUser,
-          onRemoved: () => {this._confirmRemoveMember(user.userID, user.name)},
+          onRemoved: () => {this._confirmRemoveMember(user)},
         );
+      },
+    );
+  }
+
+  /// displays an alert dialog to edit the group
+  void _editGroup() {
+    var currentGroup = this
+        ._groups
+        .firstWhere((group) => group.groupID == this._selectedGroupId);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CreateUpdateGroupPopup(group: currentGroup);
       },
     );
   }
@@ -270,6 +287,12 @@ class _GroupsPageState extends State<GroupsPage> {
                   onGroupSelected: (groupId) => this._selectGroup(groupId),
                 ),
                 SizedBox(width: 10),
+                Visibility(
+                    visible: this._userIsGroupOwner(this._user!.userID),
+                    child: IconButton(
+                      icon: Icon(Icons.edit, color: Colors.black),
+                      onPressed: () => this._editGroup(),
+                    )),
                 IconButton(
                   icon: Icon(
                     Icons.exit_to_app_rounded,

@@ -53,6 +53,11 @@ class _ViewUserPopupState extends State<ViewUserPopup> {
     this._removeMemberCallback = onRemoved;
   }
 
+  void _removeMember(BuildContext context) {
+    Navigator.of(context).pop(true);
+    this._removeMemberCallback();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -94,7 +99,7 @@ class _ViewUserPopupState extends State<ViewUserPopup> {
               visible: this._canPromoteUser,
               child: ElevatedButton(
                 child: Text("PROMOTE TO GROUP OWNER"),
-                onPressed: () => this._removeMemberCallback(),
+                onPressed: () => null,
               ),
             ),
           ],
@@ -106,7 +111,7 @@ class _ViewUserPopupState extends State<ViewUserPopup> {
           child: IconButton(
             alignment: Alignment.centerLeft,
             icon: Icon(Icons.delete_outline_rounded, color: Colors.red),
-            onPressed: () => this._removeMemberCallback(),
+            onPressed: () => this._removeMember(context),
           ),
         ),
         TextButton(

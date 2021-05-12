@@ -8,6 +8,7 @@ import 'package:jui/server/user.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
+import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_group.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/games_page.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/groups_page.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/my_profile_page.dart';
@@ -96,8 +97,12 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _createGroupPressed() {
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("TODO prompt to create a group.")));
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CreateUpdateGroupPopup();
+      },
+    );
   }
 
   void _joinGroupPressed() {
