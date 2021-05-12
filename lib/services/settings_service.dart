@@ -1,12 +1,13 @@
 import 'dart:async';
 
+import 'package:jui/models/enums/events.dart';
 import 'package:jui/models/enums/social_providers.dart';
 
 class SettingsService {
   static SettingsService? _instance;
 
-  late StreamController<SocialProviders> _messenger;
-  late Stream<SocialProviders> messages;
+  late StreamController<ProfileEvents> _messenger;
+  late Stream<ProfileEvents> messages;
 
   SettingsService._internal() {
     _messenger = StreamController();
@@ -21,7 +22,7 @@ class SettingsService {
     return _instance!;
   }
 
-  void sendMessage(SocialProviders message) {
+  void sendMessage(ProfileEvents message) {
     _messenger.add(message);
   }
 }

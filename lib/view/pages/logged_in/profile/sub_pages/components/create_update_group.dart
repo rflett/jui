@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jui/models/dto/request/group/create_update_group.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
-import 'package:jui/models/enums/social_providers.dart';
+import 'package:jui/models/enums/events.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/services/settings_service.dart';
 import 'package:jui/utilities/popups.dart';
@@ -62,7 +62,7 @@ class _CreateUpdateGroupPopupState extends State<CreateUpdateGroupPopup> {
           .showSnackBar(SnackBar(content: Text("Created $name.")));
       Navigator.of(context).pop(true);
       // Send to singleton
-      this._service.sendMessage(SocialProviders.delegator);
+      this._service.sendMessage(ProfileEvents.reloadGroups);
     } catch (err) {
       // TODO logging
       print(err);

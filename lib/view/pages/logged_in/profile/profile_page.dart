@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:jui/constants/settings_pages.dart';
+import 'package:jui/models/auth_token.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
+import 'package:jui/models/enums/events.dart';
 import 'package:jui/models/enums/social_providers.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/server/user.dart';
@@ -29,22 +33,25 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _groupFabVisible = false;
   Map<String, Widget> _profilePages = {};
 
+  // current logged in user
+  late UserResponse _user;
+
   // id of the currently selected group from the drop down
   String? _selectedGroupId;
 
+  // listeners
   late SettingsService _service;
 
   _ProfilePageState() {
     this._getData();
     this._service = SettingsService.getInstance();
-
     _service.messages.listen(onMessageReceived);
   }
 
-  void onMessageReceived(SocialProviders event) {
+  void onMessageReceived(ProfileEvents event) {
     // From Singleton
     switch (event) {
-      case SocialProviders.delegator:
+      case ProfileEvents.reloadGroups:
         _reloadGroups();
         break;
       default:
@@ -54,12 +61,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   _reloadGroups() async {
-    // retrieve the user id from the stored token
-    var tkn = await Token.get();
-    var user = await User.get(tkn.sub, withVotes: false);
-    var groups = await this._getUsersGroups(user);
-
-    this._profilePages["groups"] = GroupsPage(user: user, groups: groups);
+    // get groups
+    var groups = await this._getUsersGroups(this._user);
+    this._profilePages["groups"] = GroupsPage(user: this._user, groups: groups);
 
     setState(() {
       this._profilePages = this._profilePages;
@@ -69,8 +73,12 @@ class _ProfilePageState extends State<ProfilePage> {
   _getData() async {
     try {
       // retrieve the user id from the stored token
-      var tkn = await Token.get();
-      var user = await User.get(tkn.sub, withVotes: false);
+      var token = await Token.get();
+      var user = await User.get(token.sub, withVotes: false);
+
+      // set state vars
+      this._user = user;
+
       var groups = await this._getUsersGroups(user);
       // set the vars
       setState(() {
