@@ -170,12 +170,9 @@ class _GroupsPageState extends State<GroupsPage> {
       return;
     }
 
-    // removing any other member from the group
     try {
       await Group.leave(this._selectedGroupId!, userId);
-      setState(() {
-        this._selectedGroupMembers.removeWhere((user) => user.userID == userId);
-      });
+      // TODO tell the parent to reload the members or all the groups
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Successfully removed $name from the group.")));
     } catch (err) {
@@ -185,6 +182,7 @@ class _GroupsPageState extends State<GroupsPage> {
     }
   }
 
+  /// displays an alert dialog with information about the user
   void _showUser(UserResponse user) async {
     var currentUser = this._user!.userID;
     var isGroupOwner = this._userIsGroupOwner(user.userID);
@@ -209,6 +207,7 @@ class _GroupsPageState extends State<GroupsPage> {
           canRemoveUser: canRemoveUser,
           isGroupOwner: isGroupOwner,
           canPromoteUser: canPromoteUser,
+          onRemoved: () => {this._confirmRemoveMember(user.userID, user.name)},
         );
       },
     );
