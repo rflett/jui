@@ -28,15 +28,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
-  late UserResponse _user;
+  // state
+  UserResponse? _user;
   GroupResponse? _selectedGroup;
   List<GroupResponse> _groups = [];
 
   // SubRoutes for logged in users
   Map<String, WidgetBuilder> _loggedInRoutes = {};
+  String _currentRoute = gamePage;
 
+  // page title
   String _title = "JUI";
-
   String get title => _title;
 
   set title(String title) {
@@ -45,15 +47,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  String _currentRoute = gamePage;
-
   _HomePageState() {
     _getData();
     this._loggedInRoutes = {
       "/": (BuildContext context) => Container(),
       gamePage: (BuildContext context) => GamePage(),
       profilePage: (BuildContext context) =>
-          ProfilePage(user: this._user, group: this._selectedGroup!),
+          ProfilePage(user: this._user!, group: this._selectedGroup!),
     };
   }
 
@@ -188,10 +188,10 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Row(
                     children: [
-                      UserAvatar(uuid: this._user.userID),
+                      UserAvatar(uuid: this._user == null ? "" : this._user!.userID),
                       Padding(
                         padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        child: Text(this._user.name),
+                        child: Text(this._user == null ? "" : this._user!.name),
                       ),
                     ],
                   ),
