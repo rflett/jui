@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/constants/colors.dart';
 import 'package:jui/constants/storage_values.dart';
+import 'package:jui/models/dto/response/group/group_response.dart';
+import 'package:jui/models/dto/response/problem_response.dart';
+import 'package:jui/models/dto/response/user/user.dart';
+import 'package:jui/server/group.dart';
+import 'package:jui/server/user.dart';
+import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/storage.dart';
+import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/game/game_page.dart';
 import 'package:jui/view/pages/logged_in/profile/profile_page.dart';
 
@@ -18,12 +25,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
+  late UserResponse _user;
+  late GroupResponse _group;
+
   // SubRoutes for logged in users
-  final Map<String, WidgetBuilder> _loggedInRoutes = {
-    "/": (BuildContext context) => Container(),
-    gamePage: (BuildContext context) => GamePage(),
-    profilePage: (BuildContext context) => ProfilePage(),
-  };
+  Map<String, WidgetBuilder> _loggedInRoutes = {};
 
   String _title = "JUI";
 
@@ -36,6 +42,59 @@ class _HomePageState extends State<HomePage> {
   }
 
   String _currentRoute = gamePage;
+
+  _HomePageState() {
+    _getData();
+    this._loggedInRoutes = {
+      "/": (BuildContext context) => Container(),
+      gamePage: (BuildContext context) => GamePage(),
+      profilePage: (BuildContext context) => ProfilePage(user: this._user, group: this._group),
+    };
+  }
+
+  _getData() async {
+    try {
+      // retrieve the user id from the stored token
+      var token = await Token.get();
+      var user = await User.get(token.sub, withVotes: false);
+      var groups = await this._getUsersGroups(user);
+
+      // set the vars
+      setState(() {
+        this._group = groups[0];
+        this._user = user;
+      });
+    } catch (err) {
+      // TODO logging
+      print(err);
+      PopupUtils.showError(context, err as ProblemResponse);
+    }
+  }
+
+  // TODO remove
+  Future<List<GroupResponse>> _getUsersGroups(UserResponse user) async {
+    // get all the users groups
+    List<GroupResponse> groups = [];
+    for (var i = 0; i < user.groups!.length; i++) {
+      var group = await this._getGroup(user.groups![i]);
+      if (group != null) {
+        groups.add(group);
+      }
+    }
+    return groups;
+  }
+
+  // TODO remove
+  Future<GroupResponse?> _getGroup(String groupId) async {
+    try {
+      var group = await Group.get(groupId);
+      return group;
+    } catch (err) {
+      // TODO logging
+      print(err);
+      PopupUtils.showError(context, err as ProblemResponse);
+    }
+  }
 
   // Called whenever the app navigates to a route.
   MaterialPageRoute _handleRoute(RouteSettings settings) {

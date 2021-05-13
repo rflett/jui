@@ -2,64 +2,45 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jui/models/dto/response/group/games/game_response.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
-import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/server/group.dart';
-import 'package:jui/utilities/popups.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
 
-import 'components/group_dropdown.dart';
-
 class GamesPage extends StatefulWidget {
-  final List<GroupResponse> groups;
-  final void Function(String) onGroupSelected;
+  final GroupResponse group;
 
-  GamesPage({Key? key, required this.groups, required this.onGroupSelected}) : super(key: key);
+  GamesPage({Key? key, required this.group}) : super(key: key);
 
   @override
-  _GamesPageState createState() => _GamesPageState(groups, onGroupSelected);
+  _GamesPageState createState() => _GamesPageState(group);
 }
 
 class _GamesPageState extends State<GamesPage> {
-  // id of the currently selected group from the drop down
-  String? _selectedGroupId;
-  late void Function(String) _selectGroupCallback;
   // all groups that a user is a member of
-  List<GroupResponse> _groups = [];
+  late GroupResponse _group;
   // all the games in the current group
   List<GameResponse> _games = [];
 
-  _GamesPageState(List<GroupResponse> groups, Function(String) selectGroupCallback) {
-    this._selectGroupCallback = selectGroupCallback;
-    this._groups = groups;
+  _GamesPageState(GroupResponse group) {
+    this._group = group;
+    _getData();
   }
 
-  /// called when a group is selected from the drop down, updates the page data
-  void _selectGroup(String? groupId) async {
-    try {
-      var gamesResponse = await Group.getGames(groupId!);
-      setState(() {
-        this._selectedGroupId = groupId;
-        this._games = gamesResponse.games;
-        this._selectGroupCallback(groupId);
-      });
-    } catch (err) {
-      // TODO logging
-      print(err);
-      PopupUtils.showError(context, err as ProblemResponse);
-    }
+  void _getData() async {
+    var gamesResponse = await Group.getGames(this._group.groupID);
+    setState(() {
+      this._games = gamesResponse.games;
+    });
   }
 
   void _editGame(GameResponse game) async {
     var shouldRefresh = await showDialog<bool>(
       context: context,
       builder: (context) {
-        return CreateUpdateGamePopup(game: game, groupId: this._selectedGroupId!);
+        return CreateUpdateGamePopup(game: game, groupId: this._group.groupID);
       },
     );
     if (shouldRefresh == true) {
-      setState(() {
-        _selectGroup(this._selectedGroupId);
-      });
+      this._getData();
     }
   }
 
@@ -119,10 +100,6 @@ class _GamesPageState extends State<GamesPage> {
                 textAlign: TextAlign.left,
                 style: TextStyle(fontSize: 16),
               ),
-            ),
-            GroupDropDown(
-              groups: this._groups,
-              onGroupSelected: (groupId) => this._selectGroup(groupId),
             ),
             Divider(),
             ..._gameList(context),

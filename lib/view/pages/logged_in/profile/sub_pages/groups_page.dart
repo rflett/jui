@@ -11,126 +11,117 @@ import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_group.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/components/group_dropdown.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/view_user_popup.dart';
 
 class GroupsPage extends StatefulWidget {
   final UserResponse user;
-  final List<GroupResponse> groups;
+  final GroupResponse group;
 
-  GroupsPage({Key? key, required this.user, required this.groups})
+  GroupsPage({Key? key, required this.user, required this.group})
       : super(key: key);
 
   @override
-  _GroupsPageState createState() => _GroupsPageState(user, groups);
+  _GroupsPageState createState() => _GroupsPageState(user, group);
 }
 
 class _GroupsPageState extends State<GroupsPage> {
-  // id of the currently selected group from the drop down
-  String? _selectedGroupId;
-  // members of the currently selected group
-  List<UserResponse> _selectedGroupMembers = [];
-  // code of the currently selected group
-  String _selectedGroupCode = "";
   // the current logged in user
-  UserResponse? _user;
+  late UserResponse _user;
   // all groups that a user is a member of
-  List<GroupResponse> _groups = [];
+  late GroupResponse _group;
   // service to publish events on
   late SettingsService _service;
+  // members of the currently selected group
+  List<UserResponse> _members = [];
 
-  _GroupsPageState(UserResponse user, List<GroupResponse> groups) {
-    this._user = user;
-    this._groups = groups;
-    this._service = SettingsService.getInstance();
-  }
-
-  /// called when a group is selected from the drop down, updates the page data
-  void _selectGroup(String? groupId) async {
-    var group = await Group.getMembers(groupId!, withVotes: false);
-    setState(() {
-      this._selectedGroupId = groupId;
-      this._selectedGroupCode = this
-          ._groups
-          .firstWhere((group) => group.groupID == this._selectedGroupId)
-          .code;
-      this._selectedGroupMembers = group.members;
-    });
-  }
-
-  /// returns whether leave icon should be disabled
+  /// returns whether leave button should be disabled
   bool get _canLeaveCurrentGroup {
-    return !(this._user == null || this._user!.groups!.length == 1);
+    return this._user.groups!.length != 1;
   }
 
-  /// removes the current user from the group
-  void _leaveCurrentGroup() async {
-    try {
-      if (this._user!.groups!.length == 1) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("You can't leave your last group.")),
-        );
-        return;
-      }
+  _GroupsPageState(UserResponse user, GroupResponse group) {
+    this._user = user;
+    this._group = group;
+    this._service = SettingsService.getInstance();
+    this._getData();
+  }
 
-      if (this._userIsGroupOwner(this._user!.userID)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("TODO prompt to neknominate a new owner.")),
-        );
-        return;
-      }
-
-      // leave the group
-      var groupToLeave = this._selectedGroupId!;
-      await Group.leave(groupToLeave, this._user!.userID);
-
-      // remove group from lists, we could get the data again but that's slow af
-      setState(() {
-        this._groups.removeWhere((group) => group.groupID == groupToLeave);
-        this._user!.groups!.removeWhere((groupId) => groupId == groupToLeave);
-      });
-
-      // update the primary group id if you just left it
-      var primaryGroupId =
-          await DeviceStorage.retrieveValue(storagePrimaryGroupId);
-      if (primaryGroupId == groupToLeave) {
-        await DeviceStorage.storeValue(
-            storagePrimaryGroupId, this._user!.groups![0]);
-      }
-
-      // select the primary
-      this._selectGroup(primaryGroupId);
-
-      // let the user know we're gucci
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("You have left the group.")),
-      );
-    } catch (err) {
-      // TODO logging
-      print(err);
-      PopupUtils.showError(context, err as ProblemResponse);
-    }
+  void _getData() async {
+    var groupMembers =
+        await Group.getMembers(this._group.groupID, withVotes: false);
+    setState(() {
+      this._members = groupMembers.members;
+    });
   }
 
   /// displays the group QR code
   void _onShowQR() {
-    if (_selectedGroupId != null) {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return QrWidget(qrContent: this._selectedGroupCode);
-          });
-    }
+    showDialog(
+      context: context,
+      builder: (context) {
+        return QrWidget(qrContent: this._group.code);
+      },
+    );
   }
 
   /// returns whether the member is the owner of the selected group
   bool _userIsGroupOwner(String userId) {
-    // occurs during build
-    if (this._selectedGroupId == null) {
-      return false;
+    return this._group.ownerID == userId;
+  }
+
+  void _confirmLeaveGroup() async {
+    /// prompt and tell the user to nominate a new owner if they are already
+    /// the group owner and there's other members in the group
+    if (this._userIsGroupOwner(this._user.userID) && this._members.length > 1) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Nominate an owner"),
+            content: Text(
+                "You need to nominate a new group owner before you can leave this group."),
+            actions: [
+              TextButton(
+                child: Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+            ],
+          );
+        },
+      );
+      return;
     }
-    return this._groups.firstWhere((group) => group.groupID == this._selectedGroupId).ownerID == userId;
+
+    var shouldLeave = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Confirm"),
+            content: Text(
+                "Are you sure you want to leave this group? Since you're the only one left, it will be deleted."),
+            actions: [
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              TextButton(
+                child: Text('YES, DELETE IT'),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          );
+        });
+
+    if (shouldLeave == true) {
+      _removeMember(this._user.userID);
+    }
   }
 
   void _confirmRemoveMember(UserResponse user) async {
@@ -166,12 +157,12 @@ class _GroupsPageState extends State<GroupsPage> {
   }
 
   /// removes a member from the group
-  void _removeMember(String userId, String name) async {
+  void _removeMember(String userId, [String? name]) async {
     /**
      * This shouldn't be reachable. The remove member button should always be
      * hidden for yourself.
      */
-    if (userId == this._user!.userID) {
+    if (userId == this._user.userID) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("You can't leave using this button!")),
       );
@@ -179,10 +170,12 @@ class _GroupsPageState extends State<GroupsPage> {
     }
 
     try {
-      await Group.leave(this._selectedGroupId!, userId);
+      await Group.leave(this._group.groupID, userId);
       this._service.sendMessage(ProfileEvents.reloadGroups);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Successfully removed $name from the group.")));
+      if (name != null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Successfully removed $name from the group.")));
+      }
     } catch (err) {
       // TODO logging
       print(err);
@@ -192,7 +185,7 @@ class _GroupsPageState extends State<GroupsPage> {
 
   /// displays an alert dialog with information about the user
   void _showUser(UserResponse user) async {
-    var currentUser = this._user!.userID;
+    var currentUser = this._user.userID;
     var isGroupOwner = this._userIsGroupOwner(user.userID);
 
     // can the logged in user remove this user?
@@ -223,14 +216,10 @@ class _GroupsPageState extends State<GroupsPage> {
 
   /// displays an alert dialog to edit the group
   void _editGroup() {
-    var currentGroup = this
-        ._groups
-        .firstWhere((group) => group.groupID == this._selectedGroupId);
-
     showDialog(
       context: context,
       builder: (context) {
-        return CreateUpdateGroupPopup(group: currentGroup);
+        return CreateUpdateGroupPopup(group: this._group);
       },
     );
   }
@@ -238,34 +227,34 @@ class _GroupsPageState extends State<GroupsPage> {
   Widget groupMembers(BuildContext context) {
     List<Widget> listItems = [];
 
-    for (var i = 0; i < this._selectedGroupMembers.length; i++) {
-      var thisUserId = this._selectedGroupMembers[i].userID;
+    for (var i = 0; i < this._members.length; i++) {
+      var thisUserId = this._members[i].userID;
       listItems.add(Container(
         child: Card(
           child: ListTile(
-            leading: UserAvatar(
-              uuid: (this._user == null ? "" : this._user!.userID),
-              size: 30,
-            ),
+            leading: UserAvatar(uuid: (this._user.userID), size: 30),
             title: RichText(
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: "${this._selectedGroupMembers[i].name} ",
+                    text: this._members[i].name,
                     style: TextStyle(color: Colors.black, fontSize: 18),
                   ),
+
+                  /// show a star next to the group owner's name
                   WidgetSpan(
-                    /// show a star next to the group owner's name
-                    child: this._userIsGroupOwner(thisUserId)
-                        ? Icon(Icons.star_rounded, size: 18)
-                        : Container(),
+                    child: Padding(
+                        padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                        child: this._userIsGroupOwner(thisUserId)
+                            ? Icon(Icons.star_rounded, size: 18)
+                            : Container()),
                   ),
                 ],
               ),
             ),
             trailing: IconButton(
               icon: Icon(Icons.info_outline_rounded, color: Colors.black),
-              onPressed: () => this._showUser(this._selectedGroupMembers[i]),
+              onPressed: () => this._showUser(this._members[i]),
             ),
           ),
         ),
@@ -284,29 +273,34 @@ class _GroupsPageState extends State<GroupsPage> {
         ),
         child: Column(
           children: [
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                this._group.name,
+                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                GroupDropDown(
-                  groups: this._groups,
-                  onGroupSelected: (groupId) => this._selectGroup(groupId),
-                ),
-                SizedBox(width: 10),
-                Visibility(
-                    visible: this._userIsGroupOwner(this._user!.userID),
-                    child: IconButton(
-                      icon: Icon(Icons.edit, color: Colors.black),
-                      onPressed: () => this._editGroup(),
-                    )),
-                IconButton(
-                  icon: Icon(
-                    Icons.exit_to_app_rounded,
-                    color:
-                        this._canLeaveCurrentGroup ? Colors.red : Colors.grey,
+                TextButton(
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all<Color>(
+                        this._canLeaveCurrentGroup == true
+                            ? Colors.red
+                            : Colors.grey),
                   ),
+                  child: Text("LEAVE GROUP"),
                   onPressed: this._canLeaveCurrentGroup
-                      ? () => this._leaveCurrentGroup()
+                      ? () => this._confirmLeaveGroup()
                       : null,
+                ),
+                Visibility(
+                  visible: this._userIsGroupOwner(this._user.userID),
+                  child: TextButton(
+                    child: Text("EDIT GROUP"),
+                    onPressed: () => this._editGroup(),
+                  ),
                 ),
               ],
             ),
@@ -317,7 +311,7 @@ class _GroupsPageState extends State<GroupsPage> {
               children: [
                 Expanded(
                   child: Stack(children: [
-                    ShareGroupCode(code: this._selectedGroupCode),
+                    ShareGroupCode(code: this._group.code),
                   ]),
                 ),
                 SizedBox(width: 20),
