@@ -5,11 +5,14 @@ import 'package:jui/models/dto/response/group/group_response.dart';
 class GroupDropDown extends StatefulWidget {
   final List<GroupResponse> groups;
   final void Function(String) onGroupSelected;
+  final String? initial;
 
-  GroupDropDown({Key? key, required this.groups, required this.onGroupSelected}) : super(key: key);
+  GroupDropDown({Key? key, required this.groups, required this.onGroupSelected, required this.initial})
+      : super(key: key);
 
   @override
-  _GroupDropDownState createState() => _GroupDropDownState(groups, onGroupSelected);
+  _GroupDropDownState createState() =>
+      _GroupDropDownState(groups, onGroupSelected, initial);
 }
 
 class _GroupDropDownState extends State<GroupDropDown> {
@@ -19,7 +22,8 @@ class _GroupDropDownState extends State<GroupDropDown> {
   String? _selectedGroupId;
   late void Function(String) _selectGroupCallback;
 
-  _GroupDropDownState(List<GroupResponse> groups, Function(String) selectGroupCallback) {
+  _GroupDropDownState(
+      List<GroupResponse> groups, Function(String) selectGroupCallback, String? initial) {
     this._selectGroupCallback = selectGroupCallback;
     this._selectedGroupOptions = groups
         .map(
@@ -29,7 +33,9 @@ class _GroupDropDownState extends State<GroupDropDown> {
           ),
         )
         .toList();
-    this.selectGroup(groups[0].groupID);
+    if (initial != null) {
+      this._selectedGroupId = initial;
+    }
   }
 
   /// called when a group is selected from the drop down, updates the page data
@@ -41,6 +47,7 @@ class _GroupDropDownState extends State<GroupDropDown> {
   @override
   Widget build(BuildContext context) {
     return DropdownButton(
+      isExpanded: true,
       value: _selectedGroupId,
       onChanged: (String? newValue) => selectGroup(newValue),
       items: _selectedGroupOptions,

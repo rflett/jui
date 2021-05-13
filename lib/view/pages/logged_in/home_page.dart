@@ -10,8 +10,11 @@ import 'package:jui/server/user.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/utilities/token.dart';
+import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/game/game_page.dart';
 import 'package:jui/view/pages/logged_in/profile/profile_page.dart';
+
+import 'components/group_dropdown.dart';
 
 class HomePage extends StatefulWidget {
   final String homePageRoute;
@@ -26,7 +29,8 @@ class _HomePageState extends State<HomePage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   late UserResponse _user;
-  late GroupResponse _group;
+  GroupResponse? _selectedGroup;
+  List<GroupResponse> _groups = [];
 
   // SubRoutes for logged in users
   Map<String, WidgetBuilder> _loggedInRoutes = {};
@@ -48,7 +52,8 @@ class _HomePageState extends State<HomePage> {
     this._loggedInRoutes = {
       "/": (BuildContext context) => Container(),
       gamePage: (BuildContext context) => GamePage(),
-      profilePage: (BuildContext context) => ProfilePage(user: this._user, group: this._group),
+      profilePage: (BuildContext context) =>
+          ProfilePage(user: this._user, group: this._selectedGroup!),
     };
   }
 
@@ -57,12 +62,17 @@ class _HomePageState extends State<HomePage> {
       // retrieve the user id from the stored token
       var token = await Token.get();
       var user = await User.get(token.sub, withVotes: false);
+      var primaryGroupId =
+          await DeviceStorage.retrieveValue(storagePrimaryGroupId);
       var groups = await this._getUsersGroups(user);
 
       // set the vars
       setState(() {
-        this._group = groups[0];
+        this._groups = groups;
         this._user = user;
+        this._selectedGroup = this
+            ._groups
+            .firstWhere((group) => group.groupID == primaryGroupId!);
       });
     } catch (err) {
       // TODO logging
@@ -105,6 +115,14 @@ class _HomePageState extends State<HomePage> {
     WidgetBuilder page = _loggedInRoutes[settings.name]!;
 
     return MaterialPageRoute(builder: page, settings: settings);
+  }
+
+  void _onGroupSelected(String groupId) {
+    setState(() {
+      this._selectedGroup =
+          this._groups.firstWhere((group) => group.groupID == groupId);
+    });
+    DeviceStorage.storeValue(storagePrimaryGroupId, groupId);
   }
 
   void _onGameSelected() {
@@ -165,12 +183,29 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              child: Image.asset(
-                "assets/images/logo.png",
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      UserAvatar(uuid: this._user.userID),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Text(this._user.name),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: GroupDropDown(
+                      groups: this._groups,
+                      onGroupSelected: (groupId) => _onGroupSelected(groupId),
+                      initial: this._selectedGroup!.groupID,
+                    ),
+                  ),
+                ],
               ),
-              padding: EdgeInsets.zero,
               decoration: BoxDecoration(
-                color: appPrimaryColor,
+                color: Colors.white24,
               ),
             ),
             ListTile(

@@ -103,6 +103,9 @@ class _GamesPageState extends State<GamesPage> {
             ),
             Divider(),
             ..._gameList(context),
+            Visibility(
+                visible: this._games.length == 0,
+                child: Text("Create some games with the button below!"))
           ],
         ),
       ),
