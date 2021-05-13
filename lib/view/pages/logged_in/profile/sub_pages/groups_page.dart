@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jui/constants/storage_values.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
@@ -7,7 +6,6 @@ import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/services/settings_service.dart';
 import 'package:jui/utilities/popups.dart';
-import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_group.dart';
@@ -158,23 +156,16 @@ class _GroupsPageState extends State<GroupsPage> {
 
   /// removes a member from the group
   void _removeMember(String userId, [String? name]) async {
-    /**
-     * This shouldn't be reachable. The remove member button should always be
-     * hidden for yourself.
-     */
-    if (userId == this._user.userID) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("You can't leave using this button!")),
-      );
-      return;
-    }
-
     try {
       await Group.leave(this._group.groupID, userId);
-      this._service.sendMessage(ProfileEvents.reloadGroups);
       if (name != null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text("Successfully removed $name from the group.")));
+      }
+      if (this._user.userID == userId) {
+        this._service.sendMessage(ProfileEvents.reloadGroups);
+      } else {
+        this._getData();
       }
     } catch (err) {
       // TODO logging

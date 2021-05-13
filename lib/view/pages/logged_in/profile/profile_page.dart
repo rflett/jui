@@ -29,10 +29,6 @@ class _ProfilePageState extends State<ProfilePage> {
   // current data
   late GroupResponse _group;
 
-  // listeners
-  late SettingsService _service;
-  late StreamSubscription _serviceStream;
-
   _ProfilePageState(UserResponse user, GroupResponse group) {
     this._group = group;
 
@@ -50,38 +46,6 @@ class _ProfilePageState extends State<ProfilePage> {
         GamesPage(group: group),
       ),
     ]);
-
-    this._service = SettingsService.getInstance();
-    this._serviceStream = _service.messages.listen(onMessageReceived);
-  }
-
-  @override
-  void dispose() {
-    this._serviceStream.cancel();
-    super.dispose();
-  }
-
-  void onMessageReceived(ProfileEvents event) {
-    // From Singleton
-    switch (event) {
-      case ProfileEvents.reloadGroups:
-        _reloadGroups();
-        break;
-      case ProfileEvents.reloadGames:
-        _reloadGames();
-        break;
-      default:
-        throw UnsupportedError(
-            "WTF are you doing, do you know how dangerous that is?");
-    }
-  }
-
-  _reloadGroups() async {
-    return;
-  }
-
-  _reloadGames() async {
-    return;
   }
 
   void _onNavIconTapped(int index) {

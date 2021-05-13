@@ -1,12 +1,14 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
-import 'package:jui/constants/colors.dart';
 import 'package:jui/constants/storage_values.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
+import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/server/user.dart';
+import 'package:jui/services/settings_service.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/utilities/token.dart';
@@ -37,6 +39,10 @@ class _HomePageState extends State<HomePage> {
   Map<String, WidgetBuilder> _loggedInRoutes = {};
   String _currentRoute = gamePage;
 
+  // listeners
+  late SettingsService _service;
+  late StreamSubscription _serviceStream;
+
   // page title
   String _title = "JUI";
   String get title => _title;
@@ -55,6 +61,14 @@ class _HomePageState extends State<HomePage> {
       profilePage: (BuildContext context) =>
           ProfilePage(user: this._user!, group: this._selectedGroup!),
     };
+    this._service = SettingsService.getInstance();
+    this._serviceStream = _service.messages.listen(onMessageReceived);
+  }
+
+  @override
+  void dispose() {
+    this._serviceStream.cancel();
+    super.dispose();
   }
 
   _getData() async {
@@ -103,6 +117,12 @@ class _HomePageState extends State<HomePage> {
       // TODO logging
       print(err);
       PopupUtils.showError(context, err as ProblemResponse);
+    }
+  }
+
+  void onMessageReceived(ProfileEvents event) {
+    if (event == ProfileEvents.reloadGroups) {
+      // TODO reload the groups and refresh the ProfilePage
     }
   }
 
