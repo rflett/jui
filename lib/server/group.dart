@@ -4,6 +4,7 @@ import 'package:jui/constants/storage_values.dart';
 import 'package:jui/constants/urls.dart';
 import 'package:jui/models/dto/request/group/create_update_group.dart';
 import 'package:jui/models/dto/request/group/join_group.dart';
+import 'package:jui/models/dto/request/group/update_group_owner.dart';
 import 'package:jui/models/dto/response/group/group_games_response.dart';
 import 'package:jui/models/dto/response/group/group_members_response.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
@@ -141,7 +142,33 @@ class Group {
     http.Response response = http.Response("", 500);
     try {
       response =
-          await _apiServer.delete("$groupUrl/$groupId/members/$userId");
+      await _apiServer.delete("$groupUrl/$groupId/members/$userId");
+    } catch (err) {
+      print(err);
+    }
+
+    ApiRequest.handleErrors(response);
+  }
+
+  /// update the group owner
+  static Future<void> updateOwner(UpdateGroupOwnerRequest requestData) async {
+    var jsonBody = json.encode(requestData.toJson());
+    
+    http.Response response = http.Response("", 500);
+    try {
+      response = await _apiServer.post("$groupUrl/nominate", jsonBody);
+    } catch (err) {
+      print(err);
+    }
+
+    ApiRequest.handleErrors(response);
+  }
+
+  /// leave your group
+  static Future<void> delete(String groupId) async {
+    http.Response response = http.Response("", 500);
+    try {
+      response = await _apiServer.delete("$groupUrl/$groupId");
     } catch (err) {
       print(err);
     }

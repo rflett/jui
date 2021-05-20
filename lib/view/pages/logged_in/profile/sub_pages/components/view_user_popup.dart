@@ -9,6 +9,7 @@ class ViewUserPopup extends StatefulWidget {
   final bool canRemoveUser;
   final bool canPromoteUser;
   final void Function() onRemoved;
+  final void Function() onUpdateOwner;
 
   ViewUserPopup(
       {Key? key,
@@ -16,7 +17,8 @@ class ViewUserPopup extends StatefulWidget {
       required this.canRemoveUser,
       required this.isGroupOwner,
       required this.canPromoteUser,
-      required this.onRemoved})
+      required this.onRemoved,
+      required this.onUpdateOwner})
       : super(key: key);
 
   @override
@@ -26,6 +28,7 @@ class ViewUserPopup extends StatefulWidget {
         this.canRemoveUser,
         this.canPromoteUser,
         this.onRemoved,
+        this.onUpdateOwner,
       );
 }
 
@@ -38,6 +41,7 @@ class _ViewUserPopupState extends State<ViewUserPopup> {
   bool _canPromoteUser = false;
   // callbacks
   late void Function() _removeMemberCallback;
+  late void Function() _updateGroupOwnerCallback;
 
   _ViewUserPopupState(
     UserResponse user,
@@ -45,17 +49,24 @@ class _ViewUserPopupState extends State<ViewUserPopup> {
     bool canRemoveUser,
     bool canPromoteUser,
     Function() onRemoved,
+    Function() onUpdateOwner,
   ) {
     this._user = user;
     this._isGroupOwner = isGroupOwner;
     this._canRemoveUser = canRemoveUser;
     this._canPromoteUser = canPromoteUser;
     this._removeMemberCallback = onRemoved;
+    this._updateGroupOwnerCallback = onUpdateOwner;
   }
 
   void _removeMember(BuildContext context) {
     Navigator.of(context).pop(true);
     this._removeMemberCallback();
+  }
+
+  void _updateGroupOwner(BuildContext context) {
+    Navigator.of(context).pop(true);
+    this._updateGroupOwnerCallback();
   }
 
   @override
@@ -99,7 +110,7 @@ class _ViewUserPopupState extends State<ViewUserPopup> {
               visible: this._canPromoteUser,
               child: ElevatedButton(
                 child: Text("PROMOTE TO GROUP OWNER"),
-                onPressed: () => null,
+                onPressed: () => _updateGroupOwner(context),
               ),
             ),
           ],

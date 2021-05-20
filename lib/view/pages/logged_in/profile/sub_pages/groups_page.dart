@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jui/models/dto/request/group/update_group_owner.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
@@ -93,7 +94,7 @@ class _GroupsPageState extends State<GroupsPage> {
       return;
     }
 
-    var shouldLeave = await showDialog<bool>(
+    var shouldDelete = await showDialog<bool>(
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -117,8 +118,8 @@ class _GroupsPageState extends State<GroupsPage> {
           );
         });
 
-    if (shouldLeave == true) {
-      _removeMember(this._user.userID);
+    if (shouldDelete == true) {
+      this._deleteGroup(this._group.groupID, this._group.name);
     }
   }
 
@@ -174,6 +175,70 @@ class _GroupsPageState extends State<GroupsPage> {
     }
   }
 
+  void _updateGroupOwner(UserResponse user) async {
+    var shouldUpdate = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Confirm"),
+            content: Text(
+              "Are you sure you want to make ${user.name} the new group owner? \n"
+                  "They will now manage the group and its members.",
+            ),
+            actions: [
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              TextButton(
+                child: Text('YES'),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          );
+        });
+
+    if (shouldUpdate == true) {
+      updateGroupOwner(user.userID);
+    } else {
+      _showUser(user);
+    }
+  }
+
+  /// updates the group with a new owner
+  void updateGroupOwner(String userId) async {
+    var requestData = UpdateGroupOwnerRequest(this._group.groupID, userId);
+
+    try {
+      await Group.updateOwner(requestData);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Successfully nominated a new owner.")));
+      this._service.sendMessage(ProfileEvents.reloadGroups);
+    } catch (err) {
+      // TODO logging
+      print(err);
+      PopupUtils.showError(context, err as ProblemResponse);
+    }
+  }
+
+  /// removes a member from the group
+  void _deleteGroup(String groupId, String name) async {
+    try {
+      await Group.delete(this._group.groupID);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Successfully deleted $name.")));
+      this._service.sendMessage(ProfileEvents.reloadGroups);
+    } catch (err) {
+      // TODO logging
+      print(err);
+      PopupUtils.showError(context, err as ProblemResponse);
+    }
+  }
+
   /// displays an alert dialog with information about the user
   void _showUser(UserResponse user) async {
     var currentUser = this._user.userID;
@@ -200,6 +265,7 @@ class _GroupsPageState extends State<GroupsPage> {
           isGroupOwner: isGroupOwner,
           canPromoteUser: canPromoteUser,
           onRemoved: () => {this._confirmRemoveMember(user)},
+          onUpdateOwner: () => {this._updateGroupOwner(user)},
         );
       },
     );

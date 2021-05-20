@@ -75,44 +75,18 @@ class _HomePageState extends State<HomePage> {
     try {
       // retrieve the user id from the stored token
       var token = await Token.get();
-      var user = await User.get(token.sub, withVotes: false);
+      var user = await User.get(token.sub, withVotes: false, withGroups: true);
       var primaryGroupId =
           await DeviceStorage.retrieveValue(storagePrimaryGroupId);
-      var groups = await this._getUsersGroups(user);
 
       // set the vars
       setState(() {
-        this._groups = groups;
+        this._groups = user.groups == null ? [] : user.groups!;
         this._user = user;
         this._selectedGroup = this
             ._groups
             .firstWhere((group) => group.groupID == primaryGroupId!);
       });
-    } catch (err) {
-      // TODO logging
-      print(err);
-      PopupUtils.showError(context, err as ProblemResponse);
-    }
-  }
-
-  // TODO remove
-  Future<List<GroupResponse>> _getUsersGroups(UserResponse user) async {
-    // get all the users groups
-    List<GroupResponse> groups = [];
-    for (var i = 0; i < user.groups!.length; i++) {
-      var group = await this._getGroup(user.groups![i]);
-      if (group != null) {
-        groups.add(group);
-      }
-    }
-    return groups;
-  }
-
-  // TODO remove
-  Future<GroupResponse?> _getGroup(String groupId) async {
-    try {
-      var group = await Group.get(groupId);
-      return group;
     } catch (err) {
       // TODO logging
       print(err);

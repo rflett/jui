@@ -27,8 +27,10 @@ class User {
 
   /// get a user
   static Future<UserResponse> get(String userId,
-      {bool withVotes = false}) async {
-    var url = "$userGetUrl/$userId?withVotes=${withVotes.toString()}";
+      {bool withVotes = false, bool withGroups = false}) async {
+    var url = "$userGetUrl/$userId?"
+        "withVotes=${withVotes.toString()}&"
+        "withGroups=${withGroups.toString()}";
 
     http.Response response = http.Response("", 500);
     try {
@@ -78,13 +80,12 @@ class User {
     http.Response response = http.Response("", 500);
     try {
       response = await _apiServer.delete("$userDeleteVoteUrl/$songId");
-      } catch (err)
-      {
-        print(err);
-      }
-
-      ApiRequest.handleErrors(response);
+    } catch (err) {
+      print(err);
     }
+
+    ApiRequest.handleErrors(response);
+  }
 
   /// register a device for notifications
   static Future<void> registerDevice(RegisterDeviceRequest requestData) async {

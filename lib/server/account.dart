@@ -30,7 +30,6 @@ class Account {
     var responseObj = LoginResponse.fromJson(json.decode(response.body));
 
     _storeToken(responseObj);
-    _storeGroup(responseObj);
 
     return responseObj.user;
   }
@@ -70,7 +69,7 @@ class Account {
       return;
     }
     // primary group
-    var groupId = response.user.groups![0];
+    var groupId = response.user.groups![0].groupID;
     await DeviceStorage.storeValue(storagePrimaryGroupId, groupId);
   }
 }

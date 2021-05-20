@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/shared/vote.dart';
 
 part 'user.g.dart';
@@ -10,7 +11,7 @@ class UserResponse {
   final String email;
   final int points;
   final DateTime createdAt;
-  final List<String>? groups; // groups is null if user is not in any group
+  final List<GroupResponse>? groups; // groups is null if user is not in any group
   final String? nickName; // not set when signed up via socials
   final String authProvider;
   final String authProviderId;
