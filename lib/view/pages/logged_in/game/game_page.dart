@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/view/pages/logged_in/game/sub_pages/leaderboard/leaderboard.dart';
 import 'package:jui/view/pages/logged_in/game/sub_pages/my_votes/my_votes_page.dart';
 
 class GamePage extends StatefulWidget {
-  GamePage({Key? key}) : super(key: key);
+  final List<UserResponse> members;
+
+  GamePage({Key? key, required this.members}) : super(key: key);
 
   @override
-  _GamePageState createState() => _GamePageState();
+  _GamePageState createState() => _GamePageState(members);
 }
 
 class _GamePageState extends State<GamePage> {
   int _selectedIndex = 0;
-  List<Widget> _profilePages = [
-    Leaderboard(),
-    Leaderboard(),
-    MyVotesPage(),
-  ];
+  List<Widget> _profilePages = [];
+
+  _GamePageState(List<UserResponse> members) {
+    this._profilePages = [
+      Leaderboard(members: members),
+      MyVotesPage(),
+      MyVotesPage()
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {

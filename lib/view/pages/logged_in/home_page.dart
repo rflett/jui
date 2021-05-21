@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   UserResponse? _user;
   GroupResponse? _selectedGroup;
   List<GroupResponse> _groups = [];
+  List<UserResponse> _members = [];
 
   // SubRoutes for logged in users
   Map<String, WidgetBuilder> _loggedInRoutes = {};
@@ -57,7 +58,7 @@ class _HomePageState extends State<HomePage> {
     _getData();
     this._loggedInRoutes = {
       "/": (BuildContext context) => Container(),
-      gamePage: (BuildContext context) => GamePage(),
+      gamePage: (BuildContext context) => GamePage(members: this._members),
       profilePage: (BuildContext context) =>
           ProfilePage(user: this._user!, group: this._selectedGroup!),
     };
@@ -78,14 +79,16 @@ class _HomePageState extends State<HomePage> {
       var user = await User.get(token.sub, withVotes: false, withGroups: true);
       var primaryGroupId =
           await DeviceStorage.retrieveValue(storagePrimaryGroupId);
+      var members = await Group.getMembers(primaryGroupId!, withVotes: true);
 
       // set the vars
       setState(() {
         this._groups = user.groups == null ? [] : user.groups!;
         this._user = user;
+        this._members = members.members;
         this._selectedGroup = this
             ._groups
-            .firstWhere((group) => group.groupID == primaryGroupId!);
+            .firstWhere((group) => group.groupID == primaryGroupId);
       });
     } catch (err) {
       // TODO logging

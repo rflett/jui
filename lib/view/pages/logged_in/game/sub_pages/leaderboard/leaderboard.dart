@@ -1,29 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:jui/models/dto/response/user/user.dart';
 
 import 'components/leaderboard_card.dart';
 
 class Leaderboard extends StatefulWidget {
-  Leaderboard({Key? key}) : super(key: key);
+  final List<UserResponse> members;
+
+  Leaderboard({Key? key, required this.members}) : super(key: key);
 
   @override
-  _LeaderboardState createState() => _LeaderboardState();
+  _LeaderboardState createState() => _LeaderboardState(members);
 }
 
 class _LeaderboardState extends State<Leaderboard> {
   bool _showVotes = false;
 
-  List<String> users = [
-    "Roma",
-    "Florry",
-    "Gaven",
-    "Celesta",
-    "Ulick",
-    "Laurie",
-    "Crin",
-    "Mike",
-    "Allyson",
-    "Olia",
-  ];
+  List<UserResponse> _members = [];
+
+  _LeaderboardState(List<UserResponse> members) {
+    this._members = members;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +47,7 @@ class _LeaderboardState extends State<Leaderboard> {
                 separatorBuilder: (context, index) => Padding(
                   padding: EdgeInsets.symmetric(vertical: 30),
                 ),
-                itemCount: users.length,
+                itemCount: this._members.length,
               ),
             ),
           ]),
@@ -61,7 +57,7 @@ class _LeaderboardState extends State<Leaderboard> {
   }
 
   Widget renderCard(BuildContext context, int index) {
-    String name = users[index];
-    return LeaderboardCard(_showVotes, name, ++index);
+    UserResponse user = this._members[index];
+    return LeaderboardCard(_showVotes, user, ++index);
   }
 }
