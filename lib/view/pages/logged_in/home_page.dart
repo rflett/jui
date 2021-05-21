@@ -193,7 +193,7 @@ class _HomePageState extends State<HomePage> {
                     child: GroupDropDown(
                       groups: this._groups,
                       onGroupSelected: (groupId) => _onGroupSelected(groupId),
-                      initial: this._selectedGroup!.groupID,
+                      initial: this._selectedGroup == null ? null : this._selectedGroup!.groupID,
                     ),
                   ),
                 ],
@@ -211,7 +211,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
               },
             ),
-            Divider(),
+            SizedBox(height: 10),
             ListTile(
               leading: Icon(Icons.settings),
               title: Text('Profile'),
