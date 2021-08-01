@@ -17,7 +17,8 @@ class SetupGroupPage extends StatefulWidget {
 
 class _SetupGroupPageState extends State<SetupGroupPage> {
   // group code used to join an existing group
-  TextEditingController _groupCodeController = new TextEditingController(text: '');
+  TextEditingController _groupCodeController =
+      new TextEditingController(text: '');
   // whether the current code is a valid code or not
   bool _codeIsValid = false;
   // whether to show the cross/check for code validity
@@ -66,74 +67,95 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
               )),
           ConstrainedBox(
             constraints:
-                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 350),
-            child: Card(
-              elevation: 3,
-              child: Container(
-                padding: EdgeInsets.all(20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextFormField(
-                        onChanged: (val) =>
-                            this._formKey.currentState!.validate(),
-                        controller: _groupCodeController,
-                        validator: validateGroupCode,
-                        decoration: InputDecoration(
-                          labelText: "Code",
-                          border: UnderlineInputBorder(),
-                          suffixIcon: Visibility(
-                              visible: this._codeValidityIconIsVisible,
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 15),
-                                child: Icon(
-                                  this._codeIsValid == true
-                                      ? Icons.check
-                                      : Icons.close,
-                                  color: this._codeIsValid == true
-                                      ? Colors.green
-                                      : Colors.red,
-                                ),
-                              )),
-                        ),
+                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 450),
+            child: Container(
+              padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child:
+                          Text("Join a group", style: TextStyle(fontSize: 16)),
+                    ),
+                    TextFormField(
+                      onChanged: (val) =>
+                          this._formKey.currentState!.validate(),
+                      controller: _groupCodeController,
+                      validator: validateGroupCode,
+                      decoration: InputDecoration(
+                        labelText: "Code",
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                        suffixIcon: Visibility(
+                            visible: this._codeValidityIconIsVisible,
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 15),
+                              child: Icon(
+                                this._codeIsValid == true
+                                    ? Icons.check
+                                    : Icons.close,
+                                color: this._codeIsValid == true
+                                    ? Colors.green
+                                    : Colors.red,
+                              ),
+                            )),
                       ),
-                      Hero(
-                        tag: "scan-qr-button",
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            backgroundColor: appPrimaryColor,
-                            primary: Colors.white,
-                            padding: EdgeInsets.all(15),
-                            minimumSize: Size(300, 60),
-                          ),
-                          child: Text("Scan QR Code",
-                              style: TextStyle(fontSize: 25)),
-                          onPressed: onScanQRClicked,
-                        ),
+                    ),
+                    Hero(
+                      tag: "scan-qr-button",
+                      child: TextButton(
+                        child: Text("SCAN QR CODE"),
+                        onPressed: onScanQRClicked,
                       ),
-                      TextFormField(
-                        onChanged: (val) => _groupName = val,
-                        validator: validateGroupName,
-                        decoration: InputDecoration(
-                            labelText: "Name", border: UnderlineInputBorder()),
+                    ),
+                    SizedBox(height: 30),
+                    Row(children: <Widget>[
+                      Expanded(
+                        child: new Container(
+                            margin:
+                                const EdgeInsets.only(left: 10.0, right: 15.0),
+                            child: Divider(
+                              color: Colors.grey,
+                              height: 50,
+                            )),
                       ),
-                      Hero(
-                        tag: "update-group-button",
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            backgroundColor: appPrimaryColor,
-                            primary: Colors.white,
-                            padding: EdgeInsets.all(15),
-                            minimumSize: Size(300, 60),
-                          ),
-                          child: Text("NEXT", style: TextStyle(fontSize: 25)),
-                          onPressed: onNextClicked,
-                        ),
+                      Text("OR", style: TextStyle(color: Colors.grey)),
+                      Expanded(
+                        child: new Container(
+                            margin:
+                                const EdgeInsets.only(left: 15.0, right: 10.0),
+                            child: Divider(
+                              color: Colors.grey,
+                              height: 50,
+                            )),
                       ),
-                    ],
-                  ),
+                    ]),
+                    SizedBox(height: 30),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Create a group",
+                          style: TextStyle(fontSize: 16)),
+                    ),
+                    TextFormField(
+                      onChanged: (val) => _groupName = val,
+                      validator: validateGroupName,
+                      decoration: InputDecoration(
+                        labelText: "Name",
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        child: Text("NEXT"),
+                        onPressed: onNextClicked,
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),
@@ -255,7 +277,8 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
       var group = await Group.join(requestData);
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Welcome to " + group.name + "!")));
-      Navigator.pushNamedAndRemoveUntil(context, firstTimeSetupInviteRoute, (route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+          context, firstTimeSetupInviteRoute, (route) => false);
     } catch (err) {
       PopupUtils.showError(context, err as ProblemResponse,
           title: "Invalid group code!");
@@ -272,7 +295,8 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
       var group = await Group.create(requestData);
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("You've created " + group.name + "!")));
-      Navigator.pushNamedAndRemoveUntil(context, firstTimeSetupInviteRoute, (route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+          context, firstTimeSetupInviteRoute, (route) => false);
     } catch (err) {
       PopupUtils.showError(context, err as ProblemResponse,
           title: "Can't create group!");

@@ -52,7 +52,7 @@ class _VotesPageState extends State<VotesPage> {
 
   removeVote(Vote vote) async {
     try {
-      await User.removeVote(vote.songId);
+      await User.removeVote(vote.songID);
     } catch (err) {
       // TODO logging
       print(err);

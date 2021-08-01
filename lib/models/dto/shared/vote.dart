@@ -5,18 +5,16 @@ part 'vote.g.dart';
 
 @JsonSerializable()
 class Vote {
-  final String songId; // Spotify song ID
+  final String songID; // Spotify song ID
   final String name;
   final String album;
   final String artist;
   final List<VoteArtwork> artwork;
-  final int? viewPosition;
   final int? playedPosition;
   final DateTime? playedAt;
   final DateTime createdAt;
 
-  Vote(this.songId, this.name, this.album, this.artist, this.artwork,
-      this.viewPosition, this.playedPosition, this.playedAt, this.createdAt);
+  Vote(this.songID, this.name, this.album, this.artist, this.artwork, this.playedPosition, this.playedAt, this.createdAt);
 
   factory Vote.fromJson(Map<String, dynamic> json) => _$VoteFromJson(json);
 

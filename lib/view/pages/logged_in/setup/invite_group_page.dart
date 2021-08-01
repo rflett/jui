@@ -47,19 +47,13 @@ class _InviteGroupPageState extends State<InviteGroupPage> {
                     visible: this._groupCode != "",
                   ),
                   SizedBox(height: 40),
-                  Hero(
-                    tag: "go-to-leaderboard",
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: appPrimaryColor,
-                        primary: Colors.white,
-                        padding: EdgeInsets.all(15),
-                        minimumSize: Size(300, 60),
-                      ),
-                      child: Text("LET'S GO", style: TextStyle(fontSize: 25)),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      child: Text("NEXT"),
                       onPressed: onNextClicked,
                     ),
-                  ),
+                  )
                 ],
               ))
         ])));

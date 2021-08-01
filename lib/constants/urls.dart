@@ -22,3 +22,4 @@ const groupJoinUrl = "$serverBaseUrl/group/members";
 
 // misc
 const searchUrl = "$serverBaseUrl/search";
+const playedSongsUrl = "$serverBaseUrl/songs/played";

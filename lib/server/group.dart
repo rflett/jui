@@ -70,7 +70,6 @@ class Group {
   /// get the members of a group, optionally with their votes as well
   static Future<GroupMembersResponse> getMembers(String groupId,
       {bool withVotes = false}) async {
-    // TODO sprintf deprecated, remove once figured out routing
     var url = "$groupUrl/$groupId/members?withVotes=${withVotes.toString()}";
 
     http.Response response = http.Response("", 500);
