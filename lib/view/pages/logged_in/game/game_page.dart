@@ -1,13 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
-import 'package:jui/models/dto/shared/vote.dart';
-import 'package:jui/utilities/popups.dart';
 import 'package:jui/view/pages/logged_in/game/sub_pages/leaderboard/leaderboard.dart';
 import 'package:jui/view/pages/logged_in/game/sub_pages/my_votes/my_votes_page.dart';
 import 'package:jui/view/pages/logged_in/game/sub_pages/played_songs/played_songs_page.dart';
-import 'package:jui/server/songs.dart';
 
 class GamePage extends StatefulWidget {
   final List<UserResponse> members;
@@ -21,7 +17,6 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> {
   int _selectedIndex = 0;
   List<Widget> _gamePages = [];
-  List<Vote> _songs = [];
 
   _GamePageState(List<UserResponse> members) {
     this._gamePages = [
@@ -30,8 +25,6 @@ class _GamePageState extends State<GamePage> {
       MyVotesPage()
     ];
   }
-
-
 
   void _onItemTapped(int index) {
     setState(() {

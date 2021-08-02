@@ -1,13 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/shared/vote.dart';
 import 'package:jui/server/songs.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/view/pages/logged_in/components/animated_bar.dart';
 import 'package:palette_generator/palette_generator.dart';
-
 
 class PlayedSongsPage extends StatefulWidget {
   PlayedSongsPage({Key? key}) : super(key: key);
@@ -22,7 +20,7 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
   late AnimationController _animController;
   List<Vote> _songs = [];
   int _currentIndex = 0;
-  Color currentColor = Colors.black;
+  Color? currentColor;
 
   _PlayedSongsPageState() {
     _getData();
@@ -42,6 +40,7 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
       print(err);
       PopupUtils.showError(context, err as ProblemResponse);
     }
+    this._setAverageColor();
   }
 
   @override
@@ -79,23 +78,36 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return this._songs.length == 0 ? Container() : Scaffold(
         backgroundColor: currentColor,
+        floatingActionButton: Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 20, 15),
+          child: FloatingActionButton(
+            onPressed: () => _onSpotifyPressed(),
+            child: ImageIcon(
+              // NetworkImage("https://1000logos.net/wp-content/uploads/2021/04/Spotify-logo.png"),
+              AssetImage("assets/images/social/spotify-icon.png"),
+              size: 80,
+            ),
+            backgroundColor: Colors.green,
+          ),
+        ),
         body: GestureDetector(
           onTapDown: (details) => _onTapDown(details),
           child: Stack(
             children: <Widget>[
               PageView.builder(
-                  controller: _pageController,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: this._songs.length,
-                  itemBuilder: (context, i) {
-                    final Vote song = this._songs[i];
-                    return CachedNetworkImage(
-                      imageUrl: song.artwork[0].url,
-                      fit: BoxFit.contain,
-                    );
-                  }),
+                controller: _pageController,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: this._songs.length,
+                itemBuilder: (context, i) {
+                  final Vote song = this._songs[i];
+                  return CachedNetworkImage(
+                    imageUrl: song.artwork.first.url,
+                    fit: BoxFit.contain,
+                  );
+                },
+              ),
               Positioned(
                 top: 5.0,
                 left: 5.0,
@@ -117,16 +129,60 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
                       .values
                       .toList(),
                 ),
-              )
+              ),
+              Positioned(
+                  top: 20.0,
+                  left: 10.0,
+                  right: 10.0,
+                  child: Column(
+                    children: [
+                      Container(
+                        child: Text(this._songs[_currentIndex].name,
+                            style: TextStyle(
+                                color: Colors.white, letterSpacing: 3.0)),
+                        decoration: new BoxDecoration(color: Colors.black),
+                        padding: new EdgeInsets.all(10.0),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        child: Text(this._songs[_currentIndex].artist,
+                            style: TextStyle(
+                                color: Colors.white, letterSpacing: 3.0)),
+                        decoration: new BoxDecoration(color: Colors.black),
+                        padding: new EdgeInsets.all(10.0),
+                      ),
+                    ],
+                  )),
+              Positioned(
+                bottom: 25.0,
+                left: 20.0,
+                child: Container(
+                  child: Text(
+                    "#${this._songs[_currentIndex].playedPosition}",
+                    style: TextStyle(
+                      color: Colors.white,
+                      letterSpacing: 3.0,
+                      fontSize: 40.0,
+                    ),
+                  ),
+                  decoration: new BoxDecoration(color: Colors.black),
+                  padding: new EdgeInsets.all(10.0),
+                ),
+              ),
             ],
           ),
         ));
   }
 
+  void _onSpotifyPressed() async {
+    // TODO open Spotify
+  }
+
   void _setAverageColor() async {
-    CachedNetworkImageProvider currentImage = CachedNetworkImageProvider(this._songs[_currentIndex].artwork[0].url);
-    final PaletteGenerator paletteGenerator = await PaletteGenerator
-        .fromImageProvider(currentImage);
+    CachedNetworkImageProvider currentImage = CachedNetworkImageProvider(
+        this._songs[_currentIndex].artwork.first.url);
+    final PaletteGenerator paletteGenerator =
+        await PaletteGenerator.fromImageProvider(currentImage);
     setState(() {
       this.currentColor = paletteGenerator.dominantColor!.color;
     });
