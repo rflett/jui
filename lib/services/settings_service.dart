@@ -1,28 +1,19 @@
 import 'dart:async';
-
 import 'package:jui/models/enums/settings_page.dart';
-import 'package:jui/models/enums/social_providers.dart';
+import 'package:jui/services/base/messenger_service.dart';
 
-class SettingsService {
+class SettingsService extends MessengerService<ProfileEvents> {
   static SettingsService? _instance;
 
-  late StreamController<ProfileEvents> _messenger;
-  late Stream<ProfileEvents> messages;
-
   SettingsService._internal() {
-    _messenger = StreamController.broadcast();
-    messages = _messenger.stream;
+    messenger = StreamController.broadcast();
+    messages = messenger.stream;
   }
 
   static SettingsService getInstance() {
     if (_instance == null) {
       _instance = SettingsService._internal();
     }
-
     return _instance!;
-  }
-
-  void sendMessage(ProfileEvents message) {
-    _messenger.add(message);
   }
 }

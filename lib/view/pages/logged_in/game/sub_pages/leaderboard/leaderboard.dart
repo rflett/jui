@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
+import 'package:jui/services/group_service.dart';
 
 import 'components/leaderboard_card.dart';
 
@@ -13,12 +15,20 @@ class Leaderboard extends StatefulWidget {
 }
 
 class _LeaderboardState extends State<Leaderboard> {
+  GroupResponse? _selectedGroup;
   bool _showVotes = false;
 
   List<UserResponse> _members = [];
 
   _LeaderboardState(List<UserResponse> members) {
     this._members = members;
+
+    // Listen for state changes on the groups
+    GroupService.getInstance().messages.listen((group) {
+      setState(() {
+        _selectedGroup = group;
+      });
+    });
   }
 
   @override

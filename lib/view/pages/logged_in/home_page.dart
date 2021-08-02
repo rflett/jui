@@ -8,6 +8,7 @@ import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/server/user.dart';
+import 'package:jui/services/group_service.dart';
 import 'package:jui/services/settings_service.dart';
 import 'package:jui/utilities/navigation.dart';
 import 'package:jui/utilities/popups.dart';
@@ -92,6 +93,8 @@ class _HomePageState extends State<HomePage> {
             this._groups.firstWhere((group) => group.groupID == primaryGroupId);
         this._title = this._selectedGroup?.name ?? "";
       });
+      // Alert listeners in other pages
+      GroupService.getInstance().sendMessage(this._selectedGroup);
     } catch (err) {
       // TODO logging
       print(err);
@@ -120,8 +123,12 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       this._selectedGroup =
           this._groups.firstWhere((group) => group.groupID == groupId);
+      this._title = this._selectedGroup?.name ?? "";
     });
     DeviceStorage.storeValue(storagePrimaryGroupId, groupId);
+
+    // Alert listeners in other pages
+    GroupService.getInstance().sendMessage(this._selectedGroup);
   }
 
   void _onGameSelected() {
