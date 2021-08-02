@@ -43,7 +43,7 @@ class LeaderboardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      height: isExpanded? 450 : 120,
+      height: isExpanded ? 450 : 120,
       curve: Curves.easeInOut,
       duration: Duration(milliseconds: 400),
       child: ClipRect(
@@ -91,24 +91,26 @@ class LeaderboardCard extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 ...this._votes.map(
-                  (value) => SizedBox(
-                    height: 30,
-                    child: Row(
-                      children: [
-                        Text(
-                          value.name,
-                          style: TextStyle(
-                            fontWeight: value.playedAt != null
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
+                      (value) => SizedBox(
+                        height: 30,
+                        child: Row(
+                          children: [
+                            Text(
+                              value.name,
+                              style: TextStyle(
+                                fontWeight: value.playedAt != null
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            Spacer(),
+                            if (value.playedAt != null)
+                              Text(this
+                                  .pointsToHuman(100 - value.playedPosition!)),
+                          ],
                         ),
-                        Spacer(),
-                        if (value.playedAt != null) Text(this.pointsToHuman(100 - value.playedPosition!)),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
               ],
             ),
           ),

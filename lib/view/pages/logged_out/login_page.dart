@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
@@ -7,6 +9,7 @@ import 'package:jui/models/enums/social_providers.dart';
 import 'package:jui/server/account.dart';
 import 'package:jui/utilities/navigation.dart';
 import 'package:jui/utilities/popups.dart';
+import 'file:///B:/Programming/flutter-projects/jui/lib/view/components/buttons/outlined_loading_button.dart';
 
 import 'components/social-login/social_login_button.dart';
 
@@ -16,15 +19,20 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+
   bool _hidePassword = true;
+  bool _isLoading = false;
   String _email = "";
   String _password = "";
 
-  final _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   _onLoginClicked() async {
     if (_formKey.currentState?.validate() == true) {
+      // Show loading indicator
+      setState(() {
+        _isLoading = true;
+      });
+
       // Form was filled out, attempt login
       var requestData = SignInRequest(this._email, this._password);
       try {
@@ -43,6 +51,9 @@ class _LoginPageState extends State<LoginPage> {
         // TODO logging
         print(err);
         PopupUtils.showError(context, err as ProblemResponse);
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -130,9 +141,10 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       Align(
                         alignment: AlignmentDirectional.centerEnd,
-                        child: OutlinedButton(
+                        child: OutlinedLoadingButton(
                           child: Text("LOGIN"),
                           onPressed: _onLoginClicked,
+                          isLoading: _isLoading,
                         ),
                       ),
                     ]),
