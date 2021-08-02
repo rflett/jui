@@ -17,7 +17,7 @@ class Leaderboard extends StatefulWidget {
 }
 
 class _LeaderboardState extends State<Leaderboard> {
-  StreamSubscription _groupSub;
+  StreamSubscription? _groupSub;
   GroupResponse? _selectedGroup;
   bool _showVotes = false;
 
@@ -37,10 +37,10 @@ class _LeaderboardState extends State<Leaderboard> {
   @override
   void dispose() {
     super.dispose();
-    
+
     // Need to call this on dispose otherwise the code inside listen() stays forever
     // So if you come back to this page 5 times it'll run that code 5 times at once causing memory leaks
-    _groupSub.cancel();
+    _groupSub?.cancel();
   }
 
   @override
