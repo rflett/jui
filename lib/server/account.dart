@@ -58,7 +58,6 @@ class Account {
   /// Stores the JWT token from the LoginResponse in the DeviceStorage
   static void _storeToken(LoginResponse response) async {
     await DeviceStorage.storeValue(storageToken, response.token);
-    _apiServer.updateTokenType(response.tokenType);
     _apiServer.updateToken(response.token);
   }
 
