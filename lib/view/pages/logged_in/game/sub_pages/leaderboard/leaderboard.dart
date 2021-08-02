@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
@@ -15,6 +17,7 @@ class Leaderboard extends StatefulWidget {
 }
 
 class _LeaderboardState extends State<Leaderboard> {
+  StreamSubscription _groupSub;
   GroupResponse? _selectedGroup;
   bool _showVotes = false;
 
@@ -24,11 +27,20 @@ class _LeaderboardState extends State<Leaderboard> {
     this._members = members;
 
     // Listen for state changes on the groups
-    GroupService.getInstance().messages.listen((group) {
+    _groupSub = GroupService.getInstance().messages.listen((group) {
       setState(() {
         _selectedGroup = group;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    
+    // Need to call this on dispose otherwise the code inside listen() stays forever
+    // So if you come back to this page 5 times it'll run that code 5 times at once causing memory leaks
+    _groupSub.cancel();
   }
 
   @override
