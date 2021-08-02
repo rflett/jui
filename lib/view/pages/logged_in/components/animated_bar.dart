@@ -48,14 +48,10 @@ class AnimatedBar extends StatelessWidget {
 
   Container _buildContainer(double width, Color color) {
     return Container(
-      height: 5.0,
+      height: 3.0,
       width: width,
       decoration: BoxDecoration(
         color: color,
-        border: Border.all(
-          color: Colors.black26,
-          width: 0.8,
-        ),
         borderRadius: BorderRadius.circular(2.0),
       ),
     );
