@@ -1,6 +1,4 @@
 // Initial loading route
-const loadingRoute = "/";
-
 // Logged out routes
 const loginRoute = "/login";
 const loginProviderRoute = "/login-provider";

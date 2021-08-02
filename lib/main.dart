@@ -23,26 +23,23 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // Routes for users that aren't logged into the app right now
   final Map<String, WidgetBuilder> _topLevelRoutes = {
-    loadingRoute: (BuildContext context) => LoadingPage(),
     loginRoute: (BuildContext context) => LoginPage(),
     registerRoute: (BuildContext context) => RegisterPage(),
     firstTimeSetupGroupRoute: (BuildContext context) => SetupGroupPage(),
     firstTimeSetupInviteRoute: (BuildContext context) => InviteGroupPage(),
   };
 
-  late String _defaultRoute;
+  late Widget _defaultWidget;
 
   Future<bool> _initialise() async {
-    // Simulate contacting server for JWT authenticity
-    sleep(Duration(seconds: 2));
     String? jwt = await DeviceStorage.retrieveValue("jwt");
     if (jwt != null && jwt.isNotEmpty) {
       // User is logged in
-      _defaultRoute = gameRoute;
+      _defaultWidget = HomePage(homePageRoute: "/game");
       return true;
     } else {
       // User not logged in
-      _defaultRoute = loginRoute;
+      _defaultWidget = LoginPage();
       return false;
     }
   }
@@ -84,13 +81,15 @@ class _MyAppState extends State<MyApp> {
                 // closer together (more dense) than on mobile platforms.
                 visualDensity: VisualDensity.adaptivePlatformDensity,
               ),
-              initialRoute: _defaultRoute,
+              home: _defaultWidget,
               routes: _topLevelRoutes,
               onGenerateRoute: (settings) => _handleRoute(settings),
             );
           } else {
             // Still loading
-            return LoadingPage();
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           }
         });
   }

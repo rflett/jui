@@ -9,6 +9,7 @@ import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/server/user.dart';
 import 'package:jui/services/settings_service.dart';
+import 'package:jui/utilities/navigation.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/utilities/token.dart';
@@ -45,7 +46,8 @@ class _HomePageState extends State<HomePage> {
   late StreamSubscription _serviceStream;
 
   // page title
-  String _title = "JUI";
+  String _title = "";
+
   String get title => _title;
 
   set title(String title) {
@@ -86,9 +88,9 @@ class _HomePageState extends State<HomePage> {
         this._groups = user.groups == null ? [] : user.groups!;
         this._user = user;
         this._members = members.members;
-        this._selectedGroup = this
-            ._groups
-            .firstWhere((group) => group.groupID == primaryGroupId);
+        this._selectedGroup =
+            this._groups.firstWhere((group) => group.groupID == primaryGroupId);
+        this._title = this._selectedGroup?.name ?? "";
       });
     } catch (err) {
       // TODO logging
@@ -125,7 +127,7 @@ class _HomePageState extends State<HomePage> {
   void _onGameSelected() {
     if (this._currentRoute != gamePage) {
       _navigatorKey.currentState!.pushNamed(gamePage);
-      title = "JUI";
+      title = _selectedGroup?.name ?? "";
       this._currentRoute = gamePage;
     }
   }
@@ -165,7 +167,7 @@ class _HomePageState extends State<HomePage> {
     if (shouldLogout == true) {
       // Delete jwt and navigate back to login
       await DeviceStorage.removeValue(storageToken);
-      Navigator.pushNamedAndRemoveUntil(context, loginRoute, (route) => false);
+      Navigate(context).toLoginPage();
     }
   }
 
@@ -185,7 +187,8 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Row(
                     children: [
-                      UserAvatar(uuid: this._user == null ? "" : this._user!.userID),
+                      UserAvatar(
+                          uuid: this._user == null ? "" : this._user!.userID),
                       Padding(
                         padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                         child: Text(this._user == null ? "" : this._user!.name),
@@ -196,7 +199,9 @@ class _HomePageState extends State<HomePage> {
                     child: GroupDropDown(
                       groups: this._groups,
                       onGroupSelected: (groupId) => _onGroupSelected(groupId),
-                      initial: this._selectedGroup == null ? null : this._selectedGroup!.groupID,
+                      initial: this._selectedGroup == null
+                          ? null
+                          : this._selectedGroup!.groupID,
                     ),
                   ),
                 ],

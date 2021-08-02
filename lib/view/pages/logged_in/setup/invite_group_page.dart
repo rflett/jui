@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/constants/colors.dart';
+import 'package:jui/utilities/navigation.dart';
 import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
 import 'package:jui/constants/storage_values.dart';
@@ -29,39 +30,39 @@ class _InviteGroupPageState extends State<InviteGroupPage> {
         ),
         body: Center(
             child: Column(children: [
-          SizedBox(height: 20),
-          ConstrainedBox(
-              constraints:
+              SizedBox(height: 20),
+              ConstrainedBox(
+                  constraints:
                   BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 600),
-              child: Column(
-                children: [
-                  Text(
-                    "Invite your mates to your group by sending them this code or scanning the QR.",
-                    textAlign: TextAlign.left,
-                  ),
-                  SizedBox(height: 20),
-                  ShareGroupCode(code: this._groupCode),
-                  SizedBox(height: 40),
-                  Visibility(
-                    child: QrWidget(qrContent: this._groupCode),
-                    visible: this._groupCode != "",
-                  ),
-                  SizedBox(height: 40),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      child: Text("NEXT"),
-                      onPressed: onNextClicked,
-                    ),
-                  )
-                ],
-              ))
-        ])));
+                  child: Column(
+                    children: [
+                      Text(
+                        "Invite your mates to your group by sending them this code or scanning the QR.",
+                        textAlign: TextAlign.left,
+                      ),
+                      SizedBox(height: 20),
+                      ShareGroupCode(code: this._groupCode),
+                      SizedBox(height: 40),
+                      Visibility(
+                        child: QrWidget(qrContent: this._groupCode),
+                        visible: this._groupCode != "",
+                      ),
+                      SizedBox(height: 40),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: ElevatedButton(
+                          child: Text("NEXT"),
+                          onPressed: onNextClicked,
+                        ),
+                      )
+                    ],
+                  ))
+            ])));
   }
 
   /// Called when the 'next' button is clicked
   onNextClicked() async {
-    Navigator.pushNamedAndRemoveUntil(context, gameRoute, (route) => false);
+    Navigate(context).toGamePage();
   }
 
   getData() async {

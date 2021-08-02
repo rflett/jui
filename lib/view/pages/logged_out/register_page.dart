@@ -3,6 +3,7 @@ import 'package:jui/constants/app_routes.dart';
 import 'package:jui/models/dto/request/account/signup.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/server/account.dart';
+import 'package:jui/utilities/navigation.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/validation.dart';
 
@@ -30,7 +31,8 @@ class _RegisterPageState extends State<RegisterPage> {
         var user = await Account.signUp(requestData);
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Welcome, ${user.name}!")));
-        Navigator.pushNamedAndRemoveUntil(context, firstTimeSetupGroupRoute, (route) => false);
+
+        Navigate(context).toFirstTimeSetupGroupPage();
       } catch (err) {
         // TODO logging
         print(err);
@@ -90,7 +92,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           ConstrainedBox(
             constraints:
-            BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 500),
+                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 500),
             child: Container(
               child: Form(
                 key: _formKey,

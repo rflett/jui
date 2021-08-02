@@ -5,6 +5,7 @@ import 'package:jui/models/dto/request/account/signin.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/enums/social_providers.dart';
 import 'package:jui/server/account.dart';
+import 'package:jui/utilities/navigation.dart';
 import 'package:jui/utilities/popups.dart';
 
 import 'components/social-login/social_login_button.dart';
@@ -34,11 +35,9 @@ class _LoginPageState extends State<LoginPage> {
 
         // force user to join or create a group of they aren't a member of any
         if (user.groups == null) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, firstTimeSetupGroupRoute, (route) => false);
+          Navigate(context).toFirstTimeSetupGroupPage();
         } else {
-          Navigator.pushNamedAndRemoveUntil(
-              context, gameRoute, (route) => false);
+          Navigate(context).toGamePage();
         }
       } catch (err) {
         // TODO logging

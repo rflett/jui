@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:jui/utilities/navigation.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/constants/colors.dart';
@@ -19,10 +20,13 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
   // group code used to join an existing group
   TextEditingController _groupCodeController =
       new TextEditingController(text: '');
+
   // whether the current code is a valid code or not
   bool _codeIsValid = false;
+
   // whether to show the cross/check for code validity
   bool _codeValidityIconIsVisible = false;
+
   // group name used to create a new group
   String _groupName = "";
 
@@ -277,8 +281,8 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
       var group = await Group.join(requestData);
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Welcome to " + group.name + "!")));
-      Navigator.pushNamedAndRemoveUntil(
-          context, firstTimeSetupInviteRoute, (route) => false);
+
+      Navigate(context).toFirstTimeSetupInvitePage();
     } catch (err) {
       PopupUtils.showError(context, err as ProblemResponse,
           title: "Invalid group code!");
@@ -295,8 +299,7 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
       var group = await Group.create(requestData);
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("You've created " + group.name + "!")));
-      Navigator.pushNamedAndRemoveUntil(
-          context, firstTimeSetupInviteRoute, (route) => false);
+      Navigate(context).toFirstTimeSetupInvitePage();
     } catch (err) {
       PopupUtils.showError(context, err as ProblemResponse,
           title: "Can't create group!");
