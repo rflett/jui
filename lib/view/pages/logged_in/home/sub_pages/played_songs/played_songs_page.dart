@@ -157,7 +157,7 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
                 left: 20.0,
                 child: Container(
                   child: Text(
-                    "#${this._songs[_currentIndex].playedPosition}",
+                    playedPosition,
                     style: TextStyle(
                       color: Colors.white,
                       letterSpacing: 3.0,
@@ -175,6 +175,14 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
 
   void _onSpotifyPressed() async {
     // TODO open Spotify
+  }
+
+  String get playedPosition {
+    if (this._songs.length > 0) {
+      return "#${100 - this._songs[_currentIndex].playedPosition!}";
+    } else {
+      return "";
+    }
   }
 
   void _setAverageColor() async {
