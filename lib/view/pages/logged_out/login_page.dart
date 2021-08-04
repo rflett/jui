@@ -9,7 +9,7 @@ import 'package:jui/models/enums/social_providers.dart';
 import 'package:jui/server/account.dart';
 import 'package:jui/utilities/navigation.dart';
 import 'package:jui/utilities/popups.dart';
-import 'file:///B:/Programming/flutter-projects/jui/lib/view/components/buttons/outlined_loading_button.dart';
+import 'package:jui/view/components/buttons/outlined_loading_button.dart';
 
 import 'components/social-login/social_login_button.dart';
 
