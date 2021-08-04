@@ -10,11 +10,12 @@ class Vote {
   final String album;
   final String artist;
   final List<VoteArtwork> artwork;
+  final int? rank;
   final int? playedPosition;
   final DateTime? playedAt;
   final DateTime createdAt;
 
-  Vote(this.songID, this.name, this.album, this.artist, this.artwork, this.playedPosition, this.playedAt, this.createdAt);
+  Vote(this.songID, this.name, this.album, this.artist, this.artwork, this.rank, this.playedPosition, this.playedAt, this.createdAt);
 
   factory Vote.fromJson(Map<String, dynamic> json) => _$VoteFromJson(json);
 

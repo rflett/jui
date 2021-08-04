@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jui/constants/urls.dart';
-import 'package:jui/models/dto/response/vote_response.dart';
+import 'package:jui/models/dto/response/search_response.dart';
 import 'package:jui/server/api_server.dart';
 
 import 'base/api_request.dart';

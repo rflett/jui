@@ -5,10 +5,10 @@ part 'create_vote.g.dart';
 
 @JsonSerializable()
 class CreateVoteRequest {
-  final int position;
+  final int rank;
   final Vote vote;
 
-  CreateVoteRequest(this.position, this.vote);
+  CreateVoteRequest(this.rank, this.vote);
 
   factory CreateVoteRequest.fromJson(Map<String, dynamic> json) =>
       _$CreateVoteRequestFromJson(json);

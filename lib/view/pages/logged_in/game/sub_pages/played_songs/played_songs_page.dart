@@ -85,7 +85,6 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
           child: FloatingActionButton(
             onPressed: () => _onSpotifyPressed(),
             child: ImageIcon(
-              // NetworkImage("https://1000logos.net/wp-content/uploads/2021/04/Spotify-logo.png"),
               AssetImage("assets/images/social/spotify-icon.png"),
               size: 80,
             ),

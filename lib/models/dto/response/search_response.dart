@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:jui/models/dto/shared/vote.dart';
 
-part 'vote_response.g.dart';
+part 'search_response.g.dart';
 
 @JsonSerializable()
 class SearchResponse {

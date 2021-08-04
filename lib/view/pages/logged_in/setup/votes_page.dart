@@ -39,8 +39,8 @@ class _VotesPageState extends State<VotesPage> {
     }
   }
 
-  createVote(int position, Vote vote) async {
-    var requestData = CreateVoteRequest(position, vote);
+  createVote(int rank, Vote vote) async {
+    var requestData = CreateVoteRequest(rank, vote);
     try {
       await User.createVote(requestData);
     } catch (err) {
