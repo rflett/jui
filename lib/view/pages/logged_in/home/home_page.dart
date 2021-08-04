@@ -1,25 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jui/models/dto/response/user/user.dart';
-import 'package:jui/view/pages/logged_in/game/sub_pages/leaderboard/leaderboard.dart';
-import 'package:jui/view/pages/logged_in/game/sub_pages/my_votes/my_votes_page.dart';
-import 'package:jui/view/pages/logged_in/game/sub_pages/played_songs/played_songs_page.dart';
+import 'package:jui/view/pages/logged_in/home/sub_pages/leaderboard/leaderboard_page.dart';
+import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/my_votes_page.dart';
+import 'package:jui/view/pages/logged_in/home/sub_pages/played_songs/played_songs_page.dart';
 
-class GamePage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   final List<UserResponse> members;
 
-  GamePage({Key? key, required this.members}) : super(key: key);
+  HomePage({Key? key, required this.members}) : super(key: key);
 
   @override
-  _GamePageState createState() => _GamePageState(members);
+  _HomePageState createState() => _HomePageState(members);
 }
 
-class _GamePageState extends State<GamePage> {
+class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  List<Widget> _gamePages = [];
+  List<Widget> _pages = [];
 
-  _GamePageState(List<UserResponse> members) {
-    this._gamePages = [
+  _HomePageState(List<UserResponse> members) {
+    this._pages = [
       Leaderboard(members: members),
       PlayedSongsPage(),
       MyVotesPage()
@@ -48,7 +48,7 @@ class _GamePageState extends State<GamePage> {
         onTap: _onItemTapped,
       ),
       body: Center(
-        child: _gamePages.elementAt(_selectedIndex),
+        child: _pages.elementAt(_selectedIndex),
       ),
     );
   }

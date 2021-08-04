@@ -10,7 +10,7 @@ class Vote {
   final String album;
   final String artist;
   final List<VoteArtwork> artwork;
-  final int? rank;
+  final int? rank; // the songs rank in a users top 10
   final int? playedPosition;
   final DateTime? playedAt;
   final DateTime createdAt;

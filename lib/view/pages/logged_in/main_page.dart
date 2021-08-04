@@ -15,21 +15,21 @@ import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
-import 'package:jui/view/pages/logged_in/game/game_page.dart';
+import 'package:jui/view/pages/logged_in/home/home_page.dart';
 import 'package:jui/view/pages/logged_in/profile/profile_page.dart';
 
 import 'components/group_dropdown.dart';
 
-class HomePage extends StatefulWidget {
+class MainPage extends StatefulWidget {
   final String homePageRoute;
 
-  HomePage({Key? key, required this.homePageRoute}) : super(key: key);
+  MainPage({Key? key, required this.homePageRoute}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _MainPageState createState() => _MainPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MainPageState extends State<MainPage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   // state
@@ -57,11 +57,11 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  _HomePageState() {
+  _MainPageState() {
     _getData();
     this._loggedInRoutes = {
       "/": (BuildContext context) => Container(),
-      gamePage: (BuildContext context) => GamePage(members: this._members),
+      gamePage: (BuildContext context) => HomePage(members: this._members),
       profilePage: (BuildContext context) =>
           ProfilePage(user: this._user!, group: this._selectedGroup!),
     };

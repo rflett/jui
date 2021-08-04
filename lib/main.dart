@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/utilities/storage.dart';
-import 'package:jui/view/pages/logged_in/home_page.dart';
+import 'package:jui/view/pages/logged_in/main_page.dart';
 import 'package:jui/view/pages/logged_in/setup/invite_group_page.dart';
 import 'package:jui/view/pages/logged_in/setup/setup_group_page.dart';
 import 'package:jui/view/pages/logged_out/login_page.dart';
@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
     String? jwt = await DeviceStorage.retrieveValue("jwt");
     if (jwt != null && jwt.isNotEmpty) {
       // User is logged in
-      _defaultWidget = HomePage(homePageRoute: "/game");
+      _defaultWidget = MainPage(homePageRoute: "/game");
       return true;
     } else {
       // User not logged in
@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
     if (settings.name!.startsWith(dashboardRoute) == true) {
       // Get the initial subroute
       var subRoute = settings.name!.substring(dashboardRoute.length);
-      page = (BuildContext context) => HomePage(homePageRoute: subRoute);
+      page = (BuildContext context) => MainPage(homePageRoute: subRoute);
     } else if (_topLevelRoutes.containsKey(settings.name)) {
       // Is a top level route instead
       page = _topLevelRoutes[settings.name]!;
