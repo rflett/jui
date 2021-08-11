@@ -13,7 +13,7 @@ class Vote {
   final int? rank; // the songs rank in a users top 10
   final int? playedPosition;
   final DateTime? playedAt;
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
   Vote(this.songID, this.name, this.album, this.artist, this.artwork, this.rank, this.playedPosition, this.playedAt, this.createdAt);
 

@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:jui/server/search.dart';
 import 'package:jui/view/components/material_autocomplete.dart';
+import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/song_search_item.dart';
 
 class MyVotesPage extends StatefulWidget {
   MyVotesPage({Key? key}) : super(key: key);
@@ -9,63 +13,29 @@ class MyVotesPage extends StatefulWidget {
 }
 
 class _MyVotesPageState extends State<MyVotesPage> {
-  List<String> _songs = ["These", "Songs", "Don't", "Actually", "Search"];
-  late List<Widget> _selectedList;
+  static List<String> _songs = [
+    "These",
+    "Songs",
+    "Don't",
+    "Actually",
+    "Search"
+  ];
+  List<Widget> _selectedList = List.empty();
+  List<Widget> _searchList = List.empty();
+  Timer? _searchDelay;
 
-  _MyVotesPageState() {
-    _selectedList = _generateSelectedList(_songs);
-  }
+  bool _isSearching = false;
+  late FocusNode _searchFocusNode;
 
-  Iterable<String> _songList(TextEditingValue value) {
-    // TODO link to search api
-    return _songs;
-  }
-
-  static List<Widget> _generateSelectedList(List<String> songs) {
-    // TODO link to selected api
-    List<Widget> songWidgets = [];
-    for (int i = 0; i < songs.length; i++) {
-      songWidgets.add(
-        ReorderableDragStartListener(
-          key: Key("$i-song"),
-          index: i,
-          child: Column(
-            children: [
-              SizedBox(
-                height: 60,
-                child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      Text(
-                        "${i + 1}.",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      SizedBox(width: 10),
-                      Column(
-                        children: [
-                          Text(songs[i],
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)),
-                          Text(
-                            "Band Name",
-                            style: TextStyle(fontSize: 12),
-                          )
-                        ],
-                      ),
-                      Spacer(),
-                      Icon(Icons.view_headline_sharp, size: 30)
-                    ],
-                  ),
-                ),
-              ),
-              Divider(),
-            ],
-          ),
-        ),
-      );
-    }
-    return songWidgets;
+  @override
+  initState() {
+    super.initState();
+    this._searchFocusNode = FocusNode();
+    _searchFocusNode.addListener(() {
+      setState(() {
+        _isSearching = _searchFocusNode.hasPrimaryFocus;
+      });
+    });
   }
 
   void _reorderList(int oldIndex, int newIndex) {
@@ -73,29 +43,73 @@ class _MyVotesPageState extends State<MyVotesPage> {
     var item = newList[oldIndex];
     newList.removeAt(oldIndex);
     newList.insert(newIndex, item);
+  }
 
+  void onSearchTextChanged(String text) {
+    if (_searchDelay?.isActive == true) {
+      _searchDelay!.cancel();
+    }
+
+    // Set a timeout delay to not spam the server
+    _searchDelay =
+        Timer(Duration(milliseconds: 500), () => searchForSongs(text));
+  }
+
+  void searchForSongs(String searchText) async {
+    var response = await Search.search(searchText);
+
+    // convert to widgets
     setState(() {
-      _selectedList = _generateSelectedList(newList);
+      _searchList = response.songs
+          .map((song) => SongSearchItem(
+                songName: song.name,
+                artistName: song.artist,
+                // Last artwork in the list is the smallest sized
+                artworkUrl: song.artwork[1].url,
+              ))
+          .toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(15),
+    return Container(
       child: Column(
         children: [
-          MaterialAutocomplete(
-            optionsBuilder: _songList,
-            labelText: "Search Songs",
+          AnimatedContainer(
+            padding: _isSearching
+                ? EdgeInsets.fromLTRB(5, 15, 5, 15)
+                : EdgeInsets.fromLTRB(35, 15, 35, 15),
+            curve: Curves.easeOutSine,
+            duration: Duration(milliseconds: 300),
+            child: TextFormField(
+              onChanged: onSearchTextChanged,
+              decoration: InputDecoration(
+                suffixIcon: _isSearching
+                    ? IconButton(
+                        icon: Icon(Icons.cancel),
+                        onPressed: () => _searchFocusNode.unfocus())
+                    : null,
+                labelText: "Search for songs",
+                border: OutlineInputBorder(),
+                isDense: true,
+              ),
+              focusNode: _searchFocusNode,
+            ),
           ),
           SizedBox(height: 20),
           Expanded(
-            child: ReorderableListView(
-              onReorder: _reorderList,
-              children: _selectedList,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: ListView(children: _searchList),
             ),
           ),
+          // Expanded(
+          //   child: ReorderableListView(
+          //     onReorder: _reorderList,
+          //     children: _selectedList,
+          //   ),
+          // ),
         ],
       ),
     );
