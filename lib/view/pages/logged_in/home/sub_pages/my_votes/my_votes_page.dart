@@ -1,11 +1,14 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:jui/models/dto/shared/vote.dart';
+import 'package:jui/models/dto/shared/vote_artwork.dart';
 import 'package:jui/server/search.dart';
-import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/song_search_list.dart';
-import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/vote_list.dart';
+import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/search/song_search_list.dart';
+import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/votes/vote_list.dart';
 
-import 'components/song_search_item.dart';
+import 'components/search/song_search_item.dart';
 
 class MyVotesPage extends StatefulWidget {
   MyVotesPage({Key? key}) : super(key: key);
@@ -14,19 +17,44 @@ class MyVotesPage extends StatefulWidget {
   _MyVotesPageState createState() => _MyVotesPageState();
 }
 
-class _MyVotesPageState extends State<MyVotesPage> {
-  static List<String> _songs = [
-    "These",
-    "Songs",
-    "Don't",
-    "Actually",
-    "Search"
+class _MyVotesPageState extends State<MyVotesPage>
+    with TickerProviderStateMixin {
+  static List<Vote> _songs = [
+    makeVote(1),
+    makeVote(2),
+    makeVote(3),
+    makeVote(4),
+    makeVote(5),
+    makeVote(6),
+    makeVote(7),
+    makeVote(8),
+    makeVote(9),
+    makeVote(10),
+    makeVote(11),
   ];
   late FocusNode _searchFocusNode;
   late TextEditingController _inputController;
   Timer? _searchDelay;
   List<Widget> _searchList = List.empty();
   CrossFadeState _crossFadeState = CrossFadeState.showFirst;
+
+  static Vote makeVote (int position){
+    return Vote(
+        "1",
+        "My Song $position",
+        "album",
+        "Cool band",
+        [
+          VoteArtwork(
+              "https://t2.genius.com/unsafe/311x311/https%3A%2F%2Fimages.genius.com%2Ff13517c0a3c6ce2ad036b76449f27e42.640x640x1.jpg",
+              100,
+              100)
+        ],
+        position,
+        1,
+        DateTime.now(),
+        DateTime.now());
+  }
 
   @override
   initState() {
@@ -102,36 +130,43 @@ class _MyVotesPageState extends State<MyVotesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        AnimatedContainer(
-          padding: _isSearching
-              ? EdgeInsets.fromLTRB(5, 15, 5, 15)
-              : EdgeInsets.fromLTRB(35, 15, 35, 15),
-          curve: Curves.easeOutSine,
-          duration: Duration(milliseconds: 300),
-          child: TextFormField(
-            controller: _inputController,
-            decoration: InputDecoration(
-              suffixIcon: _isSearching
-                  ? IconButton(
-                      icon: Icon(Icons.cancel),
-                      onPressed: () => _searchFocusNode.unfocus())
-                  : null,
-              labelText: "Search for songs",
-              border: OutlineInputBorder(),
-              isDense: true,
+        Column(
+          children: [
+            AnimatedContainer(
+              padding: _isSearching
+                  ? EdgeInsets.fromLTRB(5, 15, 5, 15)
+                  : EdgeInsets.fromLTRB(35, 15, 35, 15),
+              curve: Curves.easeOutSine,
+              duration: Duration(milliseconds: 300),
+              child: TextFormField(
+                controller: _inputController,
+                decoration: InputDecoration(
+                  suffixIcon: _isSearching
+                      ? IconButton(
+                          icon: Icon(Icons.cancel),
+                          onPressed: () => _searchFocusNode.unfocus())
+                      : null,
+                  labelText: "Search for songs",
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                focusNode: _searchFocusNode,
+              ),
             ),
-            focusNode: _searchFocusNode,
-          ),
-        ),
-        SizedBox(height: 20),
-        Expanded(
-            child: AnimatedCrossFade(
-                firstChild: VoteList(),
+            SizedBox(height: 20),
+            Expanded(
+              child: AnimatedCrossFade(
+                firstChild:
+                    VoteList(votes: _songs, setVotes: (vote) => {},),
                 secondChild: SongSearchList(searchList: _searchList),
                 crossFadeState: _crossFadeState,
-                duration: Duration(milliseconds: 300))),
+                duration: Duration(milliseconds: 300),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
