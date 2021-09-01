@@ -30,6 +30,7 @@ class _MyVotesPageState extends State<MyVotesPage> {
   @override
   initState() {
     super.initState();
+    getVotes();
     this._searchFocusNode = FocusNode();
     _searchFocusNode.addListener(onSearchFocusChanged);
     _inputController = TextEditingController();

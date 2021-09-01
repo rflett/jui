@@ -7,21 +7,17 @@ import 'package:jui/utilities/popups.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 
 class MyProfilePage extends StatefulWidget {
-  final UserResponse user;
-
-  MyProfilePage({Key? key, required this.user}) : super(key: key);
+  MyProfilePage({Key? key}) : super(key: key);
 
   @override
-  _MyProfilePageState createState() => _MyProfilePageState(user);
+  _MyProfilePageState createState() => _MyProfilePageState();
 }
 
 class _MyProfilePageState extends State<MyProfilePage> {
-  UserResponse? _user;
   TextEditingController _nicknameController =
       new TextEditingController(text: '');
 
-  _MyProfilePageState(UserResponse user) {
-    this._user = user;
+  _MyProfilePageState() {
     this._nicknameController.text = user.nickName == null ? "" : user.nickName!;
   }
 
