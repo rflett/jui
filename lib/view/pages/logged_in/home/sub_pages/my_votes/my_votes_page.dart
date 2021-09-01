@@ -1,13 +1,14 @@
 import 'dart:async';
 
-import 'package:faker/faker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:jui/models/dto/shared/vote.dart';
-import 'package:jui/models/dto/shared/vote_artwork.dart';
 import 'package:jui/server/search.dart';
+import 'package:jui/server/user.dart';
+import 'package:jui/state/user_state.dart';
 import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/search/song_search_list.dart';
 import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/votes/vote_list.dart';
+import 'package:provider/provider.dart';
 
 import 'components/search/song_search_item.dart';
 
@@ -45,8 +46,21 @@ class _MyVotesPageState extends State<MyVotesPage> {
 
   get _isSearching => _crossFadeState == CrossFadeState.showSecond;
 
-  void getVotes() {
+  void getVotes() async {
+    final userProvider = Provider.of<UserState>(context, listen: false);
 
+    if (userProvider.user != null) {
+      // Get the user's votes
+      try {
+        final response = await User.getVotes(userProvider.user!.userID);
+        setState(() {
+          _votes = response.votes ?? [];
+        });
+        userProvider.updateVotes(_votes);
+      } catch (err) {
+        print(err);
+      }
+    }
   }
 
   void onSearchFocusChanged() {
@@ -96,6 +110,18 @@ class _MyVotesPageState extends State<MyVotesPage> {
     });
   }
 
+  // Send the updated votes to the server
+  void saveVotes(List<Vote> toUpdate, List<Vote> toDelete) async {
+    try {
+      await User.updateVotes(toUpdate, toDelete);
+    } catch (err) {
+      print(err);
+    }
+
+    // Also retrieve the votes from the server again to update the local copy
+    getVotes();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -128,7 +154,7 @@ class _MyVotesPageState extends State<MyVotesPage> {
               child: AnimatedCrossFade(
                 firstChild: VoteList(
                   votes: _votes,
-                  setVotes: (vote) => {},
+                  saveVotes: saveVotes,
                 ),
                 secondChild: SongSearchList(searchList: _searchList),
                 crossFadeState: _crossFadeState,

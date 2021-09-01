@@ -14,6 +14,7 @@ const userAvatarUrl = "$serverBaseUrl/user/avatar";
 const userDeviceUrl = "$serverBaseUrl/user/device";
 const userCreateVoteUrl = "$serverBaseUrl/user/vote";
 const userDeleteVoteUrl = "$serverBaseUrl/user/vote";
+const userUpdateVoteUrl = "$serverBaseUrl/user/vote/update";
 const userGetUrl = "$serverBaseUrl/user";
 
 // groups

@@ -3,10 +3,10 @@ import 'package:jui/models/dto/shared/vote.dart';
 import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/votes/vote_list_item.dart';
 
 class VoteList extends StatefulWidget {
-  final ValueSetter<List<Vote>> setVotes;
   final List<Vote> votes;
+  void Function(List<Vote> toUpdate, List<Vote> toDelete) saveVotes;
 
-  const VoteList({Key? key, required this.votes, required this.setVotes})
+  VoteList({Key? key, required this.votes, required this.saveVotes})
       : super(key: key);
 
   @override
@@ -38,6 +38,7 @@ class _VoteListState extends State<VoteList> {
     for (int i = 0; i < votes.length; i++) {
       newOrder.add(Vote.reordered(votes[i], i + 1));
     }
+
     setState(() {
       currentVotes = newOrder;
       votesReordered = true;
@@ -48,6 +49,18 @@ class _VoteListState extends State<VoteList> {
   void resetList() {
     setState(() {
       currentVotes = [...widget.votes];
+      votesReordered = false;
+    });
+  }
+
+  void saveVotes() {
+    final removed = widget.votes
+        .where((vote) =>
+            currentVotes.every((newVote) => newVote.songID != vote.songID))
+        .toList();
+
+    widget.saveVotes(currentVotes, removed);
+    setState(() {
       votesReordered = false;
     });
   }
@@ -86,7 +99,7 @@ class _VoteListState extends State<VoteList> {
                 ),
                 SizedBox(height: 10),
                 FloatingActionButton.extended(
-                  onPressed: () => widget.setVotes(currentVotes),
+                  onPressed: () => saveVotes(),
                   label: Text("Save"),
                   icon: Icon(Icons.save),
                 ),

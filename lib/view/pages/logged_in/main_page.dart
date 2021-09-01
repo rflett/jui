@@ -10,6 +10,7 @@ import 'package:jui/server/group.dart';
 import 'package:jui/server/user.dart';
 import 'package:jui/services/group_service.dart';
 import 'package:jui/services/settings_service.dart';
+import 'package:jui/state/user_state.dart';
 import 'package:jui/utilities/navigation.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/storage.dart';
@@ -31,6 +32,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final _navigatorKey = GlobalKey<NavigatorState>();
+  final UserState _userState = UserState();
 
   // state
   UserResponse? _user;
@@ -61,7 +63,7 @@ class _MainPageState extends State<MainPage> {
     _getData();
     this._loggedInRoutes = {
       "/": (BuildContext context) => Container(),
-      gamePage: (BuildContext context) => HomePage(members: this._members),
+      gamePage: (BuildContext context) => HomePage(members: this._members, userState: _userState),
       profilePage: (BuildContext context) =>
           ProfilePage(user: this._user!, group: this._selectedGroup!),
     };
