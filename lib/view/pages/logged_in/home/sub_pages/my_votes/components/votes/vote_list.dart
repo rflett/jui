@@ -10,7 +10,7 @@ class VoteList extends StatefulWidget {
       : super(key: key);
 
   @override
-  _VoteListState createState() => _VoteListState(votes);
+  _VoteListState createState() => _VoteListState([...votes]);
 }
 
 class _VoteListState extends State<VoteList> {
@@ -28,17 +28,27 @@ class _VoteListState extends State<VoteList> {
       newIndex -= 1;
     }
 
-    final item = currentVotes.removeAt(oldIndex);
-    currentVotes.insert(newIndex, item);
+    final votes = [...currentVotes];
+
+    final item = votes.removeAt(oldIndex);
+    votes.insert(newIndex, item);
 
     // Safe to assume that voting rank is the display order so re-rank all according to position
     List<Vote> newOrder = [];
-    for (int i = 0; i < currentVotes.length; i++) {
-      newOrder.add(Vote.reordered(currentVotes[i], i + 1));
+    for (int i = 0; i < votes.length; i++) {
+      newOrder.add(Vote.reordered(votes[i], i + 1));
     }
     setState(() {
       currentVotes = newOrder;
       votesReordered = true;
+    });
+  }
+
+  // Resets the re-ordering of the list
+  void resetList() {
+    setState(() {
+      currentVotes = [...widget.votes];
+      votesReordered = false;
     });
   }
 
@@ -51,6 +61,7 @@ class _VoteListState extends State<VoteList> {
             for (int i = 0; i < currentVotes.length; i++)
               VoteListItem(
                 key: Key(i.toString()),
+                index: i,
                 vote: currentVotes[i],
                 color: i.isOdd
                     ? Theme.of(context).cardColor
@@ -68,9 +79,7 @@ class _VoteListState extends State<VoteList> {
             child: Column(
               children: [
                 FloatingActionButton.extended(
-                  onPressed: () => setState(() {
-                    currentVotes = widget.votes;
-                  }),
+                  onPressed: resetList,
                   backgroundColor: Theme.of(context).errorColor,
                   label: Text("Cancel"),
                   icon: Icon(Icons.cancel),

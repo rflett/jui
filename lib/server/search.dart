@@ -13,7 +13,7 @@ class Search {
   static Future<SearchResponse> search(String searchStr) async {
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.get("$searchUrl?query=$searchStr}");
+      response = await _apiServer.get("$searchUrl?query=$searchStr");
     } catch (err) {
       print(err);
     }

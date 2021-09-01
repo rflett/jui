@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:faker/faker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:jui/models/dto/shared/vote.dart';
@@ -17,51 +18,19 @@ class MyVotesPage extends StatefulWidget {
   _MyVotesPageState createState() => _MyVotesPageState();
 }
 
-class _MyVotesPageState extends State<MyVotesPage>
-    with TickerProviderStateMixin {
-  static List<Vote> _songs = [
-    makeVote(1),
-    makeVote(2),
-    makeVote(3),
-    makeVote(4),
-    makeVote(5),
-    makeVote(6),
-    makeVote(7),
-    makeVote(8),
-    makeVote(9),
-    makeVote(10),
-    makeVote(11),
-  ];
+class _MyVotesPageState extends State<MyVotesPage> {
   late FocusNode _searchFocusNode;
   late TextEditingController _inputController;
   Timer? _searchDelay;
   List<Widget> _searchList = List.empty();
   CrossFadeState _crossFadeState = CrossFadeState.showFirst;
-
-  static Vote makeVote (int position){
-    return Vote(
-        "1",
-        "My Song $position",
-        "album",
-        "Cool band",
-        [
-          VoteArtwork(
-              "https://t2.genius.com/unsafe/311x311/https%3A%2F%2Fimages.genius.com%2Ff13517c0a3c6ce2ad036b76449f27e42.640x640x1.jpg",
-              100,
-              100)
-        ],
-        position,
-        1,
-        DateTime.now(),
-        DateTime.now());
-  }
+  List<Vote> _votes = List.empty();
 
   @override
   initState() {
     super.initState();
     this._searchFocusNode = FocusNode();
     _searchFocusNode.addListener(onSearchFocusChanged);
-
     _inputController = TextEditingController();
     _inputController.addListener(onSearchTextChanged);
   }
@@ -75,6 +44,10 @@ class _MyVotesPageState extends State<MyVotesPage>
   }
 
   get _isSearching => _crossFadeState == CrossFadeState.showSecond;
+
+  void getVotes() {
+
+  }
 
   void onSearchFocusChanged() {
     setState(() {
@@ -102,7 +75,9 @@ class _MyVotesPageState extends State<MyVotesPage>
   void searchForSongs(String searchText) async {
     if (searchText.isEmpty) {
       // Don't search empty strings
-      _searchList = List.empty();
+      setState(() {
+        _searchList = List.empty();
+      });
       return;
     }
 
@@ -119,13 +94,6 @@ class _MyVotesPageState extends State<MyVotesPage>
               ))
           .toList();
     });
-  }
-
-  void _reorderList(int oldIndex, int newIndex) {
-    var newList = [..._songs];
-    var item = newList[oldIndex];
-    newList.removeAt(oldIndex);
-    newList.insert(newIndex, item);
   }
 
   @override
@@ -158,8 +126,10 @@ class _MyVotesPageState extends State<MyVotesPage>
             SizedBox(height: 20),
             Expanded(
               child: AnimatedCrossFade(
-                firstChild:
-                    VoteList(votes: _songs, setVotes: (vote) => {},),
+                firstChild: VoteList(
+                  votes: _votes,
+                  setVotes: (vote) => {},
+                ),
                 secondChild: SongSearchList(searchList: _searchList),
                 crossFadeState: _crossFadeState,
                 duration: Duration(milliseconds: 300),

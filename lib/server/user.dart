@@ -5,6 +5,7 @@ import 'package:jui/models/dto/request/user/create_vote.dart';
 import 'package:jui/models/dto/request/user/device/register_device.dart';
 import 'package:jui/models/dto/request/user/update_user.dart';
 import 'package:jui/models/dto/response/user/user.dart';
+import 'package:jui/models/dto/response/user/votes.dart';
 import 'package:jui/server/api_server.dart';
 import 'package:jui/server/base/api_request.dart';
 
@@ -43,6 +44,24 @@ class User {
 
     // Response succeeded
     var responseObj = UserResponse.fromJson(json.decode(response.body));
+    return responseObj;
+  }
+
+  /// get a user's votes
+  static Future<VotesResponse> getVotes(String userId) async {
+    var url = "$userGetUrl/$userId/votes";
+
+    http.Response response = http.Response("", 500);
+    try {
+      response = await _apiServer.get(url);
+    } catch (err) {
+      print(err);
+    }
+
+    ApiRequest.handleErrors(response);
+
+    // Response succeeded
+    var responseObj = VotesResponse.fromJson(json.decode(response.body));
     return responseObj;
   }
 
