@@ -3,9 +3,9 @@ import 'package:jui/models/dto/request/group/update_group_owner.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
-import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/group.dart';
-import 'package:jui/services/settings_service.dart';
+import 'package:jui/state/group_state.dart';
+import 'package:jui/state/user_state.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
@@ -14,65 +14,47 @@ import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/view_user_popup.dart';
 
 class GroupsPage extends StatefulWidget {
-  final UserResponse user;
-  final GroupResponse group;
-
-  GroupsPage({Key? key, required this.user, required this.group})
-      : super(key: key);
+  GroupsPage({Key? key}) : super(key: key);
 
   @override
-  _GroupsPageState createState() => _GroupsPageState(user, group);
+  _GroupsPageState createState() => _GroupsPageState();
 }
 
 class _GroupsPageState extends State<GroupsPage> {
-  // the current logged in user
-  late UserResponse _user;
-  // all groups that a user is a member of
-  late GroupResponse _group;
-  // service to publish events on
-  late SettingsService _service;
-  // members of the currently selected group
-  List<UserResponse> _members = [];
-
   /// returns whether leave button should be disabled
-  bool get _canLeaveCurrentGroup {
-    return this._user.groups!.length != 1;
-  }
-
-  _GroupsPageState(UserResponse user, GroupResponse group) {
-    this._user = user;
-    this._group = group;
-    this._service = SettingsService.getInstance();
-    this._getData();
-  }
-
-  void _getData() async {
-    var groupMembers =
-        await Group.getMembers(this._group.groupID, withVotes: false);
-    setState(() {
-      this._members = groupMembers.members;
-    });
-  }
 
   /// displays the group QR code
-  void _onShowQR() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return QrWidget(qrContent: this._group.code);
-      },
-    );
+  void _onShowQR(String? groupCode) {
+    if (groupCode != null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return QrWidget(qrContent: groupCode);
+        },
+      );
+    }
   }
 
   /// returns whether the member is the owner of the selected group
-  bool _userIsGroupOwner(String userId) {
-    return this._group.ownerID == userId;
+  bool _userIsGroupOwner(GroupResponse currentGroup, String userId) {
+    return currentGroup.ownerID == userId;
   }
 
-  void _confirmLeaveGroup() async {
+  bool _canLeaveCurrentGroup(UserResponse currentUser) {
+    return currentUser.groups!.length != 1;
+  }
+
+  void _confirmLeaveGroup(
+      UserResponse? currentUser, GroupState groupState) async {
+    if (currentUser == null || groupState.selectedGroup == null) {
+      return;
+    }
+    GroupResponse selectedGroup = groupState.selectedGroup!;
+
     /// prompt and tell the user to nominate a new owner if they are already
     /// the group owner and there's other members in the group
-    if (this._userIsGroupOwner(this._user.userID) && this._members.length > 1) {
+    if (this._userIsGroupOwner(selectedGroup!, currentUser.userID) &&
+        groupState.members.length > 1) {
       showDialog(
         context: context,
         builder: (context) {
@@ -94,7 +76,7 @@ class _GroupsPageState extends State<GroupsPage> {
       return;
     }
 
-    var shouldDelete = await showDialog<bool>(
+    final shouldDelete = await showDialog<bool>(
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -119,11 +101,12 @@ class _GroupsPageState extends State<GroupsPage> {
         });
 
     if (shouldDelete == true) {
-      this._deleteGroup(this._group.groupID, this._group.name);
+      this._deleteGroup(selectedGroup.groupID, selectedGroup.name);
     }
   }
 
-  void _confirmRemoveMember(UserResponse user) async {
+  void _confirmRemoveMember(UserResponse user, UserResponse currentUser,
+      GroupResponse currentGroup) async {
     var shouldRemove = await showDialog<bool>(
         context: context,
         builder: (context) {
@@ -149,25 +132,21 @@ class _GroupsPageState extends State<GroupsPage> {
         });
 
     if (shouldRemove == true) {
-      _removeMember(user.userID, user.name);
+      _removeMember(user.userID, currentGroup.groupID, user.name);
     } else {
-      _showUser(user);
+      _showUser(user, currentUser, currentGroup);
     }
   }
 
-  /// removes a member from the group
-  void _removeMember(String userId, [String? name]) async {
+  /// Removes a member from the group
+  void _removeMember(String userId, String groupId, String? name) async {
     try {
-      await Group.leave(this._group.groupID, userId);
+      await Group.leave(groupId, userId);
       if (name != null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text("Successfully removed $name from the group.")));
       }
-      if (this._user.userID == userId) {
-        this._service.sendMessage(ProfileEvents.reloadGroups);
-      } else {
-        this._getData();
-      }
+      // TODO update the group list for the current user
     } catch (err) {
       // TODO logging
       print(err);
@@ -175,7 +154,8 @@ class _GroupsPageState extends State<GroupsPage> {
     }
   }
 
-  void _updateGroupOwner(UserResponse user) async {
+  void _updateGroupOwner(UserResponse user, UserResponse currentUser,
+      GroupResponse currentGroup) async {
     var shouldUpdate = await showDialog<bool>(
         context: context,
         builder: (context) {
@@ -183,7 +163,7 @@ class _GroupsPageState extends State<GroupsPage> {
             title: Text("Confirm"),
             content: Text(
               "Are you sure you want to make ${user.name} the new group owner? \n"
-                  "They will now manage the group and its members.",
+              "They will now manage the group and its members.",
             ),
             actions: [
               TextButton(
@@ -203,21 +183,23 @@ class _GroupsPageState extends State<GroupsPage> {
         });
 
     if (shouldUpdate == true) {
-      updateGroupOwner(user.userID);
+      updateGroupOwner(user.userID, currentGroup.groupID);
     } else {
-      _showUser(user);
+      _showUser(user, currentUser, currentGroup);
     }
   }
 
   /// updates the group with a new owner
-  void updateGroupOwner(String userId) async {
-    var requestData = UpdateGroupOwnerRequest(this._group.groupID, userId);
+  void updateGroupOwner(String userId, String groupId) async {
+    var requestData = UpdateGroupOwnerRequest(groupId, userId);
 
     try {
       await Group.updateOwner(requestData);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Successfully nominated a new owner.")));
-      this._service.sendMessage(ProfileEvents.reloadGroups);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Successfully nominated a new owner.")));
+
+      // TODO UPDATE THE GROUP LIST
+
     } catch (err) {
       // TODO logging
       print(err);
@@ -228,10 +210,12 @@ class _GroupsPageState extends State<GroupsPage> {
   /// removes a member from the group
   void _deleteGroup(String groupId, String name) async {
     try {
-      await Group.delete(this._group.groupID);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Successfully deleted $name.")));
-      this._service.sendMessage(ProfileEvents.reloadGroups);
+      await Group.delete(groupId);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Successfully deleted $name.")));
+
+      // TODO UPDATE THE GROUP LIST
+
     } catch (err) {
       // TODO logging
       print(err);
@@ -240,13 +224,15 @@ class _GroupsPageState extends State<GroupsPage> {
   }
 
   /// displays an alert dialog with information about the user
-  void _showUser(UserResponse user) async {
-    var currentUser = this._user.userID;
-    var isGroupOwner = this._userIsGroupOwner(user.userID);
+  void _showUser(UserResponse infoUser, UserResponse currentUser,
+      GroupResponse currentGroup) async {
+    var currentUserId = currentUser.userID;
+    var isGroupOwner = this._userIsGroupOwner(currentGroup, infoUser.userID);
 
     // can the logged in user remove this user?
     bool canRemoveUser = false;
-    if (this._userIsGroupOwner(currentUser) && currentUser != user.userID) {
+    if (this._userIsGroupOwner(currentGroup, currentUserId) &&
+        currentUserId != infoUser.userID) {
       canRemoveUser = true;
     }
 
@@ -260,41 +246,44 @@ class _GroupsPageState extends State<GroupsPage> {
       context: context,
       builder: (context) {
         return ViewUserPopup(
-          user: user,
+          user: infoUser,
           canRemoveUser: canRemoveUser,
           isGroupOwner: isGroupOwner,
           canPromoteUser: canPromoteUser,
-          onRemoved: () => {this._confirmRemoveMember(user)},
-          onUpdateOwner: () => {this._updateGroupOwner(user)},
+          onRemoved: () =>
+              {this._confirmRemoveMember(infoUser, currentUser, currentGroup)},
+          onUpdateOwner: () =>
+              {this._updateGroupOwner(infoUser, currentUser, currentGroup)},
         );
       },
     );
   }
 
   /// displays an alert dialog to edit the group
-  void _editGroup() {
+  void _editGroup(GroupResponse currentGroup) {
     showDialog(
       context: context,
       builder: (context) {
-        return CreateUpdateGroupPopup(group: this._group);
+        return CreateUpdateGroupPopup(group: currentGroup);
       },
     );
   }
 
-  Widget groupMembers(BuildContext context) {
+  Widget groupMembers(
+      BuildContext context, GroupState groupState, UserState userState) {
     List<Widget> listItems = [];
 
-    for (var i = 0; i < this._members.length; i++) {
-      var thisUserId = this._members[i].userID;
+    for (var i = 0; i < groupState.members.length; i++) {
+      var thisUserId = groupState.members[i].userID;
       listItems.add(Container(
         child: Card(
           child: ListTile(
-            leading: UserAvatar(uuid: (this._user.userID), size: 30),
+            leading: UserAvatar(uuid: userState.user?.userID ?? "", size: 30),
             title: RichText(
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: this._members[i].name,
+                    text: groupState.members[i].name,
                     style: TextStyle(color: Colors.black, fontSize: 18),
                   ),
 
@@ -302,7 +291,8 @@ class _GroupsPageState extends State<GroupsPage> {
                   WidgetSpan(
                     child: Padding(
                         padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                        child: this._userIsGroupOwner(thisUserId)
+                        child: this._userIsGroupOwner(
+                                groupState.selectedGroup!, thisUserId)
                             ? Icon(Icons.star_rounded, size: 18)
                             : Container()),
                   ),
@@ -311,7 +301,8 @@ class _GroupsPageState extends State<GroupsPage> {
             ),
             trailing: IconButton(
               icon: Icon(Icons.info_outline_rounded, color: Colors.black),
-              onPressed: () => this._showUser(this._members[i]),
+              onPressed: () => this._showUser(groupState.members[i],
+                  userState.user!, groupState.selectedGroup!),
             ),
           ),
         ),

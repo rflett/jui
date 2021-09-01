@@ -23,7 +23,6 @@ class _CreateUpdateGroupPopupState extends State<CreateUpdateGroupPopup> {
   GroupResponse? _group;
   String _title = "";
   String _actionBtnText = "";
-  late SettingsService _service;
 
   // forms
   final _formKey = GlobalKey<FormState>();
@@ -39,7 +38,6 @@ class _CreateUpdateGroupPopupState extends State<CreateUpdateGroupPopup> {
       this._name.text = group.name;
       this._group = group;
     }
-    this._service = SettingsService.getInstance();
   }
 
   @override
@@ -68,7 +66,7 @@ class _CreateUpdateGroupPopupState extends State<CreateUpdateGroupPopup> {
           .showSnackBar(SnackBar(content: Text("Created $name.")));
       Navigator.of(context).pop(true);
       // Send to singleton
-      this._service.sendMessage(ProfileEvents.reloadGroups);
+      // TODO RELOAD GROUP
     } catch (err) {
       // TODO logging
       print(err);
