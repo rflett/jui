@@ -12,6 +12,7 @@ import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_group.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/view_user_popup.dart';
+import 'package:provider/provider.dart';
 
 class GroupsPage extends StatefulWidget {
   GroupsPage({Key? key}) : super(key: key);
@@ -36,12 +37,15 @@ class _GroupsPageState extends State<GroupsPage> {
   }
 
   /// returns whether the member is the owner of the selected group
-  bool _userIsGroupOwner(GroupResponse currentGroup, String userId) {
-    return currentGroup.ownerID == userId;
+  bool _userIsGroupOwner(GroupResponse? currentGroup, String? userId) {
+    return currentGroup?.ownerID == userId;
   }
 
-  bool _canLeaveCurrentGroup(UserResponse currentUser) {
-    return currentUser.groups!.length != 1;
+  bool _canLeaveCurrentGroup(UserResponse? currentUser) {
+    if (currentUser != null) {
+      return currentUser.groups!.length != 1;
+    }
+    return false;
   }
 
   void _confirmLeaveGroup(
@@ -53,7 +57,7 @@ class _GroupsPageState extends State<GroupsPage> {
 
     /// prompt and tell the user to nominate a new owner if they are already
     /// the group owner and there's other members in the group
-    if (this._userIsGroupOwner(selectedGroup!, currentUser.userID) &&
+    if (this._userIsGroupOwner(selectedGroup, currentUser.userID) &&
         groupState.members.length > 1) {
       showDialog(
         context: context,
@@ -260,13 +264,15 @@ class _GroupsPageState extends State<GroupsPage> {
   }
 
   /// displays an alert dialog to edit the group
-  void _editGroup(GroupResponse currentGroup) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return CreateUpdateGroupPopup(group: currentGroup);
-      },
-    );
+  void _editGroup(GroupResponse? currentGroup) {
+    if (currentGroup != null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return CreateUpdateGroupPopup(group: currentGroup);
+        },
+      );
+    }
   }
 
   Widget groupMembers(
@@ -314,6 +320,9 @@ class _GroupsPageState extends State<GroupsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userState = Provider.of<UserState>(context);
+    final groupState = Provider.of<GroupState>(context);
+
     return Center(
       child: ConstrainedBox(
         constraints: BoxConstraints.loose(
@@ -324,7 +333,7 @@ class _GroupsPageState extends State<GroupsPage> {
             Padding(
               padding: EdgeInsets.all(10),
               child: Text(
-                this._group.name,
+                groupState.selectedGroup?.name ?? "",
                 style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
               ),
             ),
@@ -334,20 +343,22 @@ class _GroupsPageState extends State<GroupsPage> {
                 TextButton(
                   style: ButtonStyle(
                     foregroundColor: MaterialStateProperty.all<Color>(
-                        this._canLeaveCurrentGroup == true
+                        this._canLeaveCurrentGroup(userState.user) == true
                             ? Colors.red
                             : Colors.grey),
                   ),
                   child: Text("LEAVE GROUP"),
-                  onPressed: this._canLeaveCurrentGroup
-                      ? () => this._confirmLeaveGroup()
+                  onPressed: this._canLeaveCurrentGroup(userState.user)
+                      ? () =>
+                          this._confirmLeaveGroup(userState.user, groupState)
                       : null,
                 ),
                 Visibility(
-                  visible: this._userIsGroupOwner(this._user.userID),
+                  visible: this._userIsGroupOwner(
+                      groupState.selectedGroup, userState.user?.userID),
                   child: TextButton(
                     child: Text("EDIT GROUP"),
-                    onPressed: () => this._editGroup(),
+                    onPressed: () => this._editGroup(groupState.selectedGroup),
                   ),
                 ),
               ],
@@ -359,13 +370,14 @@ class _GroupsPageState extends State<GroupsPage> {
               children: [
                 Expanded(
                   child: Stack(children: [
-                    ShareGroupCode(code: this._group.code),
+                    ShareGroupCode(
+                        code: groupState.selectedGroup?.groupID ?? ""),
                   ]),
                 ),
                 SizedBox(width: 20),
                 TextButton(
                   child: Text("SHOW QR"),
-                  onPressed: _onShowQR,
+                  onPressed: () => _onShowQR(groupState.selectedGroup?.groupID),
                   style: TextButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
                     primary: Colors.white,
@@ -376,7 +388,7 @@ class _GroupsPageState extends State<GroupsPage> {
             ),
             SizedBox(height: 10),
             Divider(),
-            groupMembers(context)
+            groupMembers(context, groupState, userState)
           ],
         ),
       ),
