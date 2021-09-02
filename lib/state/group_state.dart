@@ -27,6 +27,7 @@ class GroupState extends ChangeNotifier {
   void setSelectedGroup(GroupResponse newGroup) {
     _selectedGroup = newGroup;
     notifyListeners();
+    _getSelectedGroupMembers();
   }
 
   // Updates the list of group members when the selected group is updated

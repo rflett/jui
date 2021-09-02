@@ -5,14 +5,15 @@ import 'package:jui/models/dto/response/group/games/game_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/game.dart';
-import 'package:jui/services/settings_service.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/validation.dart';
 
 class CreateUpdateGamePopup extends StatefulWidget {
   final String groupId;
   final GameResponse? game;
-  CreateUpdateGamePopup({Key? key, required this.groupId, this.game}) : super(key: key);
+
+  CreateUpdateGamePopup({Key? key, required this.groupId, this.game})
+      : super(key: key);
 
   @override
   _CreateUpdateGamePopupState createState() =>
@@ -26,7 +27,6 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
   String _title = "";
   String _actionBtnText = "";
   bool _deleteVisible = false;
-  late SettingsService _service;
 
   // forms
   final _formKey = GlobalKey<FormState>();
@@ -47,7 +47,6 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
       this._description.text = game.description;
       this._game = game;
     }
-    this._service = SettingsService.getInstance();
   }
 
   @override
@@ -75,7 +74,9 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
       await Game.create(this._groupId, requestData);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Created $name.")));
-      this._service.sendMessage(ProfileEvents.reloadGames);
+
+      // TODO reload games
+
       Navigator.of(context).pop(true);
     } catch (err) {
       // TODO logging
@@ -139,7 +140,8 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
                     minLines: 1,
                     maxLines: 4,
                     decoration: InputDecoration(
-                        labelText: "Description \*", border: OutlineInputBorder()),
+                        labelText: "Description \*",
+                        border: OutlineInputBorder()),
                   ),
                 ],
               ),
@@ -151,9 +153,9 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
         Visibility(
           visible: _deleteVisible,
           child: IconButton(
-              alignment: Alignment.centerLeft,
-              icon: Icon(Icons.delete_outline_rounded, color: Colors.red),
-              onPressed: () => this._deleteGame(),
+            alignment: Alignment.centerLeft,
+            icon: Icon(Icons.delete_outline_rounded, color: Colors.red),
+            onPressed: () => this._deleteGame(),
           ),
         ),
         TextButton(

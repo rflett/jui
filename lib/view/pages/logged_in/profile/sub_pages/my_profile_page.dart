@@ -18,8 +18,11 @@ class _MyProfilePageState extends State<MyProfilePage> {
   TextEditingController _nicknameController =
       new TextEditingController(text: '');
 
-  _MyProfilePageState() {
-    final currentUser = Provider.of<UserState>(context).user;
+
+  @override
+  void initState(){
+    super.initState();
+    final currentUser = Provider.of<UserState>(context, listen: false).user;
     this._nicknameController.text = currentUser?.nickName ?? "";
   }
 

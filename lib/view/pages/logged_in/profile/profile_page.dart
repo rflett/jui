@@ -1,9 +1,5 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:jui/models/dto/response/group/group_response.dart';
-import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/models/enums/settings_page.dart';
-import 'package:jui/services/settings_service.dart';
 import 'package:jui/state/group_state.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_group.dart';

@@ -5,7 +5,6 @@ import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/group.dart';
-import 'package:jui/services/settings_service.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/validation.dart';
 
@@ -81,8 +80,8 @@ class _CreateUpdateGroupPopupState extends State<CreateUpdateGroupPopup> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Updated $name.")));
       Navigator.of(context).pop(true);
-      // Send to singleton
-      this._service.sendMessage(ProfileEvents.reloadGroups);
+
+      // TODO RELOAD THE Groups
     } catch (err) {
       // TODO logging
       print(err);

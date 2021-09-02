@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
-import 'package:jui/services/group_service.dart';
+import 'package:jui/state/group_state.dart';
 import 'package:provider/provider.dart';
 
 import 'components/leaderboard_card.dart';
@@ -20,6 +17,8 @@ class _LeaderboardState extends State<Leaderboard> {
 
   @override
   Widget build(BuildContext context) {
+    var data = Provider.of<GroupState>(context);
+    var currentGroup = data.selectedGroup;
     return Container(
       color: Colors.grey.shade200,
       child: Center(
@@ -39,13 +38,14 @@ class _LeaderboardState extends State<Leaderboard> {
               ),
             ),
             Expanded(
-              child: Consumer<MemberState>(
-                builder: (context, memberState, child) => ListView.separated(
-                  itemBuilder: renderCard,
+              child: Consumer<GroupState>(
+                builder: (context, groupState, child) => ListView.separated(
+                  itemBuilder: (BuildContext context, int index) =>
+                      renderCard(context, index, groupState),
                   separatorBuilder: (context, index) => Padding(
                     padding: EdgeInsets.symmetric(vertical: 30),
                   ),
-                  itemCount: memberState.members.length,
+                  itemCount: groupState.members.length,
                 ),
               ),
             ),
@@ -55,8 +55,8 @@ class _LeaderboardState extends State<Leaderboard> {
     );
   }
 
-  Widget renderCard(BuildContext context, int index) {
-    UserResponse user = this._members[index];
+  Widget renderCard(BuildContext context, int index, GroupState groupState) {
+    UserResponse user = groupState.members[index];
     return LeaderboardCard(_showVotes, user, ++index);
   }
 }
