@@ -8,6 +8,7 @@ import 'package:jui/server/user.dart';
 import 'package:jui/state/user_state.dart';
 import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/search/song_search_list.dart';
 import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/votes/vote_list.dart';
+import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/state/VoteState.dart';
 import 'package:provider/provider.dart';
 
 import 'components/search/song_search_item.dart';
@@ -25,8 +26,7 @@ class _MyVotesPageState extends State<MyVotesPage> {
   Timer? _searchDelay;
   List<Widget> _searchList = List.empty();
   CrossFadeState _crossFadeState = CrossFadeState.showFirst;
-  List<Vote> _votes = List.empty();
-  bool _hasAddedVote = false;
+  VoteState _voteState = VoteState();
 
   @override
   initState() {
@@ -49,16 +49,15 @@ class _MyVotesPageState extends State<MyVotesPage> {
   bool get _isSearching => _crossFadeState == CrossFadeState.showSecond;
 
   void getVotes() async {
-    final userProvider = Provider.of<UserState>(context, listen: false);
+    _voteState.setLoading();
 
-    if (userProvider.user != null) {
+    final userState = Provider.of<UserState>(context, listen: false);
+
+    if (userState.user != null) {
       // Get the user's votes
       try {
-        final response = await User.getVotes(userProvider.user!.userID);
-        setState(() {
-          _votes = response.votes ?? [];
-        });
-        userProvider.updateVotes(_votes);
+        final response = await User.getVotes(userState.user!.userID);
+        _voteState.setVotes(response.votes ?? []);
       } catch (err) {
         print(err);
       }
@@ -109,19 +108,22 @@ class _MyVotesPageState extends State<MyVotesPage> {
 
   void addSongToList(Vote song) {
     setState(() {
-      _votes = [..._votes, song];
       _inputController.clear();
-      _hasAddedVote = true;
       _crossFadeState = CrossFadeState.showFirst;
+      _voteState.addSongFromSearch(song);
     });
   }
 
   // Send the updated votes to the server
-  void saveVotes(List<Vote> toUpdate, List<Vote> toDelete) async {
+  void saveVotes() async {
+    final currentAndRemoved = _voteState.getCurrentAndRemoved(max: 10);
+    _voteState.setLoading();
+
     try {
-      await User.updateVotes(toUpdate, toDelete);
+      await User.updateVotes(currentAndRemoved.item1, currentAndRemoved.item2);
     } catch (err) {
       print(err);
+      return;
     }
 
     // Also retrieve the votes from the server again to update the local copy
@@ -158,10 +160,11 @@ class _MyVotesPageState extends State<MyVotesPage> {
             SizedBox(height: 20),
             Expanded(
               child: AnimatedCrossFade(
-                firstChild: VoteList(
-                  votes: _votes,
-                  saveVotes: saveVotes,
-                  votesAltered: _hasAddedVote,
+                firstChild: ChangeNotifierProvider<VoteState>(
+                  create: (builder) => _voteState,
+                  child: VoteList(
+                    saveVotes: saveVotes,
+                  ),
                 ),
                 secondChild: SongSearchList(searchList: _searchList),
                 crossFadeState: _crossFadeState,

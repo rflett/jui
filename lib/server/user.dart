@@ -93,7 +93,7 @@ class User {
 
     http.Response response = http.Response("", 500);
     try {
-      response = await _apiServer.post(userUpdateVoteUrl, jsonBody);
+      response = await _apiServer.post(userCreateVoteUrl, jsonBody);
     } catch (err) {
       print(err);
     }
