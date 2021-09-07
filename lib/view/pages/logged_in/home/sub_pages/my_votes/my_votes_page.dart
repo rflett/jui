@@ -26,6 +26,7 @@ class _MyVotesPageState extends State<MyVotesPage> {
   List<Widget> _searchList = List.empty();
   CrossFadeState _crossFadeState = CrossFadeState.showFirst;
   List<Vote> _votes = List.empty();
+  bool _hasAddedVote = false;
 
   @override
   initState() {
@@ -45,7 +46,7 @@ class _MyVotesPageState extends State<MyVotesPage> {
     super.dispose();
   }
 
-  get _isSearching => _crossFadeState == CrossFadeState.showSecond;
+  bool get _isSearching => _crossFadeState == CrossFadeState.showSecond;
 
   void getVotes() async {
     final userProvider = Provider.of<UserState>(context, listen: false);
@@ -101,13 +102,17 @@ class _MyVotesPageState extends State<MyVotesPage> {
     // convert to widgets
     setState(() {
       _searchList = response.songs
-          .map((song) => SongSearchItem(
-                songName: song.name,
-                artistName: song.artist,
-                // Last artwork in the list is the smallest sized
-                artworkUrl: song.artwork[1].url,
-              ))
+          .map((song) => SongSearchItem(song: song, onClicked: addSongToList))
           .toList();
+    });
+  }
+
+  void addSongToList(Vote song) {
+    setState(() {
+      _votes = [..._votes, song];
+      _inputController.clear();
+      _hasAddedVote = true;
+      _crossFadeState = CrossFadeState.showFirst;
     });
   }
 
@@ -156,6 +161,7 @@ class _MyVotesPageState extends State<MyVotesPage> {
                 firstChild: VoteList(
                   votes: _votes,
                   saveVotes: saveVotes,
+                  votesAltered: _hasAddedVote,
                 ),
                 secondChild: SongSearchList(searchList: _searchList),
                 crossFadeState: _crossFadeState,

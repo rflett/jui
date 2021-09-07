@@ -4,23 +4,29 @@ import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/vote
 
 class VoteList extends StatefulWidget {
   final List<Vote> votes;
-  void Function(List<Vote> toUpdate, List<Vote> toDelete) saveVotes;
+  final void Function(List<Vote> toUpdate, List<Vote> toDelete) saveVotes;
+  final bool votesAltered;
 
-  VoteList({Key? key, required this.votes, required this.saveVotes})
+  VoteList(
+      {Key? key,
+      required this.votes,
+      required this.saveVotes,
+      required this.votesAltered})
       : super(key: key);
 
   @override
-  _VoteListState createState() => _VoteListState([...votes]);
+  _VoteListState createState() => _VoteListState([...votes], votesAltered);
 }
 
 class _VoteListState extends State<VoteList> {
   List<Vote> currentVotes;
-  bool votesReordered = false;
+  bool votesAltered;
 
-  _VoteListState(this.currentVotes);
+  _VoteListState(this.currentVotes, bool votesAltered)
+      : this.votesAltered = votesAltered;
 
   get showControls =>
-      votesReordered || currentVotes.length != widget.votes.length;
+      votesAltered || currentVotes.length != widget.votes.length;
 
   // Reorder the elements in the array and store it inside the
   void reorderList(int oldIndex, int newIndex) {
@@ -41,7 +47,7 @@ class _VoteListState extends State<VoteList> {
 
     setState(() {
       currentVotes = newOrder;
-      votesReordered = true;
+      votesAltered = true;
     });
   }
 
@@ -49,7 +55,7 @@ class _VoteListState extends State<VoteList> {
   void resetList() {
     setState(() {
       currentVotes = [...widget.votes];
-      votesReordered = false;
+      votesAltered = false;
     });
   }
 
@@ -61,7 +67,7 @@ class _VoteListState extends State<VoteList> {
 
     widget.saveVotes(currentVotes, removed);
     setState(() {
-      votesReordered = false;
+      votesAltered = false;
     });
   }
 
