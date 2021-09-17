@@ -1,46 +1,31 @@
-import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jui/models/dto/response/group/games/game_response.dart';
-import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/group.dart';
-import 'package:jui/services/settings_service.dart';
+import 'package:jui/state/group_state.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
+import 'package:provider/provider.dart';
 
 class GamesPage extends StatefulWidget {
-  final GroupResponse group;
-
-  GamesPage({Key? key, required this.group}) : super(key: key);
+  GamesPage({Key? key}) : super(key: key);
 
   @override
-  _GamesPageState createState() => _GamesPageState(group);
+  _GamesPageState createState() => _GamesPageState();
 }
 
 class _GamesPageState extends State<GamesPage> {
-  // all groups that a user is a member of
-  late GroupResponse _group;
   // all the games in the current group
-  List<GameResponse> _games = [];
-  // listeners
-  late SettingsService _service;
-  late StreamSubscription _serviceStream;
+  List<GameResponse> _games = List.empty();
 
-  _GamesPageState(GroupResponse group) {
-    this._group = group;
+  _GamesPageState() {
     _getData();
-    this._service = SettingsService.getInstance();
-    this._serviceStream = _service.messages.listen(onMessageReceived);
-  }
-
-  @override
-  void dispose() {
-    this._serviceStream.cancel();
-    super.dispose();
   }
 
   void _getData() async {
-    var gamesResponse = await Group.getGames(this._group.groupID);
+    final groupState = Provider.of<GroupState>(context, listen: false);
+
+    var gamesResponse = await Group.getGames(groupState.selectedGroup!.groupID);
     setState(() {
       this._games = gamesResponse.games;
     });
@@ -53,10 +38,12 @@ class _GamesPageState extends State<GamesPage> {
   }
 
   void _editGame(GameResponse game) async {
+    final groupState = Provider.of<GroupState>(context, listen: false);
     var shouldRefresh = await showDialog<bool>(
       context: context,
       builder: (context) {
-        return CreateUpdateGamePopup(game: game, groupId: this._group.groupID);
+        return CreateUpdateGamePopup(
+            game: game, groupId: groupState.selectedGroup!.groupID);
       },
     );
     if (shouldRefresh == true) {

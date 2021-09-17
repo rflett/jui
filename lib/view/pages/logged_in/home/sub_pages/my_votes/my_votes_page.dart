@@ -1,5 +1,17 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:jui/view/components/material_autocomplete.dart';
+import 'package:jui/models/dto/shared/vote.dart';
+import 'package:jui/server/search.dart';
+import 'package:jui/server/user.dart';
+import 'package:jui/state/user_state.dart';
+import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/search/song_search_list.dart';
+import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/votes/vote_list.dart';
+import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/state/VoteState.dart';
+import 'package:provider/provider.dart';
+
+import 'components/search/song_search_item.dart';
 
 class MyVotesPage extends StatefulWidget {
   MyVotesPage({Key? key}) : super(key: key);
@@ -9,95 +21,163 @@ class MyVotesPage extends StatefulWidget {
 }
 
 class _MyVotesPageState extends State<MyVotesPage> {
-  List<String> _songs = ["These", "Songs", "Don't", "Actually", "Search"];
-  late List<Widget> _selectedList;
+  late FocusNode _searchFocusNode;
+  late TextEditingController _inputController;
+  Timer? _searchDelay;
+  List<Widget> _searchList = List.empty();
+  CrossFadeState _crossFadeState = CrossFadeState.showFirst;
+  VoteState _voteState = VoteState();
 
-  _MyVotesPageState() {
-    _selectedList = _generateSelectedList(_songs);
+  @override
+  initState() {
+    super.initState();
+    getVotes();
+    this._searchFocusNode = FocusNode();
+    _searchFocusNode.addListener(onSearchFocusChanged);
+    _inputController = TextEditingController();
+    _inputController.addListener(onSearchTextChanged);
   }
 
-  Iterable<String> _songList(TextEditingValue value) {
-    // TODO link to search api
-    return _songs;
+  @override
+  dispose() {
+    _searchFocusNode.removeListener(onSearchFocusChanged);
+    _inputController.removeListener(onSearchTextChanged);
+
+    super.dispose();
   }
 
-  static List<Widget> _generateSelectedList(List<String> songs) {
-    // TODO link to selected api
-    List<Widget> songWidgets = [];
-    for (int i = 0; i < songs.length; i++) {
-      songWidgets.add(
-        ReorderableDragStartListener(
-          key: Key("$i-song"),
-          index: i,
-          child: Column(
-            children: [
-              SizedBox(
-                height: 60,
-                child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      Text(
-                        "${i + 1}.",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      SizedBox(width: 10),
-                      Column(
-                        children: [
-                          Text(songs[i],
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)),
-                          Text(
-                            "Band Name",
-                            style: TextStyle(fontSize: 12),
-                          )
-                        ],
-                      ),
-                      Spacer(),
-                      Icon(Icons.view_headline_sharp, size: 30)
-                    ],
-                  ),
-                ),
-              ),
-              Divider(),
-            ],
-          ),
-        ),
-      );
+  bool get _isSearching => _crossFadeState == CrossFadeState.showSecond;
+
+  void getVotes() async {
+    _voteState.setLoading();
+
+    final userState = Provider.of<UserState>(context, listen: false);
+
+    if (userState.user != null) {
+      // Get the user's votes
+      try {
+        final response = await User.getVotes(userState.user!.userID);
+        _voteState.setVotes(response.votes ?? []);
+      } catch (err) {
+        print(err);
+      }
     }
-    return songWidgets;
   }
 
-  void _reorderList(int oldIndex, int newIndex) {
-    var newList = [..._songs];
-    var item = newList[oldIndex];
-    newList.removeAt(oldIndex);
-    newList.insert(newIndex, item);
-
+  void onSearchFocusChanged() {
     setState(() {
-      _selectedList = _generateSelectedList(newList);
+      if (_searchFocusNode.hasPrimaryFocus) {
+        _crossFadeState = CrossFadeState.showSecond;
+      } else {
+        _crossFadeState = CrossFadeState.showFirst;
+        _inputController.clear();
+      }
     });
+  }
+
+  void onSearchTextChanged() {
+    setState(() {});
+    String text = _inputController.text;
+
+    if (_searchDelay?.isActive == true) {
+      _searchDelay!.cancel();
+    }
+    // Set a timeout delay to not spam the server
+    _searchDelay =
+        Timer(Duration(milliseconds: 500), () => searchForSongs(text));
+  }
+
+  void searchForSongs(String searchText) async {
+    if (searchText.isEmpty) {
+      // Don't search empty strings
+      setState(() {
+        _searchList = List.empty();
+      });
+      return;
+    }
+
+    var response = await Search.search(searchText);
+
+    // convert to widgets
+    setState(() {
+      _searchList = response.songs
+          .map((song) => SongSearchItem(song: song, onClicked: addSongToList))
+          .toList();
+    });
+  }
+
+  void addSongToList(Vote song) {
+    setState(() {
+      _inputController.clear();
+      _crossFadeState = CrossFadeState.showFirst;
+      _voteState.addSongFromSearch(song);
+    });
+  }
+
+  // Send the updated votes to the server
+  void saveVotes() async {
+    final currentAndRemoved = _voteState.getCurrentAndRemoved(max: 10);
+    _voteState.setLoading();
+
+    try {
+      await User.updateVotes(currentAndRemoved.item1, currentAndRemoved.item2);
+    } catch (err) {
+      print(err);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Something went wrong, please try again")));
+      return;
+    }
+
+    // Also retrieve the votes from the server again to update the local copy
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Votes updated successfully")));
+    getVotes();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(15),
-      child: Column(
-        children: [
-          MaterialAutocomplete(
-            optionsBuilder: _songList,
-            labelText: "Search Songs",
-          ),
-          SizedBox(height: 20),
-          Expanded(
-            child: ReorderableListView(
-              onReorder: _reorderList,
-              children: _selectedList,
+    return Stack(
+      children: [
+        Column(
+          children: [
+            AnimatedContainer(
+              padding: _isSearching
+                  ? EdgeInsets.fromLTRB(5, 15, 5, 15)
+                  : EdgeInsets.fromLTRB(35, 15, 35, 15),
+              curve: Curves.easeOutSine,
+              duration: Duration(milliseconds: 300),
+              child: TextFormField(
+                controller: _inputController,
+                decoration: InputDecoration(
+                  suffixIcon: _isSearching
+                      ? IconButton(
+                          icon: Icon(Icons.cancel),
+                          onPressed: () => _searchFocusNode.unfocus())
+                      : null,
+                  labelText: "Search for songs",
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                focusNode: _searchFocusNode,
+              ),
             ),
-          ),
-        ],
-      ),
+            SizedBox(height: 20),
+            Expanded(
+              child: AnimatedCrossFade(
+                firstChild: ChangeNotifierProvider<VoteState>(
+                  create: (builder) => _voteState,
+                  child: VoteList(
+                    saveVotes: saveVotes,
+                  ),
+                ),
+                secondChild: SongSearchList(searchList: _searchList),
+                crossFadeState: _crossFadeState,
+                duration: Duration(milliseconds: 300),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -1,24 +1,18 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:jui/models/dto/response/group/group_response.dart';
-import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/models/enums/settings_page.dart';
-import 'package:jui/services/settings_service.dart';
+import 'package:jui/state/group_state.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_group.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/games_page.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/groups_page.dart';
 import 'package:jui/view/pages/logged_in/profile/sub_pages/my_profile_page.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
-  final UserResponse user;
-  final GroupResponse group;
-
-  ProfilePage({Key? key, required this.user, required this.group})
-      : super(key: key);
+  ProfilePage({Key? key}) : super(key: key);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState(user, group);
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
@@ -26,24 +20,19 @@ class _ProfilePageState extends State<ProfilePage> {
   ProfilePages _currentPage = ProfilePages.myProfile;
   Map<ProfilePages, Widget> _profilePages = {};
 
-  // current data
-  late GroupResponse _group;
-
-  _ProfilePageState(UserResponse user, GroupResponse group) {
-    this._group = group;
-
+  _ProfilePageState() {
     this._profilePages = Map.fromEntries([
       MapEntry(
         ProfilePages.myProfile,
-        MyProfilePage(user: user),
+        MyProfilePage(),
       ),
       MapEntry(
         ProfilePages.myGroups,
-        GroupsPage(user: user, group: group),
+        GroupsPage(),
       ),
       MapEntry(
         ProfilePages.myGames,
-        GamesPage(group: group),
+        GamesPage(),
       ),
     ]);
   }
@@ -79,13 +68,15 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _createGamePressed() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return CreateUpdateGamePopup(groupId: this._group.groupID);
-      },
-    );
+  void _createGamePressed(String? groupId) {
+    if (groupId != null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return CreateUpdateGamePopup(groupId: groupId);
+        },
+      );
+    }
   }
 
   Widget? _currentFab() {
@@ -108,8 +99,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget gamesPageFab() {
+    final selectedGroupId =
+        Provider.of<GroupState>(context).selectedGroup?.groupID;
     return FloatingActionButton(
-      onPressed: () => _createGamePressed(),
+      onPressed: () => _createGamePressed(selectedGroupId),
       child: const Icon(Icons.add),
       backgroundColor: Colors.indigo,
     );

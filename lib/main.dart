@@ -1,18 +1,21 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
+import 'package:jui/state/group_state.dart';
+import 'package:jui/state/user_state.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/logged_in/main_page.dart';
 import 'package:jui/view/pages/logged_in/setup/invite_group_page.dart';
 import 'package:jui/view/pages/logged_in/setup/setup_group_page.dart';
 import 'package:jui/view/pages/logged_out/login_page.dart';
 import 'package:jui/view/pages/logged_out/register_page.dart';
-import 'package:jui/view/pages/shared/loading_page.dart';
-import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MultiProvider(providers: [
+    // Provide state management classes here that will be used throughout the app
+    ChangeNotifierProvider(create: (context) => UserState()),
+    ChangeNotifierProvider(create: (context) => GroupState()),
+  ], child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {

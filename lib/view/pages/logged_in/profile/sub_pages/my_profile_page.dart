@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:jui/models/dto/request/user/update_user.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
-import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/server/user.dart';
+import 'package:jui/state/user_state.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
+import 'package:provider/provider.dart';
 
 class MyProfilePage extends StatefulWidget {
-  final UserResponse user;
-
-  MyProfilePage({Key? key, required this.user}) : super(key: key);
+  MyProfilePage({Key? key}) : super(key: key);
 
   @override
-  _MyProfilePageState createState() => _MyProfilePageState(user);
+  _MyProfilePageState createState() => _MyProfilePageState();
 }
 
 class _MyProfilePageState extends State<MyProfilePage> {
-  UserResponse? _user;
   TextEditingController _nicknameController =
       new TextEditingController(text: '');
 
-  _MyProfilePageState(UserResponse user) {
-    this._user = user;
-    this._nicknameController.text = user.nickName == null ? "" : user.nickName!;
+
+  @override
+  void initState(){
+    super.initState();
+    final currentUser = Provider.of<UserState>(context, listen: false).user;
+    this._nicknameController.text = currentUser?.nickName ?? "";
   }
 
   @override
@@ -54,36 +55,38 @@ class _MyProfilePageState extends State<MyProfilePage> {
         constraints: BoxConstraints.loose(
           Size(300, 400),
         ),
-        child: Column(
-          children: [
-            UserAvatar(
-              uuid: (this._user == null ? "" : this._user!.userID),
-              size: 200,
-            ),
-            SizedBox(height: 20),
-            Text(
-              (this._user == null ? "" : this._user!.name),
-              style: TextStyle(
-                fontSize: 25,
+        child: Consumer<UserState>(
+          builder: (context, userState, child) => Column(
+            children: [
+              UserAvatar(
+                uuid: (userState.user?.userID ?? ""),
+                size: 200,
               ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _nicknameController,
-              decoration: InputDecoration(
-                labelText: "Nickname",
-                border: OutlineInputBorder(),
+              SizedBox(height: 20),
+              Text(
+                (userState.user?.name ?? ""),
+                style: TextStyle(
+                  fontSize: 25,
+                ),
               ),
-            ),
-            SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: _onUpdateClicked,
-                child: Text("UPDATE"),
+              SizedBox(height: 20),
+              TextField(
+                controller: _nicknameController,
+                decoration: InputDecoration(
+                  labelText: "Nickname",
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: _onUpdateClicked,
+                  child: Text("UPDATE"),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
