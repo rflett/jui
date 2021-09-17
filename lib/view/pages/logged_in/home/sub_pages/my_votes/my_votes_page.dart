@@ -123,10 +123,14 @@ class _MyVotesPageState extends State<MyVotesPage> {
       await User.updateVotes(currentAndRemoved.item1, currentAndRemoved.item2);
     } catch (err) {
       print(err);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Something went wrong, please try again")));
       return;
     }
 
     // Also retrieve the votes from the server again to update the local copy
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Votes updated successfully")));
     getVotes();
   }
 

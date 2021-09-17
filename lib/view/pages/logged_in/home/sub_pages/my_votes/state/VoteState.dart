@@ -23,13 +23,19 @@ class VoteState extends ChangeNotifier {
   /// Set [max] to indicate how many votes to keep in the current list. Defaults to 10
   Tuple2<List<Vote>, List<Vote>> getCurrentAndRemoved({int max = 10}) {
     int length = _currentVotes.length < max ? _currentVotes.length : max;
-    final currentList = _currentVotes.getRange(0, length).toList();
+    final currentList = _currentVotes.getRange(0, length);
     final removed = _originalVotes
         .where((vote) =>
             currentList.every((newVote) => newVote.songID != vote.songID))
         .toList();
 
-    return Tuple2(currentList, removed);
+    // Finally assign ranks to each item in the list based on their order
+    List<Vote> rankedVotes = [];
+    for (int i = 0; i < currentList.length; i++) {
+      rankedVotes.add(Vote.reordered(currentList.elementAt(i), i + 1));
+    }
+
+    return Tuple2(rankedVotes, removed);
   }
 
   /// Update whether something related to votes is sending a network request
