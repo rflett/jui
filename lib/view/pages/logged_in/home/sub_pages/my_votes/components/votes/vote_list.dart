@@ -49,13 +49,16 @@ class _VoteListState extends State<VoteList> {
           ReorderableListView(
             children: [
               for (int i = 0; i < voteState.currentVotes.length; i++)
-                VoteListItem(
+                Padding(
                   key: Key(i.toString()),
-                  index: i,
-                  vote: voteState.currentVotes[i],
-                  color: i.isOdd
-                      ? Theme.of(context).cardColor
-                      : Theme.of(context).hoverColor,
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: VoteListItem(
+                    index: i,
+                    vote: voteState.currentVotes[i],
+                    color: i.isOdd
+                        ? Theme.of(context).cardColor
+                        : Theme.of(context).hoverColor,
+                  ),
                 ),
             ],
             onReorder: reorderList,
@@ -68,17 +71,15 @@ class _VoteListState extends State<VoteList> {
               duration: Duration(milliseconds: 100),
               child: Column(
                 children: [
-                  FloatingActionButton.extended(
+                  FloatingActionButton(
                     onPressed: resetList,
-                    backgroundColor: Theme.of(context).errorColor,
-                    label: Text("Cancel"),
-                    icon: Icon(Icons.cancel),
+                    backgroundColor: Colors.grey,
+                    child: Icon(Icons.cancel),
                   ),
                   SizedBox(height: 10),
-                  FloatingActionButton.extended(
+                  FloatingActionButton(
                     onPressed: widget.saveVotes,
-                    label: Text("Save"),
-                    icon: Icon(Icons.save),
+                    child: Icon(Icons.save),
                   ),
                 ],
               ),

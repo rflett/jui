@@ -371,13 +371,13 @@ class _GroupsPageState extends State<GroupsPage> {
                 Expanded(
                   child: Stack(children: [
                     ShareGroupCode(
-                        code: groupState.selectedGroup?.groupID ?? ""),
+                        code: groupState.selectedGroup?.code ?? ""),
                   ]),
                 ),
                 SizedBox(width: 20),
                 TextButton(
                   child: Text("SHOW QR"),
-                  onPressed: () => _onShowQR(groupState.selectedGroup?.groupID),
+                  onPressed: () => _onShowQR(groupState.selectedGroup?.code),
                   style: TextButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
                     primary: Colors.white,
