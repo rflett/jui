@@ -54,6 +54,7 @@ class _VoteListState extends State<VoteList> {
                   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: VoteListItem(
                     index: i,
+                    onRemoved: voteState.removeVote,
                     vote: voteState.currentVotes[i],
                     color: i.isOdd
                         ? Theme.of(context).cardColor
@@ -69,14 +70,14 @@ class _VoteListState extends State<VoteList> {
             child: AnimatedOpacity(
               opacity: voteState.votesHaveChanged ? 1 : 0,
               duration: Duration(milliseconds: 100),
-              child: Column(
+              child: Row(
                 children: [
                   FloatingActionButton(
                     onPressed: resetList,
                     backgroundColor: Colors.grey,
                     child: Icon(Icons.cancel),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(width: 20),
                   FloatingActionButton(
                     onPressed: widget.saveVotes,
                     child: Icon(Icons.save),

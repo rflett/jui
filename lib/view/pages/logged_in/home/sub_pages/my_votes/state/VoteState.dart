@@ -8,10 +8,11 @@ class VoteState extends ChangeNotifier {
   List<Vote> _originalVotes = List.empty();
   List<Vote> _currentVotes = List.empty();
   bool _hasAddedVote = false;
+  bool _hasRemovedVote = false;
   bool _hasReorderedVotes = false;
   bool _isLoading = false;
 
-  bool get votesHaveChanged => _hasAddedVote || _hasReorderedVotes;
+  bool get votesHaveChanged => _hasAddedVote || _hasRemovedVote || _hasReorderedVotes;
 
   bool get isLoading => _isLoading;
 
@@ -50,6 +51,7 @@ class VoteState extends ChangeNotifier {
     _currentVotes = [...votes];
     _hasReorderedVotes = false;
     _hasAddedVote = false;
+    _hasRemovedVote = false;
     _isLoading = false;
     notifyListeners();
   }
@@ -73,6 +75,13 @@ class VoteState extends ChangeNotifier {
     _currentVotes = [..._originalVotes];
     _hasReorderedVotes = false;
     _hasAddedVote = false;
+    notifyListeners();
+  }
+
+  // Remove a vote from the list
+  removeVote(int index) {
+    _currentVotes.removeAt(index);
+    _hasRemovedVote = true;
     notifyListeners();
   }
 }

@@ -17,9 +17,9 @@ class SongSearchItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: GestureDetector(
-        onTap: () => onClicked(song),
+    return GestureDetector(
+      onTap: () => onClicked(song),
+      child: Card(
         child: Padding(
           padding: EdgeInsets.all(15),
           child: Row(
@@ -44,7 +44,7 @@ class SongSearchItem extends StatelessWidget {
                     SizedBox(height: 10),
                     Text(
                       artistName,
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 15),
                     )
                   ],
                 ),

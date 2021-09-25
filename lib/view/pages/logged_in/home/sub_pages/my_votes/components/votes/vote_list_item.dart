@@ -5,9 +5,10 @@ class VoteListItem extends StatelessWidget {
   final Vote vote;
   final int index;
   final Color color;
+  final ValueSetter<int> onRemoved;
 
   const VoteListItem(
-      {Key? key, required this.vote, required this.color, required this.index})
+      {Key? key, required this.vote, required this.color, required this.index, required this.onRemoved})
       : super(key: key);
 
   @override
@@ -17,14 +18,14 @@ class VoteListItem extends StatelessWidget {
           ? Theme.of(context).cardColor
           : Colors.grey.shade400,
       child: Padding(
-        padding: EdgeInsets.all(15),
+        padding: EdgeInsets.fromLTRB(10, 5, 5, 5),
         child: Row(
           children: [
             Text(
-              "#${vote.rank}",
-              style: TextStyle(fontSize: 30),
+              "#${index + 1}",
+              style: TextStyle(fontSize: 20),
             ),
-            SizedBox(width: 20),
+            SizedBox(width: 10),
             ReorderableDragStartListener(
               index: index,
               child: SizedBox(
@@ -44,7 +45,7 @@ class VoteListItem extends StatelessWidget {
                     Text(
                       vote.name,
                       style: TextStyle(
-                        fontSize: 25,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -57,14 +58,16 @@ class VoteListItem extends StatelessWidget {
                 ),
               ),
             ),
-            IconButton(icon: Icon(Icons.delete_outlined, color: Colors.red), onPressed: () => {}),
-            SizedBox(width: 10),
-            ReorderableDragStartListener(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+            Column(
+              children: [
+                IconButton(icon: Icon(Icons.close, color: Colors.red), onPressed: () => onRemoved(index)),
+                SizedBox(height: 30),
+                ReorderableDragStartListener(
                   child: Icon(Icons.drag_handle_rounded, color: Colors.grey),
+                  index: index,
                 ),
-                index: index,
+                SizedBox(height: 5),
+              ],
             ),
 
           ],

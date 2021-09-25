@@ -111,6 +111,7 @@ class _MyVotesPageState extends State<MyVotesPage> {
       _inputController.clear();
       _crossFadeState = CrossFadeState.showFirst;
       _voteState.addSongFromSearch(song);
+      _searchFocusNode.unfocus();
     });
   }
 
@@ -141,9 +142,7 @@ class _MyVotesPageState extends State<MyVotesPage> {
         Column(
           children: [
             AnimatedContainer(
-              padding: _isSearching
-                  ? EdgeInsets.fromLTRB(5, 15, 5, 15)
-                  : EdgeInsets.fromLTRB(35, 15, 35, 15),
+              padding: EdgeInsets.all(15),
               curve: Curves.easeOutSine,
               duration: Duration(milliseconds: 300),
               child: TextFormField(
@@ -156,12 +155,10 @@ class _MyVotesPageState extends State<MyVotesPage> {
                       : null,
                   labelText: "Search for songs",
                   border: OutlineInputBorder(),
-                  isDense: true,
                 ),
                 focusNode: _searchFocusNode,
               ),
             ),
-            SizedBox(height: 20),
             Expanded(
               child: AnimatedCrossFade(
                 firstChild: ChangeNotifierProvider<VoteState>(

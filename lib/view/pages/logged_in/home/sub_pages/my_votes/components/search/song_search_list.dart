@@ -20,7 +20,7 @@ class SongSearchList extends StatelessWidget {
                 direction: Axis.horizontal,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: [Text("Nothing found, try searching for a song")],
+                children: [Text("Start searching for a song!")],
               ),
             ),
           ),
