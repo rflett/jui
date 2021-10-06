@@ -34,12 +34,17 @@ class _MainPageState extends State<MainPage> {
   String _currentRoute = gamePage;
 
   _MainPageState() {
-    _getData();
     this._loggedInRoutes = {
       "/": (BuildContext context) => Container(),
       gamePage: (BuildContext context) => HomePage(),
       profilePage: (BuildContext context) => ProfilePage(),
     };
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getData();
   }
 
   _getData() async {
@@ -56,13 +61,13 @@ class _MainPageState extends State<MainPage> {
       return;
     }
 
-    var primaryGroupId = await DeviceStorage.retrieveValue(
-        storagePrimaryGroupId);
+    var primaryGroupId =
+        await DeviceStorage.retrieveValue(storagePrimaryGroupId);
 
     var groups = user.groups ?? List.empty();
 
     final selectedGroup =
-    groups.firstWhere((group) => group.groupID == primaryGroupId);
+        groups.firstWhere((group) => group.groupID == primaryGroupId);
 
     // set the vars
     setState(() {
