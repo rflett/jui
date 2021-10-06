@@ -37,7 +37,6 @@ class GroupState extends ChangeNotifier {
         var members =
             await Group.getMembers(_selectedGroup!.groupID, withVotes: true);
         _selectedGroupMembers = members.members;
-        notifyListeners();
       } catch (err) {
         print(err);
       }
