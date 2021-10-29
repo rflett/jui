@@ -57,6 +57,10 @@ class _MyVotesPageState extends State<MyVotesPage> {
       // Get the user's votes
       try {
         final response = await User.getVotes(userState.user!.userID);
+
+        if (response.votes != null && response.votes!.length != 0) {
+          response.votes!.sort((a, b) => a.rank!.compareTo(b.rank!));
+        }
         _voteState.setVotes(response.votes ?? []);
       } catch (err) {
         print(err);
