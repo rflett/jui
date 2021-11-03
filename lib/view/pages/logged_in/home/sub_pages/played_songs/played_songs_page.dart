@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
@@ -23,7 +25,7 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
   int _playedCount = 0;
   int _currentIndex = 0;
   int _startIndex = 0;
-  int _numItems = 5;
+  int _numItems = 1; // if playedCount is less than 5 then no songs will get returned
 
   Color? currentColor;
 
@@ -39,6 +41,7 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
         this._songs = playedSongs.songs;
         this._playedCount = playedSongs.playedCount;
         this._currentIndex = currentIndex;
+        this._numItems = min(this._playedCount, 5);
       });
 
       this._setAverageColor();
@@ -76,8 +79,17 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
 
   @override
   Widget build(BuildContext context) {
-    return this._songs.length == 0
-        ? Container()
+    return this._songs.length == 0 || this._playedCount == 0
+        ? Container(
+            color: Colors.greenAccent,
+            child: Hero(
+              tag: "login-logo",
+              child: Image.asset(
+                "assets/images/countdown.png",
+                // width: 300,
+              ),
+            ),
+          )
         : Scaffold(
             backgroundColor: currentColor,
             floatingActionButton: Padding(
@@ -119,7 +131,7 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
                           (index) => AnimatedBar(
                             animController: _animController,
                             position: index,
-                            currentIndex: playedPosition,
+                            currentIndex: playedPosition - 1,
                           ),
                         ))),
                   ),
@@ -188,6 +200,9 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
   }
 
   void _setAverageColor() async {
+    if (this._songs.length == 0) {
+      return;
+    }
     CachedNetworkImageProvider currentImage = CachedNetworkImageProvider(
         this._songs[_currentIndex].artwork.first.url);
     final PaletteGenerator paletteGenerator =
