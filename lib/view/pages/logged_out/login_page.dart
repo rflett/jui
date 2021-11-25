@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
       } catch (err) {
         // TODO logging
         print(err);
-        PopupUtils.showError(context, err as ProblemResponse);
+        PopupUtils.showError(context, err as ProblemResponse, title: "Error");
         setState(() {
           _isLoading = false;
         });
@@ -90,87 +90,89 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: Hero(
-              tag: "login-logo",
-              child: Image.asset(
-                "assets/images/logo.png",
-                width: 300,
-              ),
-            ),
-          ),
-          ConstrainedBox(
-            constraints:
-                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 500),
-            child: Container(
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  children: [
-                    Wrap(runSpacing: 10, children: [
-                      TextFormField(
-                        onChanged: (val) => _email = val,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: _validateEmail,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.email_outlined),
-                          labelText: "Email",
-                          border: OutlineInputBorder(),
-                          isDense: true,
-                        ),
-                      ),
-                      TextFormField(
-                        onChanged: (val) => _password = val,
-                        validator: _validatePassword,
-                        obscureText: _hidePassword,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.lock_outline_rounded),
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.remove_red_eye),
-                            onPressed: _onViewPasswordPressed,
-                          ),
-                          labelText: "Password",
-                          border: OutlineInputBorder(),
-                          isDense: true,
-                        ),
-                      ),
-                      Align(
-                        alignment: AlignmentDirectional.centerEnd,
-                        child: OutlinedLoadingButton(
-                          child: Text("LOGIN"),
-                          onPressed: _onLoginClicked,
-                          isLoading: _isLoading,
-                        ),
-                      ),
-                    ]),
-                    SizedBox(height: 20),
-                    Column(children: [
-                      Wrap(
-                        runSpacing: 10,
-                        children: [
-                          SocialLoginButton(SocialProviders.google),
-                          SocialLoginButton(SocialProviders.spotify),
-                          SocialLoginButton(SocialProviders.facebook),
-                          SocialLoginButton(SocialProviders.instagram),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      TextButton(
-                        onPressed: () =>
-                            Navigator.pushNamed(context, registerRoute),
-                        child: Text("SIGNUP WITH EMAIL"),
-                      ),
-                    ]),
-                  ],
+      body: ListView(children: [
+        Center(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Hero(
+                tag: "login-logo",
+                child: Image.asset(
+                  "assets/images/logo.png",
+                  width: 300,
                 ),
               ),
             ),
-          ),
-        ]),
-      ),
+            ConstrainedBox(
+              constraints:
+                  BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 500),
+              child: Container(
+                child: Form(
+                  key: _formKey,
+                  child: ListView(
+                    children: [
+                      Wrap(runSpacing: 10, children: [
+                        TextFormField(
+                          onChanged: (val) => _email = val,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: _validateEmail,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.email_outlined),
+                            labelText: "Email",
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                        ),
+                        TextFormField(
+                          onChanged: (val) => _password = val,
+                          validator: _validatePassword,
+                          obscureText: _hidePassword,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.lock_outline_rounded),
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.remove_red_eye),
+                              onPressed: _onViewPasswordPressed,
+                            ),
+                            labelText: "Password",
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                        ),
+                        Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: OutlinedLoadingButton(
+                            child: Text("LOGIN"),
+                            onPressed: _onLoginClicked,
+                            isLoading: _isLoading,
+                          ),
+                        ),
+                      ]),
+                      SizedBox(height: 20),
+                      Column(children: [
+                        Wrap(
+                          runSpacing: 10,
+                          children: [
+                            SocialLoginButton(SocialProviders.google),
+                            SocialLoginButton(SocialProviders.spotify),
+                            SocialLoginButton(SocialProviders.facebook),
+                            SocialLoginButton(SocialProviders.instagram),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        TextButton(
+                          onPressed: () =>
+                              Navigator.pushNamed(context, registerRoute),
+                          child: Text("SIGNUP WITH EMAIL"),
+                        ),
+                      ]),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ]),
+        ),
+      ]),
     );
   }
 }

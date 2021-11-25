@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jui/constants/app_routes.dart';
 import 'package:jui/models/dto/request/account/signup.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/server/account.dart';
@@ -78,80 +77,85 @@ class _RegisterPageState extends State<RegisterPage> {
       appBar: AppBar(
         title: Text("Register with email"),
       ),
-      body: Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: Hero(
-              tag: "login-logo",
-              child: Image.asset(
-                "assets/images/logo.png",
-                width: 300,
-              ),
-            ),
-          ),
-          ConstrainedBox(
-            constraints:
-                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 500),
-            child: Container(
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  children: [
-                    Wrap(runSpacing: 10, children: [
-                      TextFormField(
-                        onChanged: (val) => _name = val,
-                        keyboardType: TextInputType.name,
-                        validator: validateRequired,
-                        decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.person_outline_rounded),
-                            labelText: "Name \*",
-                            border: OutlineInputBorder()),
-                      ),
-                      TextFormField(
-                        onChanged: (val) => _nickName = val,
-                        keyboardType: TextInputType.name,
-                        decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.person_outline_rounded),
-                            labelText: "Nickname",
-                            border: OutlineInputBorder()),
-                      ),
-                      TextFormField(
-                        onChanged: (val) => _email = val,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: _validateEmail,
-                        decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.email_outlined),
-                            labelText: "Email \*",
-                            border: OutlineInputBorder()),
-                      ),
-                      TextFormField(
-                        onChanged: (val) => _password = val,
-                        validator: _validatePassword,
-                        obscureText: _hidePassword,
-                        decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock_outline_rounded),
-                            suffixIcon: IconButton(
-                              icon: Icon(Icons.remove_red_eye),
-                              onPressed: _onViewPasswordPressed,
-                            ),
-                            labelText: "Password \*",
-                            border: OutlineInputBorder()),
-                      ),
-                      Align(
-                        alignment: AlignmentDirectional.centerEnd,
-                        child: TextButton(
-                          child: Text("SIGNUP"),
-                          onPressed: _onSignupClicked,
-                        ),
-                      ),
-                    ]),
-                  ],
+      body: ListView(
+        children: [
+          Center(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Hero(
+                  tag: "login-logo",
+                  child: Image.asset(
+                    "assets/images/logo.png",
+                    width: 300,
+                  ),
                 ),
               ),
-            ),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                    minWidth: 100, maxWidth: 300, maxHeight: 500),
+                child: Container(
+                  child: Form(
+                    key: _formKey,
+                    child: ListView(
+                      children: [
+                        Wrap(runSpacing: 10, children: [
+                          TextFormField(
+                            onChanged: (val) => _name = val,
+                            keyboardType: TextInputType.name,
+                            validator: validateRequired,
+                            decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.person_outline_rounded),
+                                labelText: "Name \*",
+                                border: OutlineInputBorder()),
+                          ),
+                          TextFormField(
+                            onChanged: (val) => _nickName = val,
+                            keyboardType: TextInputType.name,
+                            decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.person_outline_rounded),
+                                labelText: "Nickname",
+                                border: OutlineInputBorder()),
+                          ),
+                          TextFormField(
+                            onChanged: (val) => _email = val,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: _validateEmail,
+                            decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.email_outlined),
+                                labelText: "Email \*",
+                                border: OutlineInputBorder()),
+                          ),
+                          TextFormField(
+                            onChanged: (val) => _password = val,
+                            validator: _validatePassword,
+                            obscureText: _hidePassword,
+                            decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.lock_outline_rounded),
+                                suffixIcon: IconButton(
+                                  icon: Icon(Icons.remove_red_eye),
+                                  onPressed: _onViewPasswordPressed,
+                                ),
+                                labelText: "Password \*",
+                                border: OutlineInputBorder()),
+                          ),
+                          Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: TextButton(
+                              child: Text("SIGNUP"),
+                              onPressed: _onSignupClicked,
+                            ),
+                          ),
+                        ]),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ]),
           ),
-        ]),
+        ],
       ),
     );
   }

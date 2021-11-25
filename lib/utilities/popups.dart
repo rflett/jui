@@ -4,9 +4,9 @@ import 'package:jui/models/dto/response/problem_response.dart';
 class PopupUtils {
   /// Shows an error popup to the user containing the information that fits the specific error
   static void showError(BuildContext context, ProblemResponse problem, {String title = "Unexpected error!"}) {
-    if (problem.message != null) {
+    if (problem.error != null) {
       // Error text is present
-      _showError(context, problem, title, problem.message!);
+      _showError(context, problem, title, problem.error!);
     }
   }
 
