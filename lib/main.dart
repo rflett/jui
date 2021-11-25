@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/state/group_state.dart';
+import 'package:jui/state/played_song_state.dart';
 import 'package:jui/state/user_state.dart';
 import 'package:jui/utilities/storage.dart';
 import 'package:jui/view/pages/logged_in/main_page.dart';
@@ -15,6 +16,7 @@ void main() {
     // Provide state management classes here that will be used throughout the app
     ChangeNotifierProvider(create: (context) => UserState()),
     ChangeNotifierProvider(create: (context) => GroupState()),
+    ChangeNotifierProvider(create: (context) => PlayedSongState()),
   ], child: MyApp()));
 }
 

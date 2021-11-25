@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/view/pages/logged_in/home/sub_pages/leaderboard/leaderboard_page.dart';
 import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/my_votes_page.dart';
 import 'package:jui/view/pages/logged_in/home/sub_pages/played_songs/played_songs_page.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);

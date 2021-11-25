@@ -1,9 +1,8 @@
 import 'dart:collection';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
-import 'package:jui/models/dto/shared/vote.dart';
 import 'package:jui/server/group.dart';
 
 class GroupState extends ChangeNotifier {
@@ -11,7 +10,6 @@ class GroupState extends ChangeNotifier {
   List<GroupResponse> _groups = List.empty();
   List<UserResponse> _selectedGroupMembers = List.empty();
 
-  /// An unmodifiable view of the votes in the cart.
   UnmodifiableListView<UserResponse> get members =>
       UnmodifiableListView(_selectedGroupMembers);
 
@@ -37,6 +35,7 @@ class GroupState extends ChangeNotifier {
         var members =
             await Group.getMembers(_selectedGroup!.groupID, withVotes: true);
         _selectedGroupMembers = members.members;
+        notifyListeners();
       } catch (err) {
         print(err);
       }

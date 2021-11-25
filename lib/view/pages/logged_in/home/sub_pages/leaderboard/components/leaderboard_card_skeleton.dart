@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jui/view/components/skeleton/skeleton_box.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -13,7 +14,7 @@ class LeaderboardCardSkeleton extends StatelessWidget {
         baseColor: Colors.grey,
         highlightColor: Colors.blueGrey,
         child: Padding(
-          padding: EdgeInsets.all(15),
+          padding: EdgeInsets.all(10),
           child: Column(
             children: [
               SizedBox(
@@ -26,8 +27,8 @@ class LeaderboardCardSkeleton extends StatelessWidget {
                       Expanded(
                         child: ListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: Placeholder(),
-                          subtitle: Placeholder(),
+                          title: SkeletonBox(20, 20),
+                          subtitle: SkeletonBox(20, 10),
                         ),
                       ),
                       Spacer(),
@@ -35,7 +36,7 @@ class LeaderboardCardSkeleton extends StatelessWidget {
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: ListTile(
-                            title: Placeholder(),
+                            title: SkeletonBox(20, 20),
                           ),
                         ),
                       ),

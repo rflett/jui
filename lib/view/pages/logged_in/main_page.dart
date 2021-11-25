@@ -98,6 +98,12 @@ class _MainPageState extends State<MainPage> {
         groupState.groups.firstWhere((group) => group.groupID == groupId);
 
     groupState.setSelectedGroup(selectedGroup);
+    if (this._currentRoute == gamePage) {
+      // Need to dynamically update the title
+      setState(() {
+        title = groupState.selectedGroup?.name ?? "";
+      });
+    }
 
     DeviceStorage.storeValue(storagePrimaryGroupId, groupId);
   }
