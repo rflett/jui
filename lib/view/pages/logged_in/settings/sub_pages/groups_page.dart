@@ -7,6 +7,7 @@ import 'package:jui/server/group.dart';
 import 'package:jui/state/group_state.dart';
 import 'package:jui/state/user_state.dart';
 import 'package:jui/utilities/popups.dart';
+import 'package:jui/view/pages/logged_in/components/group_dropdown.dart';
 import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/settings/sub_pages/components/create_update_group.dart';
@@ -324,18 +325,18 @@ class _GroupsPageState extends State<GroupsPage> {
     final groupState = Provider.of<GroupState>(context);
 
     return Center(
-      child: ConstrainedBox(
-        constraints: BoxConstraints.loose(
-          Size(300, 600),
-        ),
+      child: Padding(
+        padding: EdgeInsets.all(10),
         child: Column(
           children: [
             Padding(
               padding: EdgeInsets.all(10),
-              child: Text(
-                groupState.selectedGroup?.name ?? "",
-                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
-              ),
+              child: GroupDropdown(
+                  hideUnderline: true,
+                  fontSize: 20,
+                  groups: groupState.groups,
+                  onGroupSelected: groupState.setSelectedGroupById,
+                  selectedId: groupState.selectedGroup?.groupID),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -370,8 +371,7 @@ class _GroupsPageState extends State<GroupsPage> {
               children: [
                 Expanded(
                   child: Stack(children: [
-                    ShareGroupCode(
-                        code: groupState.selectedGroup?.code ?? ""),
+                    ShareGroupCode(code: groupState.selectedGroup?.code ?? ""),
                   ]),
                 ),
                 SizedBox(width: 20),

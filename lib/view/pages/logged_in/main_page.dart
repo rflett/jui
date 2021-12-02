@@ -93,19 +93,14 @@ class _MainPageState extends State<MainPage> {
     return MaterialPageRoute(builder: page, settings: settings);
   }
 
-  void _onGroupSelected(String groupId, GroupState groupState) {
-    final selectedGroup =
-        groupState.groups.firstWhere((group) => group.groupID == groupId);
-
-    groupState.setSelectedGroup(selectedGroup);
+  void _onGroupSelected(String? groupId, GroupState groupState) {
+    groupState.setSelectedGroupById(groupId);
     if (this._currentRoute == gamePage) {
       // Need to dynamically update the title
       setState(() {
         title = groupState.selectedGroup?.name ?? "";
       });
     }
-
-    DeviceStorage.storeValue(storagePrimaryGroupId, groupId);
   }
 
   void _onGameSelected(GroupState groupState) {
@@ -186,11 +181,11 @@ class _MainPageState extends State<MainPage> {
                   ),
                   Expanded(
                     child: Consumer<GroupState>(
-                      builder: (context, groupState, child) => GroupDropDown(
+                      builder: (context, groupState, child) => GroupDropdown(
                         groups: groupState.groups,
                         onGroupSelected: (groupId) =>
                             _onGroupSelected(groupId, groupState),
-                        initial: groupState.selectedGroup?.groupID ?? null,
+                        selectedId: groupState.selectedGroup?.groupID,
                       ),
                     ),
                   ),
