@@ -74,6 +74,7 @@ class VoteState extends ChangeNotifier {
   resetVotes() {
     _currentVotes = [..._originalVotes];
     _hasReorderedVotes = false;
+    _hasRemovedVote = false;
     _hasAddedVote = false;
     notifyListeners();
   }
