@@ -74,11 +74,8 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Created $name.")));
 
-      // TODO reload games
-
       Navigator.of(context).pop(true);
     } catch (err) {
-      // TODO logging
       print(err);
       PopupUtils.showError(context, err as ProblemResponse);
     }
@@ -90,6 +87,7 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
       await Game.update(this._game!.groupID, this._game!.gameID, requestData);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Updated $name.")));
+
       Navigator.of(context).pop(true);
     } catch (err) {
       // TODO logging
@@ -103,6 +101,7 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
       await Game.delete(this._game!.groupID, this._game!.gameID);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Successfully deleted game.")));
+
       Navigator.of(context).pop(true);
     } catch (err) {
       // TODO logging

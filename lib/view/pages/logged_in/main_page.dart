@@ -12,7 +12,7 @@ import 'package:jui/utilities/storage.dart';
 import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/home/home_page.dart';
-import 'package:jui/view/pages/logged_in/settings/profile_page.dart';
+import 'package:jui/view/pages/logged_in/settings/settings_page.dart';
 import 'package:provider/provider.dart';
 import 'components/group_dropdown.dart';
 
@@ -37,7 +37,7 @@ class _MainPageState extends State<MainPage> {
     this._loggedInRoutes = {
       "/": (BuildContext context) => Container(),
       gamePage: (BuildContext context) => HomePage(),
-      profilePage: (BuildContext context) => ProfilePage(),
+      profilePage: (BuildContext context) => SettingsPage(),
     };
   }
 
