@@ -9,9 +9,9 @@ import 'package:jui/state/user_state.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_group.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/components/qr_widget.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/components/view_user_popup.dart';
+import 'package:jui/view/pages/logged_in/settings/sub_pages/components/create_update_group.dart';
+import 'package:jui/view/pages/logged_in/settings/sub_pages/components/qr_widget.dart';
+import 'package:jui/view/pages/logged_in/settings/sub_pages/components/view_user_popup.dart';
 import 'package:provider/provider.dart';
 
 class GroupsPage extends StatefulWidget {

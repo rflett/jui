@@ -12,7 +12,7 @@ import 'package:jui/utilities/storage.dart';
 import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/home/home_page.dart';
-import 'package:jui/view/pages/logged_in/profile/profile_page.dart';
+import 'package:jui/view/pages/logged_in/settings/profile_page.dart';
 import 'package:provider/provider.dart';
 import 'components/group_dropdown.dart';
 
@@ -215,7 +215,7 @@ class _MainPageState extends State<MainPage> {
             SizedBox(height: 10),
             ListTile(
               leading: Icon(Icons.settings),
-              title: Text('Profile'),
+              title: Text('Settings'),
               subtitle: Text("Manage your profile, groups and games"),
               onTap: () {
                 _onProfileSelected();

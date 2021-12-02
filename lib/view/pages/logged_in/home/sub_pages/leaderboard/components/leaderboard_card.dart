@@ -7,11 +7,10 @@ class LeaderboardCard extends StatelessWidget {
   final bool isExpanded;
   final int position;
   final UserResponse user;
-  List<Vote> _votes = [];
+  final List<Vote> _votes;
 
-  LeaderboardCard(this.isExpanded, this.user, this.position) {
-    this._votes = user.votes == null ? [] : user.votes!;
-  }
+  LeaderboardCard(this.isExpanded, this.user, this.position)
+      : this._votes = user.votes ?? List.empty();
 
   String posToHuman() {
     var x = this.position % 10;
@@ -39,7 +38,6 @@ class LeaderboardCard extends StatelessWidget {
     return "${this.user.points} $suffix";
   }
 
-  // padding: EdgeInsets.fromLTRB(70, 0, 20, 20),
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(

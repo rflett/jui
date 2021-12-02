@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/state/group_state.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_group.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/games_page.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/groups_page.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/my_profile_page.dart';
+import 'package:jui/view/pages/logged_in/settings/sub_pages/components/create_update_game.dart';
+import 'package:jui/view/pages/logged_in/settings/sub_pages/components/create_update_group.dart';
+import 'package:jui/view/pages/logged_in/settings/sub_pages/games_page.dart';
+import 'package:jui/view/pages/logged_in/settings/sub_pages/groups_page.dart';
+import 'package:jui/view/pages/logged_in/settings/sub_pages/my_profile_page.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {

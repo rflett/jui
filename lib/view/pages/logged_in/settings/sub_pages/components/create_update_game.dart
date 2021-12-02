@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:jui/models/dto/request/group/games/create_update_game.dart';
 import 'package:jui/models/dto/response/group/games/game_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
-import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/game.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/validation.dart';
