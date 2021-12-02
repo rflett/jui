@@ -9,10 +9,10 @@ import 'package:jui/state/user_state.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/view/pages/logged_in/components/group_dropdown.dart';
 import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
-import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
-import 'package:jui/view/pages/logged_in/settings/sub_pages/components/create_update_group.dart';
-import 'package:jui/view/pages/logged_in/settings/sub_pages/components/qr_widget.dart';
-import 'package:jui/view/pages/logged_in/settings/sub_pages/components/view_user_popup.dart';
+import 'package:jui/view/pages/logged_in/settings/components/create_update_group.dart';
+import 'package:jui/view/pages/logged_in/settings/components/qr_widget.dart';
+import 'package:jui/view/pages/logged_in/settings/components/view_user_popup.dart';
+import 'package:jui/view/pages/logged_in/settings/groups/components/group_member_list.dart';
 import 'package:provider/provider.dart';
 
 class GroupsPage extends StatefulWidget {
@@ -37,11 +37,6 @@ class _GroupsPageState extends State<GroupsPage> {
     }
   }
 
-  /// returns whether the member is the owner of the selected group
-  bool _userIsGroupOwner(GroupResponse? currentGroup, String? userId) {
-    return currentGroup?.ownerID == userId;
-  }
-
   bool _canLeaveCurrentGroup(UserResponse? currentUser) {
     if (currentUser != null) {
       return currentUser.groups!.length != 1;
@@ -58,8 +53,7 @@ class _GroupsPageState extends State<GroupsPage> {
 
     /// prompt and tell the user to nominate a new owner if they are already
     /// the group owner and there's other members in the group
-    if (this._userIsGroupOwner(selectedGroup, currentUser.userID) &&
-        groupState.members.length > 1) {
+    if (currentUser.isOwnerOf(selectedGroup) && groupState.members.length > 1) {
       showDialog(
         context: context,
         builder: (context) {
@@ -232,12 +226,11 @@ class _GroupsPageState extends State<GroupsPage> {
   void _showUser(UserResponse infoUser, UserResponse currentUser,
       GroupResponse currentGroup) async {
     var currentUserId = currentUser.userID;
-    var isGroupOwner = this._userIsGroupOwner(currentGroup, infoUser.userID);
+    var isGroupOwner = infoUser.isOwnerOf(currentGroup);
 
     // can the logged in user remove this user?
     bool canRemoveUser = false;
-    if (this._userIsGroupOwner(currentGroup, currentUserId) &&
-        currentUserId != infoUser.userID) {
+    if (isGroupOwner && currentUserId != infoUser.userID) {
       canRemoveUser = true;
     }
 
@@ -276,49 +269,6 @@ class _GroupsPageState extends State<GroupsPage> {
     }
   }
 
-  Widget groupMembers(
-      BuildContext context, GroupState groupState, UserState userState) {
-    List<Widget> listItems = [];
-
-    for (var i = 0; i < groupState.members.length; i++) {
-      var thisUserId = groupState.members[i].userID;
-      listItems.add(Container(
-        child: Card(
-          child: ListTile(
-            leading: UserAvatar(uuid: userState.user?.userID ?? "", size: 30),
-            title: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: groupState.members[i].name,
-                    style: TextStyle(color: Colors.black, fontSize: 18),
-                  ),
-
-                  /// show a star next to the group owner's name
-                  WidgetSpan(
-                    child: Padding(
-                        padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                        child: this._userIsGroupOwner(
-                                groupState.selectedGroup!, thisUserId)
-                            ? Icon(Icons.star_rounded, size: 18)
-                            : Container()),
-                  ),
-                ],
-              ),
-            ),
-            trailing: IconButton(
-              icon: Icon(Icons.info_outline_rounded, color: Colors.black),
-              onPressed: () => this._showUser(groupState.members[i],
-                  userState.user!, groupState.selectedGroup!),
-            ),
-          ),
-        ),
-      ));
-    }
-
-    return SizedBox(height: 400, child: ListView(children: listItems));
-  }
-
   @override
   Widget build(BuildContext context) {
     final userState = Provider.of<UserState>(context);
@@ -326,18 +276,17 @@ class _GroupsPageState extends State<GroupsPage> {
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(
+        padding: EdgeInsets.all(15),
+        child: Flex(
+          direction: Axis.vertical,
           children: [
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: GroupDropdown(
-                  hideUnderline: true,
-                  fontSize: 20,
-                  groups: groupState.groups,
-                  onGroupSelected: groupState.setSelectedGroupById,
-                  selectedId: groupState.selectedGroup?.groupID),
-            ),
+            GroupDropdown(
+                hideUnderline: true,
+                fontSize: 20,
+                groups: groupState.groups,
+                onGroupSelected: groupState.setSelectedGroupById,
+                selectedId: groupState.selectedGroup?.groupID),
+            SizedBox(height: 5),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -355,8 +304,9 @@ class _GroupsPageState extends State<GroupsPage> {
                       : null,
                 ),
                 Visibility(
-                  visible: this._userIsGroupOwner(
-                      groupState.selectedGroup, userState.user?.userID),
+                  visible:
+                      userState.user?.isOwnerOf(groupState.selectedGroup) ??
+                          false,
                   child: TextButton(
                     child: Text("EDIT GROUP"),
                     onPressed: () => this._editGroup(groupState.selectedGroup),
@@ -364,8 +314,7 @@ class _GroupsPageState extends State<GroupsPage> {
                 ),
               ],
             ),
-            Divider(),
-            SizedBox(height: 10),
+            SizedBox(height: 25),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -386,9 +335,15 @@ class _GroupsPageState extends State<GroupsPage> {
                 ),
               ],
             ),
-            SizedBox(height: 10),
-            Divider(),
-            groupMembers(context, groupState, userState)
+            SizedBox(height: 25),
+            Expanded(
+              child: GroupMemberList(
+                members: groupState.members,
+                selectedGroup: groupState.selectedGroup!,
+                currentUser: userState.user!,
+                showUser: _showUser,
+              ),
+            ),
           ],
         ),
       ),

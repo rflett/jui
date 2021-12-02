@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jui/utilities/navigation.dart';
 import 'package:jui/view/pages/logged_in/components/share_group_code.dart';
-import 'package:jui/view/pages/logged_in/settings/sub_pages/components/qr_widget.dart';
+import 'package:jui/view/pages/logged_in/settings/components/qr_widget.dart';
 import 'package:jui/constants/storage_values.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
 import 'package:jui/utilities/popups.dart';

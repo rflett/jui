@@ -29,9 +29,7 @@ class LeaderboardList extends StatelessWidget {
       child: ListView.separated(
         itemBuilder: (BuildContext context, int index) =>
             renderCard(context, index, groupState),
-        separatorBuilder: (context, index) => Padding(
-          padding: EdgeInsets.symmetric(vertical: 30),
-        ),
+        separatorBuilder: (context, index) => SizedBox(height: 60),
         itemCount: groupState.members.length,
       ),
     );
@@ -42,9 +40,7 @@ class LeaderboardList extends StatelessWidget {
       child: ListView.separated(
         itemBuilder: (BuildContext context, int index) =>
             LeaderboardCardSkeleton(),
-        separatorBuilder: (context, index) => Padding(
-          padding: EdgeInsets.symmetric(vertical: 30),
-        ),
+        separatorBuilder: (context, index) => SizedBox(height: 60),
         itemCount: 3,
       ),
     );

@@ -4,7 +4,7 @@ import 'package:jui/models/dto/response/group/games/game_response.dart';
 import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/group.dart';
 import 'package:jui/state/group_state.dart';
-import 'package:jui/view/pages/logged_in/settings/sub_pages/components/create_update_game.dart';
+import 'package:jui/view/pages/logged_in/settings/components/create_update_game.dart';
 import 'package:provider/provider.dart';
 
 class GamesPage extends StatefulWidget {
