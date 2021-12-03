@@ -79,101 +79,103 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: currentColor,
-        floatingActionButton: Padding(
-          padding: EdgeInsets.fromLTRB(0, 0, 20, 15),
-          child: Tooltip(
-            message: "Open in Spotify",
-            child: FloatingActionButton(
-              onPressed: () => _onSpotifyPressed(),
-              child: ImageIcon(
-                AssetImage("assets/images/social/spotify-icon.png"),
-                size: 80,
-              ),
-              backgroundColor: Colors.green,
-            ),
-          ),
-        ),
-        body: GestureDetector(
-          onTapDown: (details) => _onTapDown(details),
-          child: Stack(
-            children: <Widget>[
-              PageView.builder(
-                controller: _pageController,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: this._songs.length,
-                itemBuilder: (context, i) {
-                  final Vote song = this._songs[i];
-                  return CachedNetworkImage(
-                    imageUrl: song.artwork.first.url,
-                    fit: BoxFit.contain,
-                  );
-                },
-              ),
-              Positioned(
-                top: 5.0,
-                left: 5.0,
-                right: 5.0,
-                child: Row(
-                  children: _songs
-                      .asMap()
-                      .map((i, e) {
-                        return MapEntry(
-                          i,
-                          AnimatedBar(
-                            animController: _animController,
-                            position: i,
-                            currentIndex: _currentIndex,
-                          ),
-                        );
-                      })
-                      .values
-                      .toList(),
+    return _songs.length > 0
+        ? Scaffold(
+            backgroundColor: currentColor,
+            floatingActionButton: Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 20, 15),
+              child: Tooltip(
+                message: "Open in Spotify",
+                child: FloatingActionButton(
+                  onPressed: () => _onSpotifyPressed(),
+                  child: ImageIcon(
+                    AssetImage("assets/images/social/spotify-icon.png"),
+                    size: 80,
+                  ),
+                  backgroundColor: Colors.green,
                 ),
               ),
-              Positioned(
-                  top: 20.0,
-                  left: 10.0,
-                  right: 10.0,
-                  child: Column(
-                    children: [
-                      Container(
-                        child: Text(this._songs[_currentIndex].name,
-                            style: TextStyle(
-                                color: Colors.white, letterSpacing: 3.0)),
-                        decoration: new BoxDecoration(color: Colors.black),
-                        padding: new EdgeInsets.all(10.0),
-                      ),
-                      SizedBox(height: 10),
-                      Container(
-                        child: Text(this._songs[_currentIndex].artist,
-                            style: TextStyle(
-                                color: Colors.white, letterSpacing: 3.0)),
-                        decoration: new BoxDecoration(color: Colors.black),
-                        padding: new EdgeInsets.all(10.0),
-                      ),
-                    ],
-                  )),
-              Positioned(
-                bottom: 25.0,
-                left: 20.0,
-                child: Container(
-                  child: Text(
-                    playedPosition,
-                    style: TextStyle(
-                      color: Colors.white,
-                      letterSpacing: 3.0,
-                      fontSize: 40.0,
+            ),
+            body: GestureDetector(
+              onTapDown: (details) => _onTapDown(details),
+              child: Stack(
+                children: <Widget>[
+                  PageView.builder(
+                    controller: _pageController,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: this._songs.length,
+                    itemBuilder: (context, i) {
+                      final Vote song = this._songs[i];
+                      return CachedNetworkImage(
+                        imageUrl: song.artwork.first.url,
+                        fit: BoxFit.contain,
+                      );
+                    },
+                  ),
+                  Positioned(
+                    top: 5.0,
+                    left: 5.0,
+                    right: 5.0,
+                    child: Row(
+                      children: _songs
+                          .asMap()
+                          .map((i, e) {
+                            return MapEntry(
+                              i,
+                              AnimatedBar(
+                                animController: _animController,
+                                position: i,
+                                currentIndex: _currentIndex,
+                              ),
+                            );
+                          })
+                          .values
+                          .toList(),
                     ),
                   ),
-                  decoration: new BoxDecoration(color: Colors.black),
-                  padding: new EdgeInsets.all(10.0),
-                ),
+                  Positioned(
+                      top: 20.0,
+                      left: 10.0,
+                      right: 10.0,
+                      child: Column(
+                        children: [
+                          Container(
+                            child: Text(this._songs[_currentIndex].name,
+                                style: TextStyle(
+                                    color: Colors.white, letterSpacing: 3.0)),
+                            decoration: new BoxDecoration(color: Colors.black),
+                            padding: new EdgeInsets.all(10.0),
+                          ),
+                          SizedBox(height: 10),
+                          Container(
+                            child: Text(this._songs[_currentIndex].artist,
+                                style: TextStyle(
+                                    color: Colors.white, letterSpacing: 3.0)),
+                            decoration: new BoxDecoration(color: Colors.black),
+                            padding: new EdgeInsets.all(10.0),
+                          ),
+                        ],
+                      )),
+                  Positioned(
+                    bottom: 25.0,
+                    left: 20.0,
+                    child: Container(
+                      child: Text(
+                        playedPosition,
+                        style: TextStyle(
+                          color: Colors.white,
+                          letterSpacing: 3.0,
+                          fontSize: 40.0,
+                        ),
+                      ),
+                      decoration: new BoxDecoration(color: Colors.black),
+                      padding: new EdgeInsets.all(10.0),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ));
+            ))
+        : Container();
   }
 
   void _onSpotifyPressed() async {
@@ -185,10 +187,7 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
 
     var spotifyUrl = "https://open.spotify.com/track/${song.songID}";
 
-    var shouldNavigate = await canLaunch(spotifyUrl);
-    if (shouldNavigate) {
-      await launch(spotifyUrl);
-    }
+    await launch(spotifyUrl);
   }
 
   String get playedPosition {

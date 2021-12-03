@@ -46,7 +46,7 @@ class _LeaderboardCardState extends State<LeaderboardCard> {
         duration: Duration(milliseconds: 400),
         child: ClipRect(
           child: Card(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             child: Padding(
               padding: EdgeInsets.all(15),
               child: Column(

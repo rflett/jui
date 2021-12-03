@@ -38,9 +38,6 @@ class SocialLoginButton extends StatelessWidget {
   _onSocialTapped(SocialProviders provider) async {
     var providerName = provider.toString().split(".").last;
     var url = "$oauthUrl/$providerName/login";
-    var shouldNavigate = await canLaunch(url);
-    if (shouldNavigate) {
-      await launch(url);
-    }
+    await launch(url);
   }
 }

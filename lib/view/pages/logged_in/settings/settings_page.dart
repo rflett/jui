@@ -96,7 +96,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return FloatingActionButton(
       onPressed: () => _createGroupPressed(),
       child: const Icon(Icons.add),
-      backgroundColor: Colors.indigo,
+      backgroundColor: Theme.of(context).colorScheme.primary,
     );
   }
 
@@ -106,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return FloatingActionButton(
       onPressed: () => _createGamePressed(selectedGroupId),
       child: const Icon(Icons.add),
-      backgroundColor: Colors.indigo,
+      backgroundColor: Theme.of(context).colorScheme.primary,
     );
   }
 

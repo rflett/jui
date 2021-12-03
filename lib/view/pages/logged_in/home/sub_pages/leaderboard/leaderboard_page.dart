@@ -13,16 +13,13 @@ class _LeaderboardState extends State<Leaderboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey.shade200,
-      child: Center(
-        child: FractionallySizedBox(
-          widthFactor: 0.9,
-          child: Column(children: [
-            SizedBox(height: 20),
-            LeaderboardList(showVotes: _showVotes)
-          ]),
-        ),
+    return Center(
+      child: FractionallySizedBox(
+        widthFactor: 0.9,
+        child: Column(children: [
+          SizedBox(height: 20),
+          LeaderboardList(showVotes: _showVotes)
+        ]),
       ),
     );
   }

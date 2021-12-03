@@ -9,9 +9,9 @@ class LeaderboardCardSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: Shimmer.fromColors(
-        baseColor: Colors.grey,
+        baseColor: Theme.of(context).highlightColor,
         highlightColor: Colors.blueGrey,
         child: Padding(
           padding: EdgeInsets.all(10),

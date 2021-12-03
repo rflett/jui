@@ -86,6 +86,14 @@ class _MyAppState extends State<MyApp> {
                 // closer together (more dense) than on mobile platforms.
                 visualDensity: VisualDensity.adaptivePlatformDensity,
               ),
+              darkTheme: ThemeData(
+                primarySwatch: Colors.blue,
+                brightness: Brightness.dark,
+                // This makes the visual density adapt to the platform that you run
+                // the app on. For desktop platforms, the controls will be smaller and
+                // closer together (more dense) than on mobile platforms.
+                visualDensity: VisualDensity.adaptivePlatformDensity,
+              ),
               home: _defaultWidget,
               routes: _topLevelRoutes,
               onGenerateRoute: (settings) => _handleRoute(settings),
