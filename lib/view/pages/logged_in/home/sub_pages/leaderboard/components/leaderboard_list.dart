@@ -3,7 +3,7 @@ import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/state/group_state.dart';
 import 'package:provider/provider.dart';
 
-import 'leaderboard_card.dart';
+import 'leaderboard_card/leaderboard_card.dart';
 import 'leaderboard_card_skeleton.dart';
 
 class LeaderboardList extends StatelessWidget {
@@ -48,6 +48,6 @@ class LeaderboardList extends StatelessWidget {
 
   Widget renderCard(BuildContext context, int index, GroupState groupState) {
     UserResponse user = groupState.members[index];
-    return LeaderboardCard(showVotes, user, ++index);
+    return LeaderboardCard(position: ++index, user: user);
   }
 }

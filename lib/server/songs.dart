@@ -10,10 +10,14 @@ class Songs {
   static final _apiServer = ApiServer.instance;
 
   /// get recently played songs
-  static Future<PlayedSongsResponse> getPlayed() async {
+  static Future<PlayedSongsResponse> getPlayed(
+      {int startIndex = 0, int numItems = 10}) async {
     http.Response response = http.Response("", 500);
+    // {\"message\": \"Missing required request parameters: [startIndex, numItems]\"}
+    var url = "$playedSongsUrl?startIndex=$startIndex&numItems=$numItems";
+
     try {
-      response = await _apiServer.get(playedSongsUrl);
+      response = await _apiServer.get(url);
     } catch (err) {
       print(err);
     }

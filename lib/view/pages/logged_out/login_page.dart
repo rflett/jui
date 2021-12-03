@@ -90,89 +90,84 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(children: [
-        Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: Hero(
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            children: [
+              SizedBox(height: 15),
+              Hero(
                 tag: "login-logo",
                 child: Image.asset(
                   "assets/images/logo.png",
-                  width: 300,
                 ),
               ),
-            ),
-            ConstrainedBox(
-              constraints:
-                  BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 500),
-              child: Container(
+              SizedBox(height: 15),
+              Container(
+                height: 210,
                 child: Form(
                   key: _formKey,
-                  child: ListView(
-                    children: [
-                      Wrap(runSpacing: 10, children: [
-                        TextFormField(
-                          onChanged: (val) => _email = val,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: _validateEmail,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.email_outlined),
-                            labelText: "Email",
-                            border: OutlineInputBorder(),
-                            isDense: true,
-                          ),
+                  child: Wrap(runSpacing: 10, children: [
+                    TextFormField(
+                      onChanged: (val) => _email = val,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: _validateEmail,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.email_outlined),
+                        labelText: "Email",
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                    ),
+                    TextFormField(
+                      onChanged: (val) => _password = val,
+                      validator: _validatePassword,
+                      obscureText: _hidePassword,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.lock_outline_rounded),
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.remove_red_eye),
+                          onPressed: _onViewPasswordPressed,
                         ),
-                        TextFormField(
-                          onChanged: (val) => _password = val,
-                          validator: _validatePassword,
-                          obscureText: _hidePassword,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock_outline_rounded),
-                            suffixIcon: IconButton(
-                              icon: Icon(Icons.remove_red_eye),
-                              onPressed: _onViewPasswordPressed,
-                            ),
-                            labelText: "Password",
-                            border: OutlineInputBorder(),
-                            isDense: true,
-                          ),
-                        ),
-                        Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: OutlinedLoadingButton(
-                            child: Text("LOGIN"),
-                            onPressed: _onLoginClicked,
-                            isLoading: _isLoading,
-                          ),
-                        ),
-                      ]),
-                      SizedBox(height: 20),
-                      Column(children: [
-                        Wrap(
-                          runSpacing: 10,
-                          children: [
-                            SocialLoginButton(SocialProviders.google),
-                            SocialLoginButton(SocialProviders.spotify),
-                            SocialLoginButton(SocialProviders.facebook),
-                            SocialLoginButton(SocialProviders.instagram),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        TextButton(
-                          onPressed: () =>
-                              Navigator.pushNamed(context, registerRoute),
-                          child: Text("SIGNUP WITH EMAIL"),
-                        ),
-                      ]),
-                    ],
-                  ),
+                        labelText: "Password",
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                    ),
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: OutlinedLoadingButton(
+                        child: Text("LOGIN"),
+                        onPressed: _onLoginClicked,
+                        isLoading: _isLoading,
+                      ),
+                    ),
+                  ]),
                 ),
               ),
-            ),
-          ]),
+              Flexible(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  childAspectRatio: 3.5,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  children: [
+                    SocialLoginButton(SocialProviders.google),
+                    SocialLoginButton(SocialProviders.spotify),
+                    SocialLoginButton(SocialProviders.facebook),
+                    SocialLoginButton(SocialProviders.instagram),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              TextButton(
+                onPressed: () => Navigator.pushNamed(context, registerRoute),
+                child: Text("SIGNUP WITH EMAIL"),
+              ),
+            ],
+          ),
         ),
-      ]),
+      ),
     );
   }
 }

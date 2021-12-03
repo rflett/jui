@@ -27,7 +27,7 @@ class SocialLoginButton extends StatelessWidget {
             SizedBox(width: 10),
             Text(
               "Login with ${branding.name}",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white, fontSize: 12),
             ),
           ],
         ),

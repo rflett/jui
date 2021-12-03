@@ -19,18 +19,7 @@ class _LeaderboardState extends State<Leaderboard> {
         child: FractionallySizedBox(
           widthFactor: 0.9,
           child: Column(children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: SizedBox(
-                height: 50,
-                width: 200,
-                child: SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text("Show Votes"),
-                    value: _showVotes,
-                    onChanged: (val) => setState(() => _showVotes = val)),
-              ),
-            ),
+            SizedBox(height: 20),
             LeaderboardList(showVotes: _showVotes)
           ]),
         ),

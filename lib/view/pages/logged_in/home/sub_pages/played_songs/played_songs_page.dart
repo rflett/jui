@@ -6,6 +6,7 @@ import 'package:jui/server/songs.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/view/pages/logged_in/components/animated_bar.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PlayedSongsPage extends StatefulWidget {
   PlayedSongsPage({Key? key}) : super(key: key);
@@ -78,17 +79,20 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
 
   @override
   Widget build(BuildContext context) {
-    return this._songs.length == 0 ? Container() : Scaffold(
+    return Scaffold(
         backgroundColor: currentColor,
         floatingActionButton: Padding(
           padding: EdgeInsets.fromLTRB(0, 0, 20, 15),
-          child: FloatingActionButton(
-            onPressed: () => _onSpotifyPressed(),
-            child: ImageIcon(
-              AssetImage("assets/images/social/spotify-icon.png"),
-              size: 80,
+          child: Tooltip(
+            message: "Open in Spotify",
+            child: FloatingActionButton(
+              onPressed: () => _onSpotifyPressed(),
+              child: ImageIcon(
+                AssetImage("assets/images/social/spotify-icon.png"),
+                size: 80,
+              ),
+              backgroundColor: Colors.green,
             ),
-            backgroundColor: Colors.green,
           ),
         ),
         body: GestureDetector(
@@ -112,8 +116,7 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
                 left: 5.0,
                 right: 5.0,
                 child: Row(
-                  children: this
-                      ._songs
+                  children: _songs
                       .asMap()
                       .map((i, e) {
                         return MapEntry(
@@ -174,7 +177,18 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
   }
 
   void _onSpotifyPressed() async {
-    // TODO open Spotify
+    if (_songs.length == 0) {
+      return;
+    }
+
+    var song = _songs[_currentIndex];
+
+    var spotifyUrl = "https://open.spotify.com/track/${song.songID}";
+
+    var shouldNavigate = await canLaunch(spotifyUrl);
+    if (shouldNavigate) {
+      await launch(spotifyUrl);
+    }
   }
 
   String get playedPosition {
@@ -186,6 +200,10 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
   }
 
   void _setAverageColor() async {
+    if (this._songs.length == 0) {
+      return;
+    }
+
     CachedNetworkImageProvider currentImage = CachedNetworkImageProvider(
         this._songs[_currentIndex].artwork.first.url);
     final PaletteGenerator paletteGenerator =
