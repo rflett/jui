@@ -10,7 +10,7 @@ class Songs {
   static final _apiServer = ApiServer.instance;
 
   /// get recently played songs
-  static Future<PlayedSongsResponse> getPlayed(int startIndex, int numItems) async {
+  static Future<PlayedSongsResponse> getPlayed({int startIndex = 0, int numItems = 10}) async {
     http.Response response = http.Response("", 500);
     var url = "$playedSongsUrl?startIndex=$startIndex&numItems=$numItems";
 

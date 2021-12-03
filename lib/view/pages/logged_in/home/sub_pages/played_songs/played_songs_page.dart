@@ -26,7 +26,8 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
   int _playedCount = 0;
   int _currentIndex = 0;
   int _startIndex = 0;
-  int _numItems = 1; // if playedCount is less than 5 then no songs will get returned
+  int _numItems =
+      1; // if playedCount is less than 5 then no songs will get returned
 
   Color? currentColor;
 
@@ -36,7 +37,8 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
 
   _getData(int currentIndex) async {
     try {
-      var playedSongs = await Songs.getPlayed(_startIndex, _numItems);
+      var playedSongs =
+          await Songs.getPlayed(startIndex: _startIndex, numItems: _numItems);
 
       setState(() {
         this._songs = playedSongs.songs;
