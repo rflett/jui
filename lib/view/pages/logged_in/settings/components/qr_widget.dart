@@ -18,17 +18,14 @@ class QrWidget extends StatelessWidget {
           ),
           child: Align(
             alignment: Alignment.topCenter,
-            child: Wrap(
-              direction: Axis.vertical,
-              spacing: 20,
-              children: [
-                SizedBox(
-                    width: 200,
-                    height: 200,
-                    child: GestureDetector(
-                      child: QrImage(data: this.qrContent),
-                    )),
-              ],
+            child: Center(
+              child: SizedBox(
+                width: 260,
+                height: 260,
+                child: GestureDetector(
+                  child: QrImage(data: this.qrContent),
+                ),
+              ),
             ),
           ),
         ),

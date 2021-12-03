@@ -26,6 +26,12 @@ class ApiRequest {
       throw ProblemResponse.fromJson(jsonBody);
     }
 
+    if (response.statusCode > 500) {
+      // These are routing errors. Just show a generic error response here
+      throw ProblemResponse(
+          "An unknown error occurred. Please try again later");
+    }
+
     // these are not so bad, show a warning style notification
     if (response.statusCode == HttpStatus.badRequest ||
         response.statusCode == HttpStatus.notFound) {

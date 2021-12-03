@@ -11,7 +11,8 @@ class UserResponse {
   final String email;
   final int points;
   final DateTime createdAt;
-  final List<GroupResponse>? groups; // groups is null if user is not in any group
+  final List<GroupResponse>?
+      groups; // groups is null if user is not in any group
   final String? nickName; // not set when signed up via socials
   final String authProvider;
   final String authProviderId;
@@ -37,4 +38,9 @@ class UserResponse {
       _$UserResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$UserResponseToJson(this);
+
+  /// Returns whether or not the user was the creator / owner of the given group.
+  bool isOwnerOf(GroupResponse? group) {
+    return group != null && group.ownerID == userID;
+  }
 }

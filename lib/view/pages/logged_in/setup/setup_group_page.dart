@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:jui/utilities/navigation.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:jui/constants/app_routes.dart';
-import 'package:jui/constants/colors.dart';
 import 'package:jui/models/dto/request/group/create_update_group.dart';
 import 'package:jui/models/dto/request/group/join_group.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
@@ -61,110 +59,114 @@ class _SetupGroupPageState extends State<SetupGroupPage> {
       appBar: AppBar(
         title: Text("Get your mates together"),
       ),
-      body: Center(
-        child: Column(children: [
-          Visibility(
-              visible: scanQrVisible,
-              child: Expanded(
-                flex: 5,
-                child: _buildQrView(context),
-              )),
-          ConstrainedBox(
-            constraints:
-                BoxConstraints(minWidth: 100, maxWidth: 300, maxHeight: 450),
-            child: Container(
-              padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child:
-                          Text("Join a group", style: TextStyle(fontSize: 16)),
+      body: ListView(
+        children: [
+          Center(
+            child: Column(children: [
+              Visibility(
+                  visible: scanQrVisible,
+                  child: Expanded(
+                    flex: 5,
+                    child: _buildQrView(context),
+                  )),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                    minWidth: 100, maxWidth: 300, maxHeight: 450),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text("Join a group",
+                              style: TextStyle(fontSize: 16)),
+                        ),
+                        TextFormField(
+                          onChanged: (val) =>
+                              this._formKey.currentState!.validate(),
+                          controller: _groupCodeController,
+                          validator: validateGroupCode,
+                          decoration: InputDecoration(
+                            labelText: "Code",
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                            suffixIcon: Visibility(
+                                visible: this._codeValidityIconIsVisible,
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: 15),
+                                  child: Icon(
+                                    this._codeIsValid == true
+                                        ? Icons.check
+                                        : Icons.close,
+                                    color: this._codeIsValid == true
+                                        ? Colors.green
+                                        : Colors.red,
+                                  ),
+                                )),
+                          ),
+                        ),
+                        Hero(
+                          tag: "scan-qr-button",
+                          child: TextButton(
+                            child: Text("SCAN QR CODE"),
+                            onPressed: onScanQRClicked,
+                          ),
+                        ),
+                        SizedBox(height: 30),
+                        Row(children: <Widget>[
+                          Expanded(
+                            child: new Container(
+                                margin: const EdgeInsets.only(
+                                    left: 10.0, right: 15.0),
+                                child: Divider(
+                                  color: Colors.grey,
+                                  height: 50,
+                                )),
+                          ),
+                          Text("OR", style: TextStyle(color: Colors.grey)),
+                          Expanded(
+                            child: new Container(
+                                margin: const EdgeInsets.only(
+                                    left: 15.0, right: 10.0),
+                                child: Divider(
+                                  color: Colors.grey,
+                                  height: 50,
+                                )),
+                          ),
+                        ]),
+                        SizedBox(height: 30),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text("Create a group",
+                              style: TextStyle(fontSize: 16)),
+                        ),
+                        TextFormField(
+                          onChanged: (val) => _groupName = val,
+                          validator: validateGroupName,
+                          decoration: InputDecoration(
+                            labelText: "Name",
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton(
+                            child: Text("NEXT"),
+                            onPressed: onNextClicked,
+                          ),
+                        )
+                      ],
                     ),
-                    TextFormField(
-                      onChanged: (val) =>
-                          this._formKey.currentState!.validate(),
-                      controller: _groupCodeController,
-                      validator: validateGroupCode,
-                      decoration: InputDecoration(
-                        labelText: "Code",
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                        suffixIcon: Visibility(
-                            visible: this._codeValidityIconIsVisible,
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 15),
-                              child: Icon(
-                                this._codeIsValid == true
-                                    ? Icons.check
-                                    : Icons.close,
-                                color: this._codeIsValid == true
-                                    ? Colors.green
-                                    : Colors.red,
-                              ),
-                            )),
-                      ),
-                    ),
-                    Hero(
-                      tag: "scan-qr-button",
-                      child: TextButton(
-                        child: Text("SCAN QR CODE"),
-                        onPressed: onScanQRClicked,
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    Row(children: <Widget>[
-                      Expanded(
-                        child: new Container(
-                            margin:
-                                const EdgeInsets.only(left: 10.0, right: 15.0),
-                            child: Divider(
-                              color: Colors.grey,
-                              height: 50,
-                            )),
-                      ),
-                      Text("OR", style: TextStyle(color: Colors.grey)),
-                      Expanded(
-                        child: new Container(
-                            margin:
-                                const EdgeInsets.only(left: 15.0, right: 10.0),
-                            child: Divider(
-                              color: Colors.grey,
-                              height: 50,
-                            )),
-                      ),
-                    ]),
-                    SizedBox(height: 30),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Create a group",
-                          style: TextStyle(fontSize: 16)),
-                    ),
-                    TextFormField(
-                      onChanged: (val) => _groupName = val,
-                      validator: validateGroupName,
-                      decoration: InputDecoration(
-                        labelText: "Name",
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ElevatedButton(
-                        child: Text("NEXT"),
-                        onPressed: onNextClicked,
-                      ),
-                    )
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ]),
           ),
-        ]),
+        ],
       ),
     );
   }

@@ -12,7 +12,7 @@ import 'package:jui/utilities/storage.dart';
 import 'package:jui/utilities/token.dart';
 import 'package:jui/view/pages/logged_in/components/user_avatar.dart';
 import 'package:jui/view/pages/logged_in/home/home_page.dart';
-import 'package:jui/view/pages/logged_in/profile/profile_page.dart';
+import 'package:jui/view/pages/logged_in/settings/settings_page.dart';
 import 'package:provider/provider.dart';
 import 'components/group_dropdown.dart';
 
@@ -34,12 +34,17 @@ class _MainPageState extends State<MainPage> {
   String _currentRoute = gamePage;
 
   _MainPageState() {
-    _getData();
     this._loggedInRoutes = {
       "/": (BuildContext context) => Container(),
       gamePage: (BuildContext context) => HomePage(),
-      profilePage: (BuildContext context) => ProfilePage(),
+      profilePage: (BuildContext context) => SettingsPage(),
     };
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getData();
   }
 
   _getData() async {
@@ -56,13 +61,13 @@ class _MainPageState extends State<MainPage> {
       return;
     }
 
-    var primaryGroupId = await DeviceStorage.retrieveValue(
-        storagePrimaryGroupId);
+    var primaryGroupId =
+        await DeviceStorage.retrieveValue(storagePrimaryGroupId);
 
     var groups = user.groups ?? List.empty();
 
     final selectedGroup =
-    groups.firstWhere((group) => group.groupID == primaryGroupId);
+        groups.firstWhere((group) => group.groupID == primaryGroupId);
 
     // set the vars
     setState(() {
@@ -88,13 +93,14 @@ class _MainPageState extends State<MainPage> {
     return MaterialPageRoute(builder: page, settings: settings);
   }
 
-  void _onGroupSelected(String groupId, GroupState groupState) {
-    final selectedGroup =
-        groupState.groups.firstWhere((group) => group.groupID == groupId);
-
-    groupState.setSelectedGroup(selectedGroup);
-
-    DeviceStorage.storeValue(storagePrimaryGroupId, groupId);
+  void _onGroupSelected(String? groupId, GroupState groupState) {
+    groupState.setSelectedGroupById(groupId);
+    if (this._currentRoute == gamePage) {
+      // Need to dynamically update the title
+      setState(() {
+        title = groupState.selectedGroup?.name ?? "";
+      });
+    }
   }
 
   void _onGameSelected(GroupState groupState) {
@@ -175,11 +181,11 @@ class _MainPageState extends State<MainPage> {
                   ),
                   Expanded(
                     child: Consumer<GroupState>(
-                      builder: (context, groupState, child) => GroupDropDown(
+                      builder: (context, groupState, child) => GroupDropdown(
                         groups: groupState.groups,
                         onGroupSelected: (groupId) =>
                             _onGroupSelected(groupId, groupState),
-                        initial: groupState.selectedGroup?.groupID ?? null,
+                        selectedId: groupState.selectedGroup?.groupID,
                       ),
                     ),
                   ),
@@ -204,7 +210,7 @@ class _MainPageState extends State<MainPage> {
             SizedBox(height: 10),
             ListTile(
               leading: Icon(Icons.settings),
-              title: Text('Profile'),
+              title: Text('Settings'),
               subtitle: Text("Manage your profile, groups and games"),
               onTap: () {
                 _onProfileSelected();

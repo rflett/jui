@@ -1,17 +1,17 @@
 import 'dart:collection';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
+import 'package:jui/constants/storage_values.dart';
 import 'package:jui/models/dto/response/group/group_response.dart';
 import 'package:jui/models/dto/response/user/user.dart';
-import 'package:jui/models/dto/shared/vote.dart';
 import 'package:jui/server/group.dart';
+import 'package:jui/utilities/storage.dart';
 
 class GroupState extends ChangeNotifier {
   GroupResponse? _selectedGroup;
   List<GroupResponse> _groups = List.empty();
   List<UserResponse> _selectedGroupMembers = List.empty();
 
-  /// An unmodifiable view of the votes in the cart.
   UnmodifiableListView<UserResponse> get members =>
       UnmodifiableListView(_selectedGroupMembers);
 
@@ -27,6 +27,22 @@ class GroupState extends ChangeNotifier {
   void setSelectedGroup(GroupResponse newGroup) {
     _selectedGroup = newGroup;
     notifyListeners();
+    _getSelectedGroupMembers();
+  }
+
+  void setSelectedGroupById(String? newGroupId) {
+    if (newGroupId == null) {
+      // Need to have a group selected
+      return;
+    }
+
+    final selectedGroup =
+    _groups.firstWhere((group) => group.groupID == newGroupId);
+    _selectedGroup = selectedGroup;
+    notifyListeners();
+
+    // Store for when the app is loaded again and update the members
+    DeviceStorage.storeValue(storagePrimaryGroupId, newGroupId);
     _getSelectedGroupMembers();
   }
 

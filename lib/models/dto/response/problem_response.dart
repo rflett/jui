@@ -4,9 +4,9 @@ part 'problem_response.g.dart';
 
 @JsonSerializable()
 class ProblemResponse {
-  final String? message;
+  final String? error;
 
-  ProblemResponse(this.message);
+  ProblemResponse(this.error);
 
   factory ProblemResponse.fromJson(Map<String, dynamic> json) =>
       _$ProblemResponseFromJson(json);

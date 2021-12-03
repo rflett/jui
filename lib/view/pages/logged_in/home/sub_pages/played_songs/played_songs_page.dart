@@ -8,6 +8,7 @@ import 'package:jui/server/songs.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/view/pages/logged_in/components/animated_bar.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PlayedSongsPage extends StatefulWidget {
   PlayedSongsPage({Key? key}) : super(key: key);
@@ -25,7 +26,8 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
   int _playedCount = 0;
   int _currentIndex = 0;
   int _startIndex = 0;
-  int _numItems = 1; // if playedCount is less than 5 then no songs will get returned
+  int _numItems =
+      1; // if playedCount is less than 5 then no songs will get returned
 
   Color? currentColor;
 
@@ -35,7 +37,8 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
 
   _getData(int currentIndex) async {
     try {
-      var playedSongs = await Songs.getPlayed(_startIndex, _numItems);
+      var playedSongs =
+          await Songs.getPlayed(startIndex: _startIndex, numItems: _numItems);
 
       setState(() {
         this._songs = playedSongs.songs;
@@ -180,7 +183,15 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
   }
 
   void _onSpotifyPressed() async {
-    // TODO open Spotify
+    if (_songs.length == 0) {
+      return;
+    }
+
+    var song = _songs[_currentIndex];
+
+    var spotifyUrl = "https://open.spotify.com/track/${song.songID}";
+
+    await launch(spotifyUrl);
   }
 
   int get playedPosition {
@@ -203,6 +214,7 @@ class _PlayedSongsPageState extends State<PlayedSongsPage>
     if (this._songs.length == 0) {
       return;
     }
+
     CachedNetworkImageProvider currentImage = CachedNetworkImageProvider(
         this._songs[_currentIndex].artwork.first.url);
     final PaletteGenerator paletteGenerator =

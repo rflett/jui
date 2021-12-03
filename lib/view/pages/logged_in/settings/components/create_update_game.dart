@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:jui/models/dto/request/group/games/create_update_game.dart';
 import 'package:jui/models/dto/response/group/games/game_response.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
-import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/server/game.dart';
 import 'package:jui/utilities/popups.dart';
 import 'package:jui/utilities/validation.dart';
@@ -75,11 +74,8 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Created $name.")));
 
-      // TODO reload games
-
       Navigator.of(context).pop(true);
     } catch (err) {
-      // TODO logging
       print(err);
       PopupUtils.showError(context, err as ProblemResponse);
     }
@@ -91,6 +87,7 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
       await Game.update(this._game!.groupID, this._game!.gameID, requestData);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Updated $name.")));
+
       Navigator.of(context).pop(true);
     } catch (err) {
       // TODO logging
@@ -104,6 +101,7 @@ class _CreateUpdateGamePopupState extends State<CreateUpdateGamePopup> {
       await Game.delete(this._game!.groupID, this._game!.gameID);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Successfully deleted game.")));
+
       Navigator.of(context).pop(true);
     } catch (err) {
       // TODO logging

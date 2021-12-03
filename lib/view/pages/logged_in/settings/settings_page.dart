@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:jui/models/enums/settings_page.dart';
+import 'package:jui/state/game_state.dart';
 import 'package:jui/state/group_state.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_game.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/components/create_update_group.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/games_page.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/groups_page.dart';
-import 'package:jui/view/pages/logged_in/profile/sub_pages/my_profile_page.dart';
+import 'package:jui/view/pages/logged_in/settings/components/create_update_game.dart';
+import 'package:jui/view/pages/logged_in/settings/components/create_update_group.dart';
+import 'package:jui/view/pages/logged_in/settings/games/games_page.dart';
+import 'package:jui/view/pages/logged_in/settings/groups/groups_page.dart';
+import 'package:jui/view/pages/logged_in/settings/profile/my_profile_page.dart';
 import 'package:provider/provider.dart';
 
-class ProfilePage extends StatefulWidget {
-  ProfilePage({Key? key}) : super(key: key);
+class SettingsPage extends StatefulWidget {
+  SettingsPage({Key? key}) : super(key: key);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _SettingsPageState createState() => _SettingsPageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
-  // navigation
+class _SettingsPageState extends State<SettingsPage> {
+  final GameState gameState = new GameState(List.empty());
   ProfilePages _currentPage = ProfilePages.myProfile;
   Map<ProfilePages, Widget> _profilePages = {};
 
-  _ProfilePageState() {
+  _SettingsPageState() {
     this._profilePages = Map.fromEntries([
       MapEntry(
         ProfilePages.myProfile,
@@ -68,14 +69,15 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _createGamePressed(String? groupId) {
+  void _createGamePressed(String? groupId) async {
     if (groupId != null) {
-      showDialog(
+      await showDialog(
         context: context,
         builder: (context) {
           return CreateUpdateGamePopup(groupId: groupId);
         },
       );
+      gameState.loadGames(groupId);
     }
   }
 
@@ -94,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return FloatingActionButton(
       onPressed: () => _createGroupPressed(),
       child: const Icon(Icons.add),
-      backgroundColor: Colors.indigo,
+      backgroundColor: Theme.of(context).colorScheme.primary,
     );
   }
 
@@ -104,33 +106,36 @@ class _ProfilePageState extends State<ProfilePage> {
     return FloatingActionButton(
       onPressed: () => _createGamePressed(selectedGroupId),
       child: const Icon(Icons.add),
-      backgroundColor: Colors.indigo,
+      backgroundColor: Theme.of(context).colorScheme.primary,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline_rounded), label: "My Profile"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.people_alt_outlined), label: "My Group"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.local_play_outlined), label: "Games"),
-        ],
-        currentIndex: this._currentPage.index,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey.shade300.withAlpha(150),
-        onTap: _onNavIconTapped,
+    return ListenableProvider(
+      create: (context) => gameState,
+      child: Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          items: [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline_rounded), label: "My Profile"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.people_alt_outlined), label: "My Group"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.local_play_outlined), label: "Games"),
+          ],
+          currentIndex: this._currentPage.index,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey.shade300.withAlpha(150),
+          onTap: _onNavIconTapped,
+        ),
+        body: Center(
+            child: this._profilePages.length == 0
+                ? null
+                : this._profilePages[this._currentPage]),
+        floatingActionButton: _currentFab(),
       ),
-      body: Center(
-          child: this._profilePages.length == 0
-              ? null
-              : this._profilePages[this._currentPage]),
-      floatingActionButton: _currentFab(),
     );
   }
 }
