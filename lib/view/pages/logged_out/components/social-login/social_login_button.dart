@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jui/constants/urls.dart';
 import 'package:jui/models/enums/social_providers.dart';
+import 'package:jui/models/social_branding.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SocialLoginButton extends StatelessWidget {
@@ -10,40 +11,36 @@ class SocialLoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var branding = SocialBranding.fromProvider(_provider);
+
     return Container(
       height: 40,
-      child: Material(
-        color: Colors.transparent,
-        elevation: 2,
-        child: InkWell(
-          onTap: () => _onSocialTapped(),
-          child: Image.asset(_getImageAsset()),
+      child: TextButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(branding.color),
+          elevation: MaterialStateProperty.all(2),
+        ),
+        onPressed: () => _onSocialTapped(_provider),
+        child: Row(
+          children: [
+            branding.icon,
+            SizedBox(width: 10),
+            Text(
+              "Login with ${branding.name}",
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  _onSocialTapped() async {
-    var providerName = this._provider.toString().split(".").last;
+  _onSocialTapped(SocialProviders provider) async {
+    var providerName = provider.toString().split(".").last;
     var url = "$oauthUrl/$providerName/login";
     var shouldNavigate = await canLaunch(url);
     if (shouldNavigate) {
       await launch(url);
-    }
-  }
-
-  String _getImageAsset() {
-    switch (this._provider) {
-      case SocialProviders.google:
-        return "assets/images/social/google.png";
-      case SocialProviders.spotify:
-        return "assets/images/social/spotify.png";
-      case SocialProviders.facebook:
-        return "assets/images/social/facebook.png";
-      case SocialProviders.instagram:
-        return "assets/images/social/instagram.png";
-      case SocialProviders.delegator:
-        return "assets/images/social/delegator.png";
     }
   }
 }

@@ -10,12 +10,13 @@ class UserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).canvasColor,
       radius: size / 2,
       foregroundImage: uuid != null
           ? NetworkImage(
               "https://www.thispersondoesnotexist.com/image?value=$uuid")
           : null,
+      backgroundImage: AssetImage("assets/images/user-regular.png"),
     );
   }
 }
