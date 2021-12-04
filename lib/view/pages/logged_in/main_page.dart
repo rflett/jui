@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jui/constants/app_routes.dart';
 import 'package:jui/constants/storage_values.dart';
 import 'package:jui/models/dto/response/problem_response.dart';
@@ -197,7 +198,7 @@ class _MainPageState extends State<MainPage> {
             ),
             Consumer<GroupState>(
               builder: (context, groupState, child) => ListTile(
-                leading: Icon(Icons.music_note),
+                leading: FaIcon(FontAwesomeIcons.gamepad),
                 title: Text('Play'),
                 subtitle:
                     Text("Check out the leaderboard and manage your votes"),
@@ -209,7 +210,7 @@ class _MainPageState extends State<MainPage> {
             ),
             SizedBox(height: 10),
             ListTile(
-              leading: Icon(Icons.settings),
+              leading: FaIcon(FontAwesomeIcons.cog),
               title: Text('Settings'),
               subtitle: Text("Manage your profile, groups and games"),
               onTap: () {
@@ -218,8 +219,8 @@ class _MainPageState extends State<MainPage> {
               },
             ),
             ListTile(
-              leading: Icon(
-                Icons.logout,
+              leading: FaIcon(
+                FontAwesomeIcons.signOut,
                 color: Colors.red,
               ),
               title: Text(

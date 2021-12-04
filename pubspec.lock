@@ -271,10 +271,12 @@ packages:
   font_awesome_flutter:
     dependency: "direct main"
     description:
-      name: font_awesome_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "9.2.0"
+      path: "."
+      ref: HEAD
+      resolved-ref: "89d85ac79ad6f39e312e633246dc0e82663ac854"
+      url: "git@gitlab.com:delegator-au/shared/font_awesome_flutter.git"
+    source: git
+    version: "10.0.0-beta"
   frontend_server_client:
     dependency: transitive
     description:

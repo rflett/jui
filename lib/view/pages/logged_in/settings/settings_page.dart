@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jui/models/enums/settings_page.dart';
 import 'package:jui/state/game_state.dart';
 import 'package:jui/state/group_state.dart';
@@ -95,7 +96,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget groupsPageFab() {
     return FloatingActionButton(
       onPressed: () => _createGroupPressed(),
-      child: const Icon(Icons.add),
+      child: const FaIcon(FontAwesomeIcons.plus),
       backgroundColor: Theme.of(context).colorScheme.primary,
     );
   }
@@ -105,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
         Provider.of<GroupState>(context).selectedGroup?.groupID;
     return FloatingActionButton(
       onPressed: () => _createGamePressed(selectedGroupId),
-      child: const Icon(Icons.add),
+      child: const FaIcon(FontAwesomeIcons.plus),
       backgroundColor: Theme.of(context).colorScheme.primary,
     );
   }
@@ -119,21 +120,22 @@ class _SettingsPageState extends State<SettingsPage> {
           backgroundColor: Theme.of(context).primaryColor,
           items: [
             BottomNavigationBarItem(
-                icon: Icon(Icons.person_outline_rounded), label: "My Profile"),
+                icon: const FaIcon(FontAwesomeIcons.user), label: "My Profile"),
             BottomNavigationBarItem(
-                icon: Icon(Icons.people_alt_outlined), label: "My Group"),
+                icon: const FaIcon(FontAwesomeIcons.users), label: "My Group"),
             BottomNavigationBarItem(
-                icon: Icon(Icons.local_play_outlined), label: "Games"),
+                icon: const FaIcon(FontAwesomeIcons.gamepad), label: "Games"),
           ],
           currentIndex: this._currentPage.index,
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.grey.shade300.withAlpha(150),
           onTap: _onNavIconTapped,
         ),
-        body: Center(
-            child: this._profilePages.length == 0
-                ? null
-                : this._profilePages[this._currentPage]),
+        body: IndexedStack(index: this._currentPage.index, children: [
+          MyProfilePage(),
+          GroupsPage(),
+          GamesPage(),
+        ]),
         floatingActionButton: _currentFab(),
       ),
     );

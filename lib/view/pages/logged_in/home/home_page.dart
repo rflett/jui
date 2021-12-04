@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jui/view/pages/logged_in/home/leaderboard/leaderboard_page.dart';
 import 'package:jui/view/pages/logged_in/home/my_votes/my_votes_page.dart';
 import 'package:jui/view/pages/logged_in/home/played_songs/played_songs_page.dart';
@@ -32,11 +33,11 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).primaryColor,
         items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt_rounded), label: "Leaderboard"),
+              icon: FaIcon(FontAwesomeIcons.medal), label: "Leaderboard"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.history_rounded), label: "Played Songs"),
+              icon: FaIcon(FontAwesomeIcons.solidMusic), label: "Played Songs"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.music_note_outlined), label: "My Votes"),
+              icon: FaIcon(FontAwesomeIcons.pollH), label: "My Votes"),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,
