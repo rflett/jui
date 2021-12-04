@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:jui/models/dto/shared/vote.dart';
 import 'package:jui/server/search.dart';
 import 'package:jui/server/user.dart';
+import 'package:jui/state/group_state.dart';
 import 'package:jui/state/user_state.dart';
-import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/search/song_search_list.dart';
-import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/votes/vote_list.dart';
-import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/state/VoteState.dart';
+import 'package:jui/view/pages/logged_in/home/my_votes/components/search/song_search_list.dart';
+import 'package:jui/view/pages/logged_in/home/my_votes/components/votes/vote_list.dart';
+import 'package:jui/view/pages/logged_in/home/my_votes/state/VoteState.dart';
 import 'package:provider/provider.dart';
 
 import 'components/search/song_search_item.dart';
@@ -133,10 +134,11 @@ class _MyVotesPageState extends State<MyVotesPage> {
       return;
     }
 
-    // Also retrieve the votes from the server again to update the local copy
+    // Also retrieve the votes from the server again to update the local copy.
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Votes updated successfully")));
     getVotes();
+    Provider.of<GroupState>(context).reloadGroupMembers();
   }
 
   @override

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jui/view/pages/logged_in/home/sub_pages/leaderboard/components/leaderboard_list.dart';
+import 'package:jui/view/pages/logged_in/home/leaderboard/components/leaderboard_list.dart';
 
 class Leaderboard extends StatefulWidget {
   Leaderboard({Key? key}) : super(key: key);

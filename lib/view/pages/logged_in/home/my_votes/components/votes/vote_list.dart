@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jui/models/dto/shared/vote.dart';
-import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/components/votes/vote_list_item.dart';
-import 'package:jui/view/pages/logged_in/home/sub_pages/my_votes/state/VoteState.dart';
+import 'package:jui/view/pages/logged_in/home/my_votes/components/votes/vote_list_item.dart';
+import 'package:jui/view/pages/logged_in/home/my_votes/state/VoteState.dart';
 import 'package:provider/provider.dart';
 
 class VoteList extends StatefulWidget {

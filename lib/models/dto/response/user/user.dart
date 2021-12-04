@@ -43,4 +43,13 @@ class UserResponse {
   bool isOwnerOf(GroupResponse? group) {
     return group != null && group.ownerID == userID;
   }
+
+  List<Vote> get orderedVotes {
+    if (votes == null) {
+      return List.empty();
+    }
+    var newList = List<Vote>.from(votes!);
+    newList.sort((a, b) => a.rank! - b.rank!);
+    return newList;
+  }
 }

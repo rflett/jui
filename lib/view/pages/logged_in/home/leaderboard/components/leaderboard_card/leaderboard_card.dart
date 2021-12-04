@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jui/models/dto/response/user/user.dart';
 import 'package:jui/models/dto/shared/vote.dart';
-import 'package:jui/view/pages/logged_in/home/sub_pages/leaderboard/components/leaderboard_card/leaderboard_card_user.dart';
-import 'package:jui/view/pages/logged_in/home/sub_pages/leaderboard/components/leaderboard_card/leaderboard_card_votes.dart';
+import 'package:jui/view/pages/logged_in/home/leaderboard/components/leaderboard_card/leaderboard_card_user.dart';
+import 'package:jui/view/pages/logged_in/home/leaderboard/components/leaderboard_card/leaderboard_card_votes.dart';
 
 class LeaderboardCard extends StatefulWidget {
   final int position;
@@ -10,7 +10,7 @@ class LeaderboardCard extends StatefulWidget {
   final List<Vote> _votes;
 
   LeaderboardCard({Key? key, required this.position, required this.user})
-      : this._votes = user.votes ?? List.empty(),
+      : this._votes = user.orderedVotes,
         super(key: key);
 
   @override

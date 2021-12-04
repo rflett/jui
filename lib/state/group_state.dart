@@ -37,7 +37,7 @@ class GroupState extends ChangeNotifier {
     }
 
     final selectedGroup =
-    _groups.firstWhere((group) => group.groupID == newGroupId);
+        _groups.firstWhere((group) => group.groupID == newGroupId);
     _selectedGroup = selectedGroup;
     notifyListeners();
 
@@ -46,12 +46,15 @@ class GroupState extends ChangeNotifier {
     _getSelectedGroupMembers();
   }
 
+  void reloadGroupMembers() => _getSelectedGroupMembers();
+
   // Updates the list of group members when the selected group is updated
   void _getSelectedGroupMembers() async {
     if (_selectedGroup != null) {
       try {
         var members =
             await Group.getMembers(_selectedGroup!.groupID, withVotes: true);
+
         _selectedGroupMembers = members.members;
         notifyListeners();
       } catch (err) {
