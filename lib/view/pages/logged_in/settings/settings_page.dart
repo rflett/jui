@@ -40,6 +40,12 @@ class _SettingsPageState extends State<SettingsPage> {
     ]);
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _onNavIconTapped(int index) {
     setState(() {
       this._currentPage = _getCurrentFromIndex(index);
@@ -129,7 +135,7 @@ class _SettingsPageState extends State<SettingsPage> {
       create: (context) => gameState,
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           items: [
             BottomNavigationBarItem(
                 icon: const FaIcon(FontAwesomeIcons.user), label: "My Profile"),

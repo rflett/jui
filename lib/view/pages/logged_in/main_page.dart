@@ -63,12 +63,12 @@ class _MainPageState extends State<MainPage> {
     }
 
     var primaryGroupId =
-        await DeviceStorage.retrieveValue(storagePrimaryGroupId);
+    await DeviceStorage.retrieveValue(storagePrimaryGroupId);
 
     var groups = user.groups ?? List.empty();
 
     final selectedGroup =
-        groups.firstWhere((group) => group.groupID == primaryGroupId);
+    groups.firstWhere((group) => group.groupID == primaryGroupId);
 
     // set the vars
     setState(() {
@@ -157,8 +157,10 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: theme.colorScheme.primary,
         title: Text(title),
       ),
       drawer: Drawer(
@@ -170,43 +172,46 @@ class _MainPageState extends State<MainPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Consumer<UserState>(
-                    builder: (context, userState, child) => Row(
-                      children: [
-                        UserAvatar(uuid: userState.user?.userID ?? ""),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: Text(userState.user?.name ?? ""),
+                    builder: (context, userState, child) =>
+                        Row(
+                          children: [
+                            UserAvatar(uuid: userState.user?.userID ?? ""),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                              child: Text(userState.user?.name ?? ""),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
                   ),
                   Expanded(
                     child: Consumer<GroupState>(
-                      builder: (context, groupState, child) => GroupDropdown(
-                        groups: groupState.groups,
-                        onGroupSelected: (groupId) =>
-                            _onGroupSelected(groupId, groupState),
-                        selectedId: groupState.selectedGroup?.groupID,
-                      ),
+                      builder: (context, groupState, child) =>
+                          GroupDropdown(
+                            groups: groupState.groups,
+                            onGroupSelected: (groupId) =>
+                                _onGroupSelected(groupId, groupState),
+                            selectedId: groupState.selectedGroup?.groupID,
+                          ),
                     ),
                   ),
                 ],
               ),
               decoration: BoxDecoration(
-                color: Colors.white24,
+                color: theme.colorScheme.primary,
               ),
             ),
             Consumer<GroupState>(
-              builder: (context, groupState, child) => ListTile(
-                leading: FaIcon(FontAwesomeIcons.gamepad),
-                title: Text('Play'),
-                subtitle:
+              builder: (context, groupState, child) =>
+                  ListTile(
+                    leading: FaIcon(FontAwesomeIcons.gamepad),
+                    title: Text('Play'),
+                    subtitle:
                     Text("Check out the leaderboard and manage your votes"),
-                onTap: () {
-                  _onGameSelected(groupState);
-                  Navigator.pop(context);
-                },
-              ),
+                    onTap: () {
+                      _onGameSelected(groupState);
+                      Navigator.pop(context);
+                    },
+                  ),
             ),
             SizedBox(height: 10),
             ListTile(
