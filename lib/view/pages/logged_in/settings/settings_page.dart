@@ -20,6 +20,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final GameState gameState = new GameState(List.empty());
   ProfilePages _currentPage = ProfilePages.myProfile;
+  PageController _controller = PageController(keepPage: false);
   Map<ProfilePages, Widget> _profilePages = {};
 
   _SettingsPageState() {
@@ -40,6 +41,20 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _onNavIconTapped(int index) {
+    setState(() {
+      this._currentPage = _getCurrentFromIndex(index);
+      _controller.animateToPage(index,
+          duration: Duration(milliseconds: 400), curve: Curves.easeInOut);
+    });
+  }
+
+  void _onPageSwiped(int index) {
+    setState(() {
+      this._currentPage = _getCurrentFromIndex(index);
+    });
+  }
+
+  ProfilePages _getCurrentFromIndex(int index) {
     ProfilePages currentPage;
     switch (index) {
       case 0:
@@ -55,10 +70,7 @@ class _SettingsPageState extends State<SettingsPage> {
         currentPage = ProfilePages.myProfile;
         break;
     }
-
-    setState(() {
-      this._currentPage = currentPage;
-    });
+    return currentPage;
   }
 
   void _createGroupPressed() {
@@ -131,11 +143,14 @@ class _SettingsPageState extends State<SettingsPage> {
           unselectedItemColor: Colors.grey.shade300.withAlpha(150),
           onTap: _onNavIconTapped,
         ),
-        body: IndexedStack(index: this._currentPage.index, children: [
-          MyProfilePage(),
-          GroupsPage(),
-          GamesPage(),
-        ]),
+        body: PageView(
+            controller: _controller,
+            onPageChanged: _onPageSwiped,
+            children: [
+              MyProfilePage(),
+              GroupsPage(),
+              GamesPage(),
+            ]),
         floatingActionButton: _currentFab(),
       ),
     );
