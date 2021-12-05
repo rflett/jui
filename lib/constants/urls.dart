@@ -1,5 +1,6 @@
 // server url
 const serverBaseUrl = "https://api.staging.jaypi.online";
+const socketBaseUrl = "ws://192.168.1.3:8080";
 
 // account management
 const signinUrl = "$serverBaseUrl/account/signin";

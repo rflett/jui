@@ -49,6 +49,7 @@ dependencies:
       url: git@gitlab.com:delegator-au/shared/font_awesome_flutter.git
 
   flutter_staggered_animations: "^1.0.0"
+  web_socket_channel: ^2.1.0
 
 dev_dependencies:
   flutter_test:

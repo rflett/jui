@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jui/constants/app_routes.dart';
@@ -34,6 +36,8 @@ class _MainPageState extends State<MainPage> {
   Map<String, WidgetBuilder> _loggedInRoutes = {};
   String _currentRoute = gamePage;
 
+  StreamSubscription? _groupListener;
+
   _MainPageState() {
     this._loggedInRoutes = {
       "/": (BuildContext context) => Container(),
@@ -46,6 +50,32 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     _getData();
+    Provider.of<GroupState>(context, listen: false)
+        .addListener(_onGroupsUpdate);
+  }
+
+  @override
+  void dispose() {
+    Provider.of<GroupState>(context, listen: false)
+        .removeListener(_onGroupsUpdate);
+    _groupListener?.cancel();
+    super.dispose();
+  }
+
+  _onGroupsUpdate() {
+    _groupListener?.cancel();
+    _groupListener = Provider.of<GroupState>(context, listen: false).webSockets?.listen((event) {
+      var contents = event as String;
+      var messenger = ScaffoldMessenger.of(context);
+      messenger.showMaterialBanner(
+        MaterialBanner(content: Text(contents), actions: [
+          TextButton(
+            onPressed: () => messenger.hideCurrentMaterialBanner(),
+            child: Text("Dismiss"),
+          ),
+        ]),
+      );
+    });
   }
 
   _getData() async {
@@ -63,12 +93,12 @@ class _MainPageState extends State<MainPage> {
     }
 
     var primaryGroupId =
-    await DeviceStorage.retrieveValue(storagePrimaryGroupId);
+        await DeviceStorage.retrieveValue(storagePrimaryGroupId);
 
     var groups = user.groups ?? List.empty();
 
     final selectedGroup =
-    groups.firstWhere((group) => group.groupID == primaryGroupId);
+        groups.firstWhere((group) => group.groupID == primaryGroupId);
 
     // set the vars
     setState(() {
@@ -172,26 +202,24 @@ class _MainPageState extends State<MainPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Consumer<UserState>(
-                    builder: (context, userState, child) =>
-                        Row(
-                          children: [
-                            UserAvatar(uuid: userState.user?.userID ?? ""),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                              child: Text(userState.user?.name ?? ""),
-                            ),
-                          ],
+                    builder: (context, userState, child) => Row(
+                      children: [
+                        UserAvatar(uuid: userState.user?.userID ?? ""),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                          child: Text(userState.user?.name ?? ""),
                         ),
+                      ],
+                    ),
                   ),
                   Expanded(
                     child: Consumer<GroupState>(
-                      builder: (context, groupState, child) =>
-                          GroupDropdown(
-                            groups: groupState.groups,
-                            onGroupSelected: (groupId) =>
-                                _onGroupSelected(groupId, groupState),
-                            selectedId: groupState.selectedGroup?.groupID,
-                          ),
+                      builder: (context, groupState, child) => GroupDropdown(
+                        groups: groupState.groups,
+                        onGroupSelected: (groupId) =>
+                            _onGroupSelected(groupId, groupState),
+                        selectedId: groupState.selectedGroup?.groupID,
+                      ),
                     ),
                   ),
                 ],
@@ -201,17 +229,16 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
             Consumer<GroupState>(
-              builder: (context, groupState, child) =>
-                  ListTile(
-                    leading: FaIcon(FontAwesomeIcons.gamepad),
-                    title: Text('Play'),
-                    subtitle:
+              builder: (context, groupState, child) => ListTile(
+                leading: FaIcon(FontAwesomeIcons.gamepad),
+                title: Text('Play'),
+                subtitle:
                     Text("Check out the leaderboard and manage your votes"),
-                    onTap: () {
-                      _onGameSelected(groupState);
-                      Navigator.pop(context);
-                    },
-                  ),
+                onTap: () {
+                  _onGameSelected(groupState);
+                  Navigator.pop(context);
+                },
+              ),
             ),
             SizedBox(height: 10),
             ListTile(
